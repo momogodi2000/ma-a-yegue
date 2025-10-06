@@ -1,4 +1,4 @@
-name: mayegue
+name: maa_yegue
 description: "Ma'a yegue - Application d'apprentissage des langues traditionnelles camerounaises"
 publish_to: "none"
 
@@ -50,8 +50,11 @@ dependencies:
   flutter_lints: ^2.0.3
   lottie: ^3.0.0
   flutter_tts: ^4.2.3
+  carousel_slider: ^4.2.1
+  cached_network_image: ^3.3.1
   stripe_js: ^3.2.0
   flutter_stripe: ^10.1.1
+  fl_chart: ^0.66.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

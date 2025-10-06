@@ -2,11 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:dartz/dartz.dart';
-import 'package:mayegue/features/authentication/domain/usecases/login_usecase.dart';
-import 'package:mayegue/features/authentication/domain/repositories/auth_repository.dart';
-import 'package:mayegue/features/authentication/domain/entities/auth_response_entity.dart';
-import 'package:mayegue/features/authentication/domain/entities/user_entity.dart';
-import 'package:mayegue/core/errors/failures.dart';
+import 'package:maa_yegue/features/authentication/domain/usecases/login_usecase.dart';
+import 'package:maa_yegue/features/authentication/domain/repositories/auth_repository.dart';
+import 'package:maa_yegue/features/authentication/domain/entities/auth_response_entity.dart';
+import 'package:maa_yegue/features/authentication/domain/entities/user_entity.dart';
+import 'package:maa_yegue/core/errors/failures.dart';
 
 import 'login_usecase_test.mocks.dart';
 

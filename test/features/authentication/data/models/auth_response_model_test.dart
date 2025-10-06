@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mayegue/features/authentication/data/models/auth_response_model.dart';
-import 'package:mayegue/features/authentication/data/models/user_model.dart';
-import 'package:mayegue/features/authentication/domain/entities/auth_response_entity.dart';
+import 'package:maa_yegue/features/authentication/data/models/auth_response_model.dart';
+import 'package:maa_yegue/features/authentication/data/models/user_model.dart';
+import 'package:maa_yegue/features/authentication/domain/entities/auth_response_entity.dart';
 
 void main() {
   group('AuthResponseModel', () {

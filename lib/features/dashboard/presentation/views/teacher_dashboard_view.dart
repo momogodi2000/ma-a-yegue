@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/supported_languages.dart';
 import '../../../../core/constants/routes.dart';
+import '../../../lessons/domain/entities/course.dart';
 import '../../../../shared/widgets/user_guide_widget.dart';
 import '../../../../shared/widgets/theme_switcher_widget.dart';
 import '../viewmodels/teacher_dashboard_viewmodel.dart';
@@ -12,6 +13,9 @@ import '../widgets/student_progress_widget.dart';
 import '../widgets/analytics_widget.dart';
 import '../widgets/content_management_widget.dart';
 import '../widgets/teacher_dictionary_contribution_dialog.dart';
+import 'course_creation_view.dart';
+import 'lesson_creation_view.dart';
+import 'quiz_creation_view.dart';
 
 /// Dashboard view specifically designed for teachers
 class TeacherDashboardView extends StatefulWidget {
@@ -199,6 +203,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
         children: [
           // Content management tools
           ContentManagementWidget(
+            onCreateCourse: () => _createNewCourse(context),
             onCreateLesson: () => _createNewLesson(context),
             onCreateGame: () => _createNewGame(context),
             onManageVocabulary: () => _manageVocabulary(context),
@@ -1000,16 +1005,59 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
     );
   }
 
-  // Navigation methods (TODO: Implement actual navigation)
+  // Navigation methods
+  void _createNewCourse(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CourseCreationView(),
+      ),
+    );
+  }
+
   void _createNewLesson(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Création de leçon - À implémenter')),
+    // For now, create a dummy course for demonstration
+    // TODO: Implement course selection dialog
+    final dummyCourse = Course(
+      id: 'demo-course',
+      title: 'Demo Course',
+      description: 'Demo course for testing',
+      languageCode: 'ewondo',
+      thumbnailUrl: '',
+      lessons: [],
+      estimatedDuration: 60,
+      level: CourseLevel.beginner,
+      status: CourseStatus.draft,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LessonCreationView(course: dummyCourse),
+      ),
     );
   }
 
   void _createNewGame(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Création de jeu - À implémenter')),
+    // For now, create a dummy course for demonstration
+    final dummyCourse = Course(
+      id: 'demo-course',
+      title: 'Demo Course',
+      description: 'Demo course for testing',
+      languageCode: 'ewondo',
+      thumbnailUrl: '',
+      lessons: [],
+      estimatedDuration: 60,
+      level: CourseLevel.beginner,
+      status: CourseStatus.draft,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QuizCreationView(course: dummyCourse),
+      ),
     );
   }
 

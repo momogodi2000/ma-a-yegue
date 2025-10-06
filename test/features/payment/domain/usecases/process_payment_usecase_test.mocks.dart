@@ -6,12 +6,12 @@
 import 'dart:async' as _i4;
 
 import 'package:dartz/dartz.dart' as _i2;
-import 'package:mayegue/core/errors/failures.dart' as _i5;
-import 'package:mayegue/features/payment/domain/entities/payment_entity.dart'
+import 'package:maa_yegue/core/errors/failures.dart' as _i5;
+import 'package:maa_yegue/features/payment/domain/entities/payment_entity.dart'
     as _i6;
-import 'package:mayegue/features/payment/domain/entities/subscription_entity.dart'
+import 'package:maa_yegue/features/payment/domain/entities/subscription_entity.dart'
     as _i7;
-import 'package:mayegue/features/payment/domain/repositories/payment_repository.dart'
+import 'package:maa_yegue/features/payment/domain/repositories/payment_repository.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 

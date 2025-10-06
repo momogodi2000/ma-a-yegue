@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:mayegue/features/authentication/presentation/views/login_view.dart';
+import 'package:maa_yegue/features/authentication/presentation/views/login_view.dart';
 
 class MockAuthViewModel extends ChangeNotifier {
   bool _isLoading = false;

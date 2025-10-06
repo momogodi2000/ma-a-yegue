@@ -1,4 +1,4 @@
-ï»¿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../monitoring/app_monitoring.dart';
 class AppErrorBoundary extends StatefulWidget {
@@ -90,8 +90,8 @@ class _AppErrorBoundaryState extends State<AppErrorBoundary> {
               const SizedBox(height: 16),
               Text(
                 widget.message ??
-                    'L\'application a rencontrÃ© un problÃ¨me inattendu. '
-                        'Nous avons Ã©tÃ© notifiÃ©s et travaillons sur une solution.',
+                    'L\'application a rencontré un problème inattendu. '
+                        'Nous avons été notifiés et travaillons sur une solution.',
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -107,7 +107,7 @@ class _AppErrorBoundaryState extends State<AppErrorBoundary> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'DÃ©tails de l\'erreur (mode debug):',
+                        'Détails de l\'erreur (mode debug):',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -129,14 +129,14 @@ class _AppErrorBoundaryState extends State<AppErrorBoundary> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: _restart,
-                      child: const Text('RedÃ©marrer'),
+                      child: const Text('Redémarrer'),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _retry,
-                      child: const Text('RÃ©essayer'),
+                      child: const Text('Réessayer'),
                     ),
                   ),
                 ],
@@ -144,7 +144,7 @@ class _AppErrorBoundaryState extends State<AppErrorBoundary> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _reportBug,
-                child: const Text('Signaler le problÃ¨me'),
+                child: const Text('Signaler le problème'),
               ),
             ],
           ),
@@ -181,11 +181,11 @@ class _AppErrorBoundaryState extends State<AppErrorBoundary> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Signaler un problÃ¨me'),
+        title: const Text('Signaler un problème'),
         content: const Text(
-          'Votre rapport d\'erreur a Ã©tÃ© envoyÃ© automatiquement. '
-          'Si le problÃ¨me persiste, vous pouvez nous contacter Ã  '
-          'support@Maâ€™a yegue.com avec une description dÃ©taillÃ©e.',
+          'Votre rapport d\'erreur a été envoyé automatiquement. '
+          'Si le problème persiste, vous pouvez nous contacter à '
+          'support@Ma’a yegue.com avec une description détaillée.',
         ),
         actions: [
           TextButton(

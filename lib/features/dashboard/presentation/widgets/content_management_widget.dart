@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ContentManagementWidget extends StatelessWidget {
+  final VoidCallback? onCreateCourse;
   final VoidCallback? onCreateLesson;
   final VoidCallback? onCreateGame;
   final VoidCallback? onManageVocabulary;
@@ -8,6 +9,7 @@ class ContentManagementWidget extends StatelessWidget {
 
   const ContentManagementWidget({
     super.key,
+    this.onCreateCourse,
     this.onCreateLesson,
     this.onCreateGame,
     this.onManageVocabulary,
@@ -56,11 +58,9 @@ class ContentManagementWidget extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      // Navigate to create new content
-                    },
+                    onPressed: onCreateCourse,
                     icon: const Icon(Icons.add),
-                    label: const Text('Create Content'),
+                    label: const Text('Create Course'),
                   ),
                 ),
                 const SizedBox(width: 8),

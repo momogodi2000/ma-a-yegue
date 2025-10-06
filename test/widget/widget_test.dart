@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:mayegue/main.dart';
-import 'package:mayegue/shared/providers/app_providers.dart';
-import 'package:mayegue/core/config/environment_config.dart';
+import 'package:maa_yegue/main.dart';
+import 'package:maa_yegue/shared/providers/app_providers.dart';
+import 'package:maa_yegue/core/config/environment_config.dart';
 
 void main() {
   List<SingleChildWidget> getProviders() => appProviders;

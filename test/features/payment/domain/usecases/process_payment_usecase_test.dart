@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dartz/dartz.dart';
-import 'package:mayegue/core/errors/failures.dart';
-import 'package:mayegue/features/payment/domain/entities/payment_entity.dart';
-import 'package:mayegue/features/payment/domain/repositories/payment_repository.dart';
-import 'package:mayegue/features/payment/domain/usecases/process_payment_usecase.dart';
+import 'package:maa_yegue/core/errors/failures.dart';
+import 'package:maa_yegue/features/payment/domain/entities/payment_entity.dart';
+import 'package:maa_yegue/features/payment/domain/repositories/payment_repository.dart';
+import 'package:maa_yegue/features/payment/domain/usecases/process_payment_usecase.dart';
 
 // Mock class
 class MockPaymentRepository extends Mock implements PaymentRepository {}

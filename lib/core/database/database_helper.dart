@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'migrations/migration_v3.dart';
+import 'migrations/migration_v4.dart';
 
 /// Database helper for managing SQLite database operations
 class DatabaseHelper {
-  static const String _databaseName = 'Ma’a yegue_app.db';
-  static const int _databaseVersion = 2;
+  static const String _databaseName = 'maa_yegue_app.db';
+  static const int _databaseVersion = 4;
 
   static Database? _database;
 
@@ -36,6 +38,31 @@ class DatabaseHelper {
 
   /// Create database tables
   static Future<void> _onCreate(Database db, int version) async {
+    print('Creating database version $version...');
+    
+    // Create all version 1 tables (original schema)
+    await _createV1Tables(db);
+    
+    // If creating at version 2 or higher, add v2 tables
+    if (version >= 2) {
+      await _createV2Tables(db);
+    }
+    
+    // If creating at version 3, add v3 tables
+    if (version >= 3) {
+      await DatabaseMigrationV3.createTablesV3(db);
+    }
+    
+    // If creating at version 4, add v4 tables
+    if (version >= 4) {
+      await DatabaseMigrationV4.createTablesV4(db);
+    }
+    
+    print('✅ Database created successfully at version $version');
+  }
+
+  /// Create version 1 tables
+  static Future<void> _createV1Tables(Database db) async {
     // Create dictionary entries table
     await db.execute('''
       CREATE TABLE dictionary_entries (
@@ -68,30 +95,19 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create indexes for better query performance
-    await db.execute('''
-      CREATE INDEX idx_dictionary_language_code ON dictionary_entries(language_code)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_dictionary_canonical_form ON dictionary_entries(canonical_form)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_dictionary_review_status ON dictionary_entries(review_status)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_dictionary_search_terms ON dictionary_entries(search_terms)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_dictionary_sync_status ON dictionary_entries(needs_sync, has_conflict)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_dictionary_last_updated ON dictionary_entries(last_updated)
-    ''');
+    // Create indexes for dictionary
+    await db.execute(
+        'CREATE INDEX idx_dictionary_language_code ON dictionary_entries(language_code)');
+    await db.execute(
+        'CREATE INDEX idx_dictionary_canonical_form ON dictionary_entries(canonical_form)');
+    await db.execute(
+        'CREATE INDEX idx_dictionary_review_status ON dictionary_entries(review_status)');
+    await db.execute(
+        'CREATE INDEX idx_dictionary_search_terms ON dictionary_entries(search_terms)');
+    await db.execute(
+        'CREATE INDEX idx_dictionary_sync_status ON dictionary_entries(needs_sync, has_conflict)');
+    await db.execute(
+        'CREATE INDEX idx_dictionary_last_updated ON dictionary_entries(last_updated)');
 
     // Create user progress table
     await db.execute('''
@@ -115,19 +131,14 @@ class DatabaseHelper {
     ''');
 
     // Create indexes for user progress
-    await db.execute('''
-      CREATE INDEX idx_progress_user_language ON user_progress(user_id, language_code)
-    ''');
+    await db.execute(
+        'CREATE INDEX idx_progress_user_language ON user_progress(user_id, language_code)');
+    await db.execute(
+        'CREATE INDEX idx_progress_entry ON user_progress(entry_id)');
+    await db.execute(
+        'CREATE INDEX idx_progress_sync ON user_progress(needs_sync)');
 
-    await db.execute('''
-      CREATE INDEX idx_progress_entry ON user_progress(entry_id)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_progress_sync ON user_progress(needs_sync)
-    ''');
-
-    // Create offline actions table for tracking user actions while offline
+    // Create offline actions table
     await db.execute('''
       CREATE TABLE offline_actions (
         id TEXT PRIMARY KEY,
@@ -143,13 +154,10 @@ class DatabaseHelper {
       )
     ''');
 
-    await db.execute('''
-      CREATE INDEX idx_offline_actions_user ON offline_actions(user_id)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_offline_actions_processed ON offline_actions(is_processed)
-    ''');
+    await db.execute(
+        'CREATE INDEX idx_offline_actions_user ON offline_actions(user_id)');
+    await db.execute(
+        'CREATE INDEX idx_offline_actions_processed ON offline_actions(is_processed)');
 
     // Create sync metadata table
     await db.execute('''
@@ -159,8 +167,11 @@ class DatabaseHelper {
         updated_at INTEGER NOT NULL
       )
     ''');
+  }
 
-    // Create users table for local user data storage
+  /// Create version 2 tables
+  static Future<void> _createV2Tables(Database db) async {
+    // Create users table
     await db.execute('''
       CREATE TABLE users (
         id TEXT PRIMARY KEY,
@@ -179,7 +190,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // Create auth tokens table for local token storage
+    // Create auth tokens table
     await db.execute('''
       CREATE TABLE auth_tokens (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -190,65 +201,39 @@ class DatabaseHelper {
     ''');
 
     // Create indexes for users table
-    await db.execute('''
-      CREATE INDEX idx_users_email ON users(email)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_users_role ON users(role)
-    ''');
-
-    await db.execute('''
-      CREATE INDEX idx_users_sync ON users(is_synced, last_sync)
-    ''');
+    await db.execute('CREATE INDEX idx_users_email ON users(email)');
+    await db.execute('CREATE INDEX idx_users_role ON users(role)');
+    await db.execute(
+        'CREATE INDEX idx_users_sync ON users(is_synced, last_sync)');
   }
 
   /// Handle database upgrades
-  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Handle database schema migrations here
+  static Future<void> _onUpgrade(
+      Database db, int oldVersion, int newVersion) async {
+    print('Upgrading database from version $oldVersion to $newVersion...');
+
+    // Migrate from version 1 to 2
     if (oldVersion < 2) {
-      // Add users table for version 2
-      await db.execute('''
-        CREATE TABLE users (
-          id TEXT PRIMARY KEY,
-          email TEXT NOT NULL,
-          displayName TEXT,
-          phoneNumber TEXT,
-          photoUrl TEXT,
-          role TEXT NOT NULL DEFAULT 'learner',
-          createdAt TEXT NOT NULL,
-          lastLoginAt TEXT,
-          isEmailVerified INTEGER DEFAULT 0,
-          preferences TEXT,
-          last_sync TEXT,
-          is_synced INTEGER DEFAULT 0,
-          UNIQUE(id)
-        )
-      ''');
-
-      // Add auth tokens table for version 2
-      await db.execute('''
-        CREATE TABLE auth_tokens (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          token TEXT NOT NULL,
-          refresh_token TEXT NOT NULL,
-          created_at TEXT NOT NULL
-        )
-      ''');
-
-      // Create indexes for users table
-      await db.execute('''
-        CREATE INDEX idx_users_email ON users(email)
-      ''');
-
-      await db.execute('''
-        CREATE INDEX idx_users_role ON users(role)
-      ''');
-
-      await db.execute('''
-        CREATE INDEX idx_users_sync ON users(is_synced, last_sync)
-      ''');
+      print('Migrating to version 2...');
+      await _createV2Tables(db);
+      print('✅ Migrated to version 2');
     }
+
+    // Migrate from version 2 to 3
+    if (oldVersion < 3) {
+      print('Migrating to version 3...');
+      await DatabaseMigrationV3.migrateToV3(db);
+      print('✅ Migrated to version 3');
+    }
+
+    // Migrate from version 3 to 4
+    if (oldVersion < 4) {
+      print('Migrating to version 4...');
+      await DatabaseMigrationV4.migrateToV4(db);
+      print('✅ Migrated to version 4');
+    }
+
+    print('✅ Database upgrade completed');
   }
 
   /// Close database connection
@@ -270,6 +255,11 @@ class DatabaseHelper {
       await txn.delete('sync_metadata');
       await txn.delete('users');
       await txn.delete('auth_tokens');
+      await txn.delete('user_levels');
+      await txn.delete('learning_progress');
+      await txn.delete('lesson_progress');
+      await txn.delete('milestones');
+      await txn.delete('skill_progress');
     });
   }
 
@@ -277,25 +267,31 @@ class DatabaseHelper {
   static Future<Map<String, int>> getDatabaseInfo() async {
     final db = await database;
 
-    final dictionaryCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM dictionary_entries WHERE is_deleted = 0')
-    ) ?? 0;
+    final dictionaryCount = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM dictionary_entries WHERE is_deleted = 0')) ??
+        0;
 
-    final progressCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM user_progress')
-    ) ?? 0;
+    final progressCount =
+        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM user_progress')) ?? 0;
 
-    final offlineActionsCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM offline_actions WHERE is_processed = 0')
-    ) ?? 0;
+    final offlineActionsCount = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM offline_actions WHERE is_processed = 0')) ??
+        0;
 
-    final conflictsCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM dictionary_entries WHERE has_conflict = 1')
-    ) ?? 0;
+    final conflictsCount = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM dictionary_entries WHERE has_conflict = 1')) ??
+        0;
 
-    final pendingSyncCount = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM dictionary_entries WHERE needs_sync = 1')
-    ) ?? 0;
+    final pendingSyncCount = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM dictionary_entries WHERE needs_sync = 1')) ??
+        0;
+
+    final userLevelsCount =
+        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM user_levels')) ?? 0;
+
+    final learningProgressCount = Sqflite.firstIntValue(
+            await db.rawQuery('SELECT COUNT(*) FROM learning_progress')) ??
+        0;
 
     return {
       'dictionaryEntries': dictionaryCount,
@@ -303,6 +299,8 @@ class DatabaseHelper {
       'offlineActions': offlineActionsCount,
       'conflicts': conflictsCount,
       'pendingSync': pendingSyncCount,
+      'userLevels': userLevelsCount,
+      'learningProgress': learningProgressCount,
     };
   }
 
@@ -310,5 +308,21 @@ class DatabaseHelper {
   static Future<void> vacuum() async {
     final db = await database;
     await db.execute('VACUUM');
+  }
+
+  /// Check if a table exists
+  static Future<bool> tableExists(String tableName) async {
+    final db = await database;
+    final result = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+      [tableName],
+    );
+    return result.isNotEmpty;
+  }
+
+  /// Get database version
+  static Future<int> getDatabaseVersion() async {
+    final db = await database;
+    return await db.getVersion();
   }
 }

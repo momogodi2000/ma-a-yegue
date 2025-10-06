@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mayegue/features/lessons/data/models/lesson_model.dart';
-import 'package:mayegue/features/lessons/data/models/lesson_content_model.dart';
-import 'package:mayegue/features/lessons/domain/entities/lesson.dart';
-import 'package:mayegue/features/lessons/domain/entities/lesson_content.dart';
+import 'package:maa_yegue/features/lessons/data/models/lesson_model.dart';
+import 'package:maa_yegue/features/lessons/data/models/lesson_content_model.dart';
+import 'package:maa_yegue/features/lessons/domain/entities/lesson.dart';
+import 'package:maa_yegue/features/lessons/domain/entities/lesson_content.dart';
 
 void main() {
   group('LessonModel', () {

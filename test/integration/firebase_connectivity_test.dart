@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:mayegue/core/services/firebase_service.dart';
-import 'package:mayegue/firebase_options.dart';
+import 'package:maa_yegue/core/services/firebase_service.dart';
+import 'package:maa_yegue/firebase_options.dart';
 
 void main() {
   group('Firebase Connectivity Integration Tests', () {

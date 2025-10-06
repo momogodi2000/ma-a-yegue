@@ -6,39 +6,39 @@
 import 'dart:async' as _i7;
 
 import 'package:dartz/dartz.dart' as _i3;
-import 'package:mayegue/core/errors/failures.dart' as _i8;
-import 'package:mayegue/core/usecases/usecase.dart' as _i15;
-import 'package:mayegue/features/authentication/domain/entities/auth_response_entity.dart'
+import 'package:maa_yegue/core/errors/failures.dart' as _i8;
+import 'package:maa_yegue/core/usecases/usecase.dart' as _i15;
+import 'package:maa_yegue/features/authentication/domain/entities/auth_response_entity.dart'
     as _i5;
-import 'package:mayegue/features/authentication/domain/entities/user_entity.dart'
+import 'package:maa_yegue/features/authentication/domain/entities/user_entity.dart'
     as _i13;
-import 'package:mayegue/features/authentication/domain/repositories/auth_repository.dart'
+import 'package:maa_yegue/features/authentication/domain/repositories/auth_repository.dart'
     as _i2;
-import 'package:mayegue/features/authentication/domain/usecases/apple_sign_in_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/apple_sign_in_usecase.dart'
     as _i17;
-import 'package:mayegue/features/authentication/domain/usecases/facebook_sign_in_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/facebook_sign_in_usecase.dart'
     as _i16;
-import 'package:mayegue/features/authentication/domain/usecases/forgot_password_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/forgot_password_usecase.dart'
     as _i18;
-import 'package:mayegue/features/authentication/domain/usecases/get_current_user_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/get_current_user_usecase.dart'
     as _i12;
-import 'package:mayegue/features/authentication/domain/usecases/google_sign_in_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/google_sign_in_usecase.dart'
     as _i14;
-import 'package:mayegue/features/authentication/domain/usecases/login_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/login_usecase.dart'
     as _i6;
-import 'package:mayegue/features/authentication/domain/usecases/logout_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/logout_usecase.dart'
     as _i10;
-import 'package:mayegue/features/authentication/domain/usecases/register_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/register_usecase.dart'
     as _i9;
-import 'package:mayegue/features/authentication/domain/usecases/reset_password_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/reset_password_usecase.dart'
     as _i11;
-import 'package:mayegue/features/authentication/domain/usecases/sign_in_with_phone_number_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/sign_in_with_phone_number_usecase.dart'
     as _i20;
-import 'package:mayegue/features/authentication/domain/usecases/verify_phone_number_usecase.dart'
+import 'package:maa_yegue/features/authentication/domain/usecases/verify_phone_number_usecase.dart'
     as _i21;
-import 'package:mayegue/features/onboarding/domain/repositories/onboarding_repository.dart'
+import 'package:maa_yegue/features/onboarding/domain/repositories/onboarding_repository.dart'
     as _i4;
-import 'package:mayegue/features/onboarding/domain/usecases/get_onboarding_status_usecase.dart'
+import 'package:maa_yegue/features/onboarding/domain/usecases/get_onboarding_status_usecase.dart'
     as _i19;
 import 'package:mockito/mockito.dart' as _i1;
 

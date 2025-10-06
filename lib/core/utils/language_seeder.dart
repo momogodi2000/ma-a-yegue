@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mayegue/features/languages/data/models/language_model.dart';
+import 'package:maa_yegue/features/languages/data/models/language_model.dart';
 
 /// Utility class for seeding language data into Firestore
 class LanguageSeeder {

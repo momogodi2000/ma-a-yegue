@@ -16,7 +16,7 @@ import 'package:firebase_storage/firebase_storage.dart' as _i4;
 import 'package:google_sign_in/google_sign_in.dart' as _i9;
 import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart'
     as _i13;
-import 'package:mayegue/core/services/firebase_service.dart' as _i11;
+import 'package:maa_yegue/core/services/firebase_service.dart' as _i11;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i12;
 

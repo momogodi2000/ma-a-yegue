@@ -2,13 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:mayegue/features/authentication/data/repositories/auth_repository_impl.dart';
-import 'package:mayegue/features/authentication/data/datasources/auth_remote_datasource.dart';
-import 'package:mayegue/features/authentication/data/datasources/auth_local_datasource.dart';
-import 'package:mayegue/features/authentication/data/models/user_model.dart';
-import 'package:mayegue/features/authentication/data/models/auth_response_model.dart';
-import 'package:mayegue/core/sync/general_sync_manager.dart';
-import 'package:mayegue/core/sync/sync_operation.dart';
+import 'package:maa_yegue/features/authentication/data/repositories/auth_repository_impl.dart';
+import 'package:maa_yegue/features/authentication/data/datasources/auth_remote_datasource.dart';
+import 'package:maa_yegue/features/authentication/data/datasources/auth_local_datasource.dart';
+import 'package:maa_yegue/features/authentication/data/models/user_model.dart';
+import 'package:maa_yegue/features/authentication/data/models/auth_response_model.dart';
+import 'package:maa_yegue/core/sync/general_sync_manager.dart';
+import 'package:maa_yegue/core/sync/sync_operation.dart';
 
 import 'auth_repository_impl_test.mocks.dart';
 
