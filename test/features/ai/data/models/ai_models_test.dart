@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maa_yegue/features/ai/data/models/ai_models.dart';
-import 'package:maa_yegue/features/ai/domain/entities/ai_entities.dart';
+import 'package:mayegue/features/ai/data/models/ai_models.dart';
+import 'package:mayegue/features/ai/domain/entities/ai_entities.dart';
 
 void main() {
   group('AiModels', () {

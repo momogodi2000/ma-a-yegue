@@ -5,11 +5,11 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
-import 'package:maa_yegue/features/lessons/domain/entities/lesson_entity.dart'
+import 'package:mayegue/features/lessons/domain/entities/lesson_entity.dart'
     as _i5;
-import 'package:maa_yegue/features/lessons/domain/repositories/lessons_repository.dart'
+import 'package:mayegue/features/lessons/domain/repositories/lessons_repository.dart'
     as _i2;
-import 'package:maa_yegue/features/lessons/domain/usecases/get_chapters_usecase.dart'
+import 'package:mayegue/features/lessons/domain/usecases/get_chapters_usecase.dart'
     as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 

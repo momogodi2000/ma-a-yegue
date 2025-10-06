@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:maa_yegue/core/errors/failures.dart';
-import 'package:maa_yegue/features/gamification/domain/entities/gamification.dart';
-import 'package:maa_yegue/features/gamification/domain/usecases/gamification_usecases.dart';
+import 'package:mayegue/core/errors/failures.dart';
+import 'package:mayegue/features/gamification/domain/entities/gamification.dart';
+import 'package:mayegue/features/gamification/domain/usecases/gamification_usecases.dart';
 
 /// ViewModel for gamification features
 class GamificationViewModel extends ChangeNotifier {

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maa_yegue/core/utils/validators.dart';
+import 'package:mayegue/core/utils/validators.dart';
 
 void main() {
   group('Validators', () {

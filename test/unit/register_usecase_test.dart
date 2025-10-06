@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maa_yegue/features/authentication/domain/usecases/register_usecase.dart';
-import 'package:maa_yegue/features/authentication/domain/repositories/auth_repository.dart';
+import 'package:mayegue/features/authentication/domain/usecases/register_usecase.dart';
+import 'package:mayegue/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:mockito/mockito.dart';
 
 // Mock repository for testing

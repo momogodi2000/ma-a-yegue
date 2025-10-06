@@ -8,17 +8,17 @@ import 'dart:async' as _i6;
 import 'package:connectivity_plus/connectivity_plus.dart' as _i10;
 import 'package:connectivity_plus_platform_interface/connectivity_plus_platform_interface.dart'
     as _i11;
-import 'package:maa_yegue/core/sync/general_sync_manager.dart' as _i4;
-import 'package:maa_yegue/core/sync/sync_operation.dart' as _i12;
-import 'package:maa_yegue/features/authentication/data/datasources/auth_local_datasource.dart'
+import 'package:mayegue/core/sync/general_sync_manager.dart' as _i4;
+import 'package:mayegue/core/sync/sync_operation.dart' as _i12;
+import 'package:mayegue/features/authentication/data/datasources/auth_local_datasource.dart'
     as _i8;
-import 'package:maa_yegue/features/authentication/data/datasources/auth_remote_datasource.dart'
+import 'package:mayegue/features/authentication/data/datasources/auth_remote_datasource.dart'
     as _i5;
-import 'package:maa_yegue/features/authentication/data/models/auth_response_model.dart'
+import 'package:mayegue/features/authentication/data/models/auth_response_model.dart'
     as _i2;
-import 'package:maa_yegue/features/authentication/data/models/user_model.dart'
+import 'package:mayegue/features/authentication/data/models/user_model.dart'
     as _i3;
-import 'package:maa_yegue/features/authentication/domain/entities/user_entity.dart'
+import 'package:mayegue/features/authentication/domain/entities/user_entity.dart'
     as _i9;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i7;

@@ -3,8 +3,8 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:maa_yegue/features/authentication/data/datasources/auth_local_datasource.dart';
-import 'package:maa_yegue/features/authentication/data/models/user_model.dart';
+import 'package:mayegue/features/authentication/data/datasources/auth_local_datasource.dart';
+import 'package:mayegue/features/authentication/data/models/user_model.dart';
 
 import 'auth_local_datasource_test.mocks.dart';
 

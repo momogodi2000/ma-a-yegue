@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:maa_yegue/features/lessons/presentation/viewmodels/lesson_viewmodel.dart';
-import 'package:maa_yegue/features/lessons/domain/usecases/get_chapters_usecase.dart';
-import 'package:maa_yegue/features/lessons/domain/entities/lesson_entity.dart';
+import 'package:mayegue/features/lessons/presentation/viewmodels/lesson_viewmodel.dart';
+import 'package:mayegue/features/lessons/domain/usecases/get_chapters_usecase.dart';
+import 'package:mayegue/features/lessons/domain/entities/lesson_entity.dart';
 
 import 'lesson_viewmodel_test.mocks.dart';
 

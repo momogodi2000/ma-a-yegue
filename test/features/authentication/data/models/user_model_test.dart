@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maa_yegue/features/authentication/data/models/user_model.dart';
-import 'package:maa_yegue/features/authentication/domain/entities/user_entity.dart';
+import 'package:mayegue/features/authentication/data/models/user_model.dart';
+import 'package:mayegue/features/authentication/domain/entities/user_entity.dart';
 
 void main() {
   group('UserModel', () {

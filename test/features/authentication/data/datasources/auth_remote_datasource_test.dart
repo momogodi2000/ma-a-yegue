@@ -4,10 +4,10 @@ import 'package:mockito/annotations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:maa_yegue/features/authentication/data/datasources/auth_remote_datasource.dart';
-import 'package:maa_yegue/features/authentication/data/models/user_model.dart';
-import 'package:maa_yegue/features/authentication/data/models/auth_response_model.dart';
-import 'package:maa_yegue/core/services/firebase_service.dart';
+import 'package:mayegue/features/authentication/data/datasources/auth_remote_datasource.dart';
+import 'package:mayegue/features/authentication/data/models/user_model.dart';
+import 'package:mayegue/features/authentication/data/models/auth_response_model.dart';
+import 'package:mayegue/core/services/firebase_service.dart';
 
 import 'auth_remote_datasource_test.mocks.dart';
 
