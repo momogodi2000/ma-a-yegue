@@ -33,7 +33,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0',
+    apiKey: 'AIzaSyBIqG0_OwcU8evk2TqO2IQqFHEv3q9qwZc',
     appId: '1:853678151393:android:c448e584dca7faac9cc9a0',
     messagingSenderId: '853678151393',
     projectId: 'studio-6750997720-7c22e',
@@ -41,37 +41,39 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0',
+    apiKey: 'AIzaSyD19nFd3V7ZXVg_gB5seZc8L9L3uLjPhZU',
     appId: '1:853678151393:ios:e5d778801dec39b19cc9a0',
     messagingSenderId: '853678151393',
     projectId: 'studio-6750997720-7c22e',
     storageBucket: 'studio-6750997720-7c22e.firebasestorage.app',
-    iosBundleId: 'com.Ma’a yegue.app',
+    iosBundleId: 'com.mayegue.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0',
-    appId: '1:853678151393:macos:1b76e5af09b25394c5dfc0',
+    apiKey: 'AIzaSyD19nFd3V7ZXVg_gB5seZc8L9L3uLjPhZU',
+    appId: '1:853678151393:ios:e5d778801dec39b19cc9a0',
     messagingSenderId: '853678151393',
     projectId: 'studio-6750997720-7c22e',
     storageBucket: 'studio-6750997720-7c22e.firebasestorage.app',
-    iosBundleId: 'com.Ma’a yegue.app',
+    iosBundleId: 'com.mayegue.app',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0',
-    appId: '1:853678151393:web:95b5de88274a802cc5dfc0',
+    appId: '1:853678151393:web:40332d5cd4cedb029cc9a0',
     messagingSenderId: '853678151393',
     projectId: 'studio-6750997720-7c22e',
     storageBucket: 'studio-6750997720-7c22e.firebasestorage.app',
     authDomain: 'studio-6750997720-7c22e.firebaseapp.com',
+    measurementId: 'G-F60NV25RDJ',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyCe4_2NdHl3zvkukTg18WRTiZC7RecMRw0',
-    appId: '1:853678151393:windows:1b76e5af09b25394c5dfc0',
+    appId: '1:853678151393:web:40332d5cd4cedb029cc9a0',
     messagingSenderId: '853678151393',
     projectId: 'studio-6750997720-7c22e',
     storageBucket: 'studio-6750997720-7c22e.firebasestorage.app',
+    authDomain: 'studio-6750997720-7c22e.firebaseapp.com',
   );
 }

@@ -1,4 +1,4 @@
-package com.mayegue.mayegue;
+package com.mayegue.app;
 
 import io.flutter.embedding.android.FlutterActivity;
 

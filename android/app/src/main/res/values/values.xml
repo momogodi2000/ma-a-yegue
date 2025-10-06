@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Firebase configuration values for Android -->
+    <string name="google_app_id" translatable="false">1:853678151393:android:c448e584dca7faac9cc9a0</string>
+    <string name="google_api_key" translatable="false">AIzaSyBIqG0_OwcU8evk2TqO2IQqFHEv3q9qwZc</string>
+    <string name="firebase_database_url" translatable="false">https://studio-6750997720-7c22e-default-rtdb.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">853678151393</string>
+    <string name="google_storage_bucket" translatable="false">studio-6750997720-7c22e.firebasestorage.app</string>
+    <string name="project_id" translatable="false">studio-6750997720-7c22e</string>
+    <string name="default_web_client_id" translatable="false">853678151393-4atq8co6pmqlgiu6tgnjs4t20kfs6189.apps.googleusercontent.com</string>
+</resources>
