@@ -9,11 +9,8 @@ class QuizCreationView extends StatefulWidget {
   final Course course;
   final Lesson? lesson; // If null, create new lesson for quiz
 
-  const QuizCreationView({
-    Key? key,
-    required this.course,
-    this.lesson,
-  }) : super(key: key);
+  const QuizCreationView({Key? key, required this.course, this.lesson})
+    : super(key: key);
 
   @override
   State<QuizCreationView> createState() => _QuizCreationViewState();
@@ -24,7 +21,7 @@ class _QuizCreationViewState extends State<QuizCreationView> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  List<QuizQuestion> _questions = [];
+  final List<QuizQuestion> _questions = [];
   bool _isLoading = false;
   int _passingScore = 70; // Default 70%
 
@@ -47,14 +44,16 @@ class _QuizCreationViewState extends State<QuizCreationView> {
 
   void _addQuestion() {
     setState(() {
-      _questions.add(QuizQuestion(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        question: '',
-        type: QuestionType.multipleChoice,
-        options: ['', '', '', ''],
-        correctAnswer: 0,
-        points: 1,
-      ));
+      _questions.add(
+        QuizQuestion(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          question: '',
+          type: QuestionType.multipleChoice,
+          options: ['', '', '', ''],
+          correctAnswer: 0,
+          points: 1,
+        ),
+      );
     });
   }
 
@@ -114,20 +113,22 @@ class _QuizCreationViewState extends State<QuizCreationView> {
 
     try {
       // Create or update lesson with quiz content
-      final lesson = widget.lesson ?? Lesson(
-        id: '', // Will be generated
-        courseId: widget.course.id,
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        order: widget.course.lessons.length + 1,
-        type: LessonType.assessment,
-        status: LessonStatus.available,
-        estimatedDuration: _questions.length * 2, // 2 minutes per question
-        thumbnailUrl: '',
-        contents: [],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+      final lesson =
+          widget.lesson ??
+          Lesson(
+            id: '', // Will be generated
+            courseId: widget.course.id,
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim(),
+            order: widget.course.lessons.length + 1,
+            type: LessonType.assessment,
+            status: LessonStatus.available,
+            estimatedDuration: _questions.length * 2, // 2 minutes per question
+            thumbnailUrl: '',
+            contents: [],
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
 
       // Create quiz content
       final quizContent = LessonContent(
@@ -156,8 +157,8 @@ class _QuizCreationViewState extends State<QuizCreationView> {
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Quiz saved successfully!'),
+          SnackBar(
+            content: Text('Quiz saved successfully with ID: $contentId'),
             backgroundColor: Colors.green,
           ),
         );
@@ -308,7 +309,7 @@ class _QuizCreationViewState extends State<QuizCreationView> {
                               const Text(
                                 'Click "Add Question" to start building your quiz',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(color: Colors.grey),
+                                style: TextStyle(color: Colors.grey),
                               ),
                             ],
                           ),
@@ -331,7 +332,8 @@ class _QuizCreationViewState extends State<QuizCreationView> {
                             key: ValueKey(_questions[index].id),
                             question: _questions[index],
                             questionNumber: index + 1,
-                            onUpdate: (question) => _updateQuestion(index, question),
+                            onUpdate: (question) =>
+                                _updateQuestion(index, question),
                             onDelete: () => _removeQuestion(index),
                           );
                         },
@@ -352,7 +354,10 @@ class _QuizCreationViewState extends State<QuizCreationView> {
                         ),
                         child: const Text(
                           'Save Quiz',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -405,7 +410,9 @@ class _QuestionBuilderWidgetState extends State<QuestionBuilderWidget> {
   void initState() {
     super.initState();
     _currentQuestion = widget.question;
-    _questionController = TextEditingController(text: _currentQuestion.question);
+    _questionController = TextEditingController(
+      text: _currentQuestion.question,
+    );
     _optionControllers = _currentQuestion.options
         .map((option) => TextEditingController(text: option))
         .toList();
@@ -461,7 +468,9 @@ class _QuestionBuilderWidgetState extends State<QuestionBuilderWidget> {
                       onChanged: (value) {
                         if (value != null) {
                           setState(() {
-                            _currentQuestion = _currentQuestion.copyWith(type: value);
+                            _currentQuestion = _currentQuestion.copyWith(
+                              type: value,
+                            );
                             _updateQuestion();
                           });
                         }
@@ -512,7 +521,9 @@ class _QuestionBuilderWidgetState extends State<QuestionBuilderWidget> {
                     onChanged: (value) {
                       final points = int.tryParse(value) ?? 1;
                       setState(() {
-                        _currentQuestion = _currentQuestion.copyWith(points: points);
+                        _currentQuestion = _currentQuestion.copyWith(
+                          points: points,
+                        );
                         _updateQuestion();
                       });
                     },
@@ -539,7 +550,9 @@ class _QuestionBuilderWidgetState extends State<QuestionBuilderWidget> {
               onChanged: (value) {
                 if (value != null) {
                   setState(() {
-                    _currentQuestion = _currentQuestion.copyWith(correctAnswer: value);
+                    _currentQuestion = _currentQuestion.copyWith(
+                      correctAnswer: value,
+                    );
                     _updateQuestion();
                   });
                 }
@@ -679,8 +692,4 @@ class QuizQuestion {
 }
 
 /// Question type enumeration
-enum QuestionType {
-  multipleChoice,
-  trueFalse,
-  shortAnswer,
-}
+enum QuestionType { multipleChoice, trueFalse, shortAnswer }

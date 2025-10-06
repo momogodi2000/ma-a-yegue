@@ -1,11 +1,11 @@
 {
-    "name": "mayegue",
-    "short_name": "mayegue",
+    "name": "Ma'a yegue",
+    "short_name": "Ma'a yegue",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Ma'a yegue - Application d'apprentissage des langues traditionnelles camerounaises",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

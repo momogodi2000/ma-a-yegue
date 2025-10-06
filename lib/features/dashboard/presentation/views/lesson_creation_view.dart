@@ -8,10 +8,7 @@ import 'package:maa_yegue/features/lessons/data/services/course_service.dart';
 class LessonCreationView extends StatefulWidget {
   final Course course;
 
-  const LessonCreationView({
-    Key? key,
-    required this.course,
-  }) : super(key: key);
+  const LessonCreationView({Key? key, required this.course}) : super(key: key);
 
   @override
   State<LessonCreationView> createState() => _LessonCreationViewState();
@@ -27,7 +24,13 @@ class _LessonCreationViewState extends State<LessonCreationView> {
   int _order = 1;
   bool _isLoading = false;
 
-  final List<String> _contentTypes = ['text', 'video', 'audio', 'image', 'quiz'];
+  final List<String> _contentTypes = [
+    'text',
+    'video',
+    'audio',
+    'image',
+    'quiz',
+  ];
 
   @override
   void initState() {
@@ -57,7 +60,8 @@ class _LessonCreationViewState extends State<LessonCreationView> {
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         order: _order,
-        type: LessonType.vocabulary, // Default type, TODO: Map from content type
+        type:
+            LessonType.vocabulary, // Default type, TODO: Map from content type
         status: LessonStatus.available,
         estimatedDuration: 15, // Default 15 minutes
         thumbnailUrl: '', // TODO: Add thumbnail upload
@@ -83,14 +87,11 @@ class _LessonCreationViewState extends State<LessonCreationView> {
       final courseService = CourseService();
       final lessonId = await courseService.createLesson(lesson);
 
-      // For now, just show success message
-      print('Lesson created: ${lesson.title}');
-
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Lesson created successfully!'),
+          SnackBar(
+            content: Text('Lesson created successfully with ID: $lessonId'),
             backgroundColor: Colors.green,
           ),
         );
@@ -172,7 +173,8 @@ class _LessonCreationViewState extends State<LessonCreationView> {
                       maxLines: 2,
                       decoration: const InputDecoration(
                         labelText: 'Description *',
-                        hintText: 'Brief description of what students will learn',
+                        hintText:
+                            'Brief description of what students will learn',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
@@ -280,7 +282,10 @@ class _LessonCreationViewState extends State<LessonCreationView> {
                         ),
                         child: const Text(
                           'Create Lesson',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -322,11 +327,7 @@ class _LessonCreationViewState extends State<LessonCreationView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            _getContentTypeIcon(),
-            size: 32,
-            color: Colors.grey[600],
-          ),
+          Icon(_getContentTypeIcon(), size: 32, color: Colors.grey[600]),
           const SizedBox(height: 8),
           Text(
             _getContentTypeLabel(),

@@ -44,7 +44,9 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
       final userStats = await _getMockUserStats();
 
       // Load quiz statistics
-      final quizStats = await widget.quizProvider.getQuizStatistics('current_user');
+      final quizStats = await widget.quizProvider.getQuizStatistics(
+        'current_user',
+      );
 
       // Load recent activity (mock data for now)
       final recentActivity = await _getRecentActivity();
@@ -274,7 +276,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$xp / ${nextLevelXP} XP to next level',
+                  '$xp / $nextLevelXP XP to next level',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.white.withOpacity(0.8),
@@ -338,9 +340,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
   }) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -349,17 +349,11 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
             if (progress != null) ...[
               const SizedBox(height: 8),
@@ -389,47 +383,43 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
       children: [
         const Text(
           'Skill Progress',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        ...skills.map((skill) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    skill['name'] as String,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+        ...skills.map(
+          (skill) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      skill['name'] as String,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Level ${skill['level']}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+                    Text(
+                      'Level ${skill['level']}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              LinearProgressIndicator(
-                value: skill['progress'] as double,
-                backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).primaryColor,
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                LinearProgressIndicator(
+                  value: skill['progress'] as double,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).primaryColor,
+                  ),
+                ),
+              ],
+            ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -440,33 +430,34 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
       children: [
         const Text(
           'Recent Activity',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        ...(_recentActivity ?? []).map((activity) => Card(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: _getActivityColor(activity['type'] as String).withOpacity(0.2),
-              child: Icon(
-                _getActivityIcon(activity['type'] as String),
-                color: _getActivityColor(activity['type'] as String),
+        ...(_recentActivity ?? []).map(
+          (activity) => Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: _getActivityColor(
+                  activity['type'] as String,
+                ).withOpacity(0.2),
+                child: Icon(
+                  _getActivityIcon(activity['type'] as String),
+                  color: _getActivityColor(activity['type'] as String),
+                ),
               ),
-            ),
-            title: Text(activity['title'] as String),
-            subtitle: Text(activity['description'] as String),
-            trailing: Text(
-              '+${activity['points']} XP',
-              style: const TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
+              title: Text(activity['title'] as String),
+              subtitle: Text(activity['description'] as String),
+              trailing: Text(
+                '+${activity['points']} XP',
+                style: const TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -503,10 +494,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
       children: [
         const Text(
           'Quick Actions',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Row(
@@ -543,9 +531,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

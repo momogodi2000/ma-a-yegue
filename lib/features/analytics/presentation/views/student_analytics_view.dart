@@ -37,7 +37,8 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
               title: const Text('My Learning Analytics'),
               actions: [
                 IconButton(
-                  onPressed: () => viewModel.refreshAnalytics('current_user_id'),
+                  onPressed: () =>
+                      viewModel.refreshAnalytics('current_user_id'),
                   icon: const Icon(Icons.refresh),
                 ),
                 const ThemeSwitcherWidget(),
@@ -46,10 +47,10 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
             body: viewModel.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : viewModel.error != null
-                    ? _buildErrorView(viewModel.error!)
-                    : viewModel.analytics != null
-                        ? _buildAnalyticsView(viewModel.analytics!)
-                        : const Center(child: Text('No analytics data available')),
+                ? _buildErrorView(viewModel.error!)
+                : viewModel.analytics != null
+                ? _buildAnalyticsView(viewModel.analytics!)
+                : const Center(child: Text('No analytics data available')),
           );
         },
       ),
@@ -63,11 +64,7 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: AppDimensions.spacingLarge),
             Text(
               'Failed to load analytics',
@@ -270,7 +267,10 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
                     Expanded(
                       child: Text(
                         'Improving at ${metrics.improvementRate.toStringAsFixed(1)}% per week!',
-                        style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -280,7 +280,8 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
             const SizedBox(height: AppDimensions.spacingLarge),
 
             // Strengths and Weaknesses
-            if (metrics.strengths.isNotEmpty || metrics.weaknesses.isNotEmpty) ...[
+            if (metrics.strengths.isNotEmpty ||
+                metrics.weaknesses.isNotEmpty) ...[
               const Text(
                 'Learning Insights',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -288,10 +289,18 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
               const SizedBox(height: AppDimensions.spacingSmall),
 
               if (metrics.strengths.isNotEmpty)
-                _buildInsightsList('Strengths', metrics.strengths, Colors.green),
+                _buildInsightsList(
+                  'Strengths',
+                  metrics.strengths,
+                  Colors.green,
+                ),
 
               if (metrics.weaknesses.isNotEmpty)
-                _buildInsightsList('Areas to Focus', metrics.weaknesses, Colors.orange),
+                _buildInsightsList(
+                  'Areas to Focus',
+                  metrics.weaknesses,
+                  Colors.orange,
+                ),
             ],
           ],
         ),
@@ -471,7 +480,12 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
 
   // ===== HELPER WIDGETS =====
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -484,9 +498,9 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
             Text(
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
             const SizedBox(height: AppDimensions.spacingTiny),
             Text(
@@ -506,7 +520,9 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
       decoration: BoxDecoration(
         color: const Color(0xFFFFEBEE), // red.shade50 equivalent
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFFFCDD2)), // red.shade200 equivalent
+        border: Border.all(
+          color: const Color(0xFFFFCDD2),
+        ), // red.shade200 equivalent
       ),
       child: Row(
         children: [
@@ -524,10 +540,7 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
                     color: color,
                   ),
                 ),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(title, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),
@@ -536,7 +549,12 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
     );
   }
 
-  Widget _buildMetricCard(String title, String value, IconData icon, Color color) {
+  Widget _buildMetricCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingMedium),
       decoration: BoxDecoration(
@@ -566,7 +584,12 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
     );
   }
 
-  Widget _buildPatternCard(String title, String value, IconData icon, Color color) {
+  Widget _buildPatternCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingMedium),
       decoration: BoxDecoration(
@@ -583,15 +606,9 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
               children: [
                 Text(
                   value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: color),
                 ),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(title, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),
@@ -600,7 +617,12 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
     );
   }
 
-  Widget _buildAchievementCard(String title, String subtitle, IconData icon, Color color) {
+  Widget _buildAchievementCard(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingMedium),
       decoration: BoxDecoration(
@@ -617,15 +639,9 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: color),
                 ),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),
@@ -640,26 +656,25 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: color),
         ),
         const SizedBox(height: AppDimensions.spacingSmall),
-        ...items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: AppDimensions.spacingTiny),
-              child: Row(
-                children: [
-                  Icon(
-                    title == 'Strengths' ? Icons.check_circle : Icons.warning,
-                    size: 16,
-                    color: color,
-                  ),
-                  const SizedBox(width: AppDimensions.spacingSmall),
-                  Text(item),
-                ],
-              ),
-            )),
+        ...items.map(
+          (item) => Padding(
+            padding: const EdgeInsets.only(bottom: AppDimensions.spacingTiny),
+            child: Row(
+              children: [
+                Icon(
+                  title == 'Strengths' ? Icons.check_circle : Icons.warning,
+                  size: 16,
+                  color: color,
+                ),
+                const SizedBox(width: AppDimensions.spacingSmall),
+                Text(item),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: AppDimensions.spacingMedium),
       ],
     );
@@ -670,18 +685,23 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingMedium),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppDimensions.paddingMedium,
+          ),
           child: Text(
             'Visual Analytics',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: AppDimensions.spacingLarge),
 
         // Performance Chart
-        AnalyticsCharts.buildPerformanceChart(context, analytics.performanceMetrics),
+        AnalyticsCharts.buildPerformanceChart(
+          context,
+          analytics.performanceMetrics,
+        ),
 
         const SizedBox(height: AppDimensions.spacingLarge),
 
@@ -689,11 +709,17 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
         Row(
           children: [
             Expanded(
-              child: AnalyticsCharts.buildProgressChart(context, analytics.learningProgress),
+              child: AnalyticsCharts.buildProgressChart(
+                context,
+                analytics.learningProgress,
+              ),
             ),
             const SizedBox(width: AppDimensions.spacingMedium),
             Expanded(
-              child: AnalyticsCharts.buildStudyPatternsChart(context, analytics.learningPatterns),
+              child: AnalyticsCharts.buildStudyPatternsChart(
+                context,
+                analytics.learningPatterns,
+              ),
             ),
           ],
         ),
@@ -704,18 +730,24 @@ class _StudentAnalyticsViewState extends State<StudentAnalyticsView> {
         Row(
           children: [
             Expanded(
-              child: AnalyticsCharts.buildContentPreferencesChart(context, analytics.learningPatterns),
+              child: AnalyticsCharts.buildContentPreferencesChart(
+                context,
+                analytics.learningPatterns,
+              ),
             ),
             const SizedBox(width: AppDimensions.spacingMedium),
             Expanded(
-              child: AnalyticsCharts.buildAchievementProgressChart(context, analytics.achievements),
+              child: AnalyticsCharts.buildAchievementProgressChart(
+                context,
+                analytics.achievements,
+              ),
             ),
           ],
         ),
       ],
     );
   }
-    C o l o r   _ g e t B a c k g r o u n d C o l o r ( C o l o r   c o l o r )   {   i f   ( c o l o r   = =   C o l o r s . g r e e n )   r e t u r n   c o n s t   C o l o r ( 0 x F F E 8 F 5 E 8 ) ;   i f   ( c o l o r   = =   C o l o r s . b l u e )   r e t u r n   c o n s t   C o l o r ( 0 x F F E 3 F 2 F D ) ;   i f   ( c o l o r   = =   C o l o r s . o r a n g e )   r e t u r n   c o n s t   C o l o r ( 0 x F F F F F 3 E 0 ) ;   i f   ( c o l o r   = =   C o l o r s . p u r p l e )   r e t u r n   c o n s t   C o l o r ( 0 x F F F 3 E 5 F 5 ) ;   i f   ( c o l o r   = =   C o l o r s . a m b e r )   r e t u r n   c o n s t   C o l o r ( 0 x F F F F F 8 E 1 ) ;   r e t u r n   c o n s t   C o l o r ( 0 x F F E E E E E E ) ;   }   } 
+
   Color _getBackgroundColor(Color color) {
     if (color == Colors.green) return const Color(0xFFE8F5E8);
     if (color == Colors.blue) return const Color(0xFFE3F2FD);

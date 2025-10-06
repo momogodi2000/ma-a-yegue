@@ -63,8 +63,8 @@ class _CourseCreationViewState extends State<CourseCreationView> {
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Course created successfully!'),
+          SnackBar(
+            content: Text('Course created successfully with ID: $courseId'),
             backgroundColor: Colors.green,
           ),
         );
@@ -151,7 +151,8 @@ class _CourseCreationViewState extends State<CourseCreationView> {
                       maxLines: 3,
                       decoration: const InputDecoration(
                         labelText: 'Description *',
-                        hintText: 'Describe what students will learn in this course',
+                        hintText:
+                            'Describe what students will learn in this course',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
@@ -178,7 +179,9 @@ class _CourseCreationViewState extends State<CourseCreationView> {
                         labelText: 'Language *',
                         border: OutlineInputBorder(),
                       ),
-                      items: SupportedLanguages.languages.values.map((language) {
+                      items: SupportedLanguages.languages.values.map((
+                        language,
+                      ) {
                         return DropdownMenuItem(
                           value: language.code,
                           child: Text(language.name),
@@ -208,7 +211,8 @@ class _CourseCreationViewState extends State<CourseCreationView> {
                         return DropdownMenuItem(
                           value: difficulty,
                           child: Text(
-                            difficulty[0].toUpperCase() + difficulty.substring(1),
+                            difficulty[0].toUpperCase() +
+                                difficulty.substring(1),
                           ),
                         );
                       }).toList(),
@@ -249,7 +253,10 @@ class _CourseCreationViewState extends State<CourseCreationView> {
                         ),
                         child: const Text(
                           'Create Course',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -274,18 +281,11 @@ class _CourseCreationViewState extends State<CourseCreationView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.image,
-            size: 48,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.image, size: 48, color: Colors.grey[400]),
           const SizedBox(height: 8),
           Text(
             'Course Thumbnail',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 16,
-            ),
+            style: TextStyle(color: Colors.grey[600], fontSize: 16),
           ),
           const SizedBox(height: 8),
           ElevatedButton.icon(

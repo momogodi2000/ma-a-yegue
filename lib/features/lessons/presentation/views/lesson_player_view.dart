@@ -47,13 +47,9 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _progressValue = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _progressAnimation,
-      curve: Curves.easeInOut,
-    ));
+    _progressValue = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _progressAnimation, curve: Curves.easeInOut),
+    );
 
     _updateProgressAnimation();
   }
@@ -67,14 +63,15 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
 
   void _updateProgressAnimation() {
     if (widget.lesson.contents.isNotEmpty) {
-      final progress = (_currentContentIndex + 1) / widget.lesson.contents.length;
-      _progressValue = Tween<double>(
-        begin: _progressValue.value,
-        end: progress,
-      ).animate(CurvedAnimation(
-        parent: _progressAnimation,
-        curve: Curves.easeInOut,
-      ));
+      final progress =
+          (_currentContentIndex + 1) / widget.lesson.contents.length;
+      _progressValue = Tween<double>(begin: _progressValue.value, end: progress)
+          .animate(
+            CurvedAnimation(
+              parent: _progressAnimation,
+              curve: Curves.easeInOut,
+            ),
+          );
       _progressAnimation.forward(from: 0.0);
     }
   }
@@ -130,8 +127,10 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
 
     try {
       // Calculate total watch time
-      final totalWatchTime = _contentWatchTime.values
-          .fold(Duration.zero, (total, time) => total + time);
+      final totalWatchTime = _contentWatchTime.values.fold(
+        Duration.zero,
+        (total, time) => total + time,
+      );
 
       // Update progress tracking
       await widget.progressService.updateLessonProgress(
@@ -156,7 +155,6 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
 
       // Show completion dialog
       _showCompletionDialog();
-
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -185,8 +183,9 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
 
   double _calculateProficiencyScore(Duration totalWatchTime) {
     // Base score on watch time and lesson completion
-    final baseScore = 10.0;
-    final timeBonus = (totalWatchTime.inMinutes / widget.lesson.estimatedDuration) * 5.0;
+    const baseScore = 10.0;
+    final timeBonus =
+        (totalWatchTime.inMinutes / widget.lesson.estimatedDuration) * 5.0;
     return (baseScore + timeBonus).clamp(0.0, 20.0);
   }
 
@@ -199,11 +198,7 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.celebration,
-              size: 64,
-              color: Colors.green,
-            ),
+            const Icon(Icons.celebration, size: 64, color: Colors.green),
             const SizedBox(height: 16),
             Text(
               'Great job completing "${widget.lesson.title}"!',
@@ -214,10 +209,7 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
             Text(
               'You\'ve earned experience points and improved your ${_getSkillNameForLesson()} skills.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -287,16 +279,16 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
-                border: Border(
-                  top: BorderSide(color: Colors.grey[300]!),
-                ),
+                border: Border(top: BorderSide(color: Colors.grey[300]!)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Previous button
                   ElevatedButton.icon(
-                    onPressed: _currentContentIndex > 0 ? _previousContent : null,
+                    onPressed: _currentContentIndex > 0
+                        ? _previousContent
+                        : null,
                     icon: const Icon(Icons.arrow_back),
                     label: const Text('Previous'),
                     style: ElevatedButton.styleFrom(
@@ -328,9 +320,7 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
 
           // Error message
@@ -395,7 +385,8 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () => _onContentCompleted(content.id, const Duration(seconds: 30)),
+            onPressed: () =>
+                _onContentCompleted(content.id, const Duration(seconds: 30)),
             icon: const Icon(Icons.play_arrow),
             label: const Text('Mark as Watched'),
           ),
@@ -424,7 +415,8 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () => _onContentCompleted(content.id, const Duration(seconds: 20)),
+            onPressed: () =>
+                _onContentCompleted(content.id, const Duration(seconds: 20)),
             icon: const Icon(Icons.play_arrow),
             label: const Text('Mark as Listened'),
           ),
@@ -457,7 +449,8 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () => _onContentCompleted(content.id, const Duration(seconds: 15)),
+            onPressed: () =>
+                _onContentCompleted(content.id, const Duration(seconds: 15)),
             icon: const Icon(Icons.check),
             label: const Text('Mark as Read'),
           ),
@@ -503,7 +496,8 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
           const SizedBox(height: 20),
 
           ElevatedButton.icon(
-            onPressed: () => _onContentCompleted(content.id, const Duration(seconds: 10)),
+            onPressed: () =>
+                _onContentCompleted(content.id, const Duration(seconds: 10)),
             icon: const Icon(Icons.visibility),
             label: const Text('Mark as Viewed'),
           ),
