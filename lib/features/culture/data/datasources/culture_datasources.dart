@@ -3,6 +3,7 @@ import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_helper.dart';
 import '../../domain/entities/culture_entities.dart';
 import '../models/culture_models.dart';
+import 'sample_culture_content.dart';
 
 /// Abstract base class for culture data sources
 abstract class CultureDataSource {
@@ -49,30 +50,52 @@ class CultureLocalDataSource implements CultureDataSource {
     int? limit,
     int? offset,
   }) async {
-    String whereClause = '';
-    List<dynamic> whereArgs = [];
+    try {
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
 
-    if (language != null) {
-      whereClause += 'language = ?';
-      whereArgs.add(language);
+      if (language != null) {
+        whereClause += 'language = ?';
+        whereArgs.add(language);
+      }
+
+      if (category != null) {
+        if (whereClause.isNotEmpty) whereClause += ' AND ';
+        whereClause += 'category = ?';
+        whereArgs.add(category.toString().split('.').last);
+      }
+
+      final maps = await (await _db).query(
+        'culture_content',
+        where: whereClause.isNotEmpty ? whereClause : null,
+        whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+        limit: limit,
+        offset: offset,
+        orderBy: 'created_at DESC',
+      );
+
+      // If database is empty, return sample content
+      if (maps.isEmpty) {
+        var sampleContent = SampleCultureContent.getSampleCultureContent();
+        
+        // Filter by category if specified
+        if (category != null) {
+          sampleContent = sampleContent.where((c) => c.category == category).toList();
+        }
+        
+        // Filter by language if specified
+        if (language != null && language.isNotEmpty) {
+          sampleContent = sampleContent.where((c) => c.language.toLowerCase() == language.toLowerCase()).toList();
+        }
+        
+        return sampleContent;
+      }
+
+      return maps.map((map) => CultureContentModel.fromJson(map)).toList();
+    } catch (e) {
+      // Fallback to sample content on error
+      return SampleCultureContent.getSampleCultureContent();
     }
-
-    if (category != null) {
-      if (whereClause.isNotEmpty) whereClause += ' AND ';
-      whereClause += 'category = ?';
-      whereArgs.add(category.toString().split('.').last);
-    }
-
-    final maps = await (await _db).query(
-      'culture_content',
-      where: whereClause.isNotEmpty ? whereClause : null,
-      whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
-      limit: limit,
-      offset: offset,
-      orderBy: 'created_at DESC',
-    );
-
-    return maps.map((map) => CultureContentModel.fromJson(map)).toList();
   }
 
   @override
@@ -82,30 +105,52 @@ class CultureLocalDataSource implements CultureDataSource {
     int? limit,
     int? offset,
   }) async {
-    String whereClause = '';
-    List<dynamic> whereArgs = [];
+    try {
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
 
-    if (language != null) {
-      whereClause += 'language = ?';
-      whereArgs.add(language);
+      if (language != null) {
+        whereClause += 'language = ?';
+        whereArgs.add(language);
+      }
+
+      if (period != null) {
+        if (whereClause.isNotEmpty) whereClause += ' AND ';
+        whereClause += 'period = ?';
+        whereArgs.add(period);
+      }
+
+      final maps = await (await _db).query(
+        'historical_content',
+        where: whereClause.isNotEmpty ? whereClause : null,
+        whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+        limit: limit,
+        offset: offset,
+        orderBy: 'created_at DESC',
+      );
+
+      // If database is empty, return sample content
+      if (maps.isEmpty) {
+        var sampleContent = SampleCultureContent.getSampleHistoricalContent();
+        
+        // Filter by period if specified
+        if (period != null) {
+          sampleContent = sampleContent.where((c) => c.period == period).toList();
+        }
+        
+        // Filter by language if specified
+        if (language != null && language.isNotEmpty) {
+          sampleContent = sampleContent.where((c) => c.language.toLowerCase() == language.toLowerCase()).toList();
+        }
+        
+        return sampleContent;
+      }
+
+      return maps.map((map) => HistoricalContentModel.fromJson(map)).toList();
+    } catch (e) {
+      // Fallback to sample content on error
+      return SampleCultureContent.getSampleHistoricalContent();
     }
-
-    if (period != null) {
-      if (whereClause.isNotEmpty) whereClause += ' AND ';
-      whereClause += 'period = ?';
-      whereArgs.add(period);
-    }
-
-    final maps = await (await _db).query(
-      'historical_content',
-      where: whereClause.isNotEmpty ? whereClause : null,
-      whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
-      limit: limit,
-      offset: offset,
-      orderBy: 'created_at DESC',
-    );
-
-    return maps.map((map) => HistoricalContentModel.fromJson(map)).toList();
   }
 
   @override
@@ -115,66 +160,115 @@ class CultureLocalDataSource implements CultureDataSource {
     int? limit,
     int? offset,
   }) async {
-    String whereClause = '';
-    List<dynamic> whereArgs = [];
+    try {
+      String whereClause = '';
+      List<dynamic> whereArgs = [];
 
-    if (category != null) {
-      whereClause += 'category = ?';
-      whereArgs.add(category.toString().split('.').last);
+      if (category != null) {
+        whereClause += 'category = ?';
+        whereArgs.add(category.toString().split('.').last);
+      }
+
+      if (difficulty != null) {
+        if (whereClause.isNotEmpty) whereClause += ' AND ';
+        whereClause += 'difficulty = ?';
+        whereArgs.add(difficulty);
+      }
+
+      final maps = await (await _db).query(
+        'yemba_content',
+        where: whereClause.isNotEmpty ? whereClause : null,
+        whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
+        limit: limit,
+        offset: offset,
+        orderBy: 'created_at DESC',
+      );
+
+      // If database is empty, return sample content
+      if (maps.isEmpty) {
+        var sampleContent = SampleCultureContent.getSampleYembaContent();
+        
+        // Filter by category if specified
+        if (category != null) {
+          sampleContent = sampleContent.where((c) => c.category == category).toList();
+        }
+        
+        // Filter by difficulty if specified
+        if (difficulty != null) {
+          sampleContent = sampleContent.where((c) => c.difficulty == difficulty).toList();
+        }
+        
+        return sampleContent;
+      }
+
+      return maps.map((map) => YembaContentModel.fromJson(map)).toList();
+    } catch (e) {
+      // Fallback to sample content on error
+      return SampleCultureContent.getSampleYembaContent();
     }
-
-    if (difficulty != null) {
-      if (whereClause.isNotEmpty) whereClause += ' AND ';
-      whereClause += 'difficulty = ?';
-      whereArgs.add(difficulty);
-    }
-
-    final maps = await (await _db).query(
-      'yemba_content',
-      where: whereClause.isNotEmpty ? whereClause : null,
-      whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
-      limit: limit,
-      offset: offset,
-      orderBy: 'created_at DESC',
-    );
-
-    return maps.map((map) => YembaContentModel.fromJson(map)).toList();
   }
 
   @override
   Future<CultureContentModel?> getCultureContentById(String id) async {
-    final maps = await (await _db).query(
-      'culture_content',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    try {
+      final maps = await (await _db).query(
+        'culture_content',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
 
-    if (maps.isEmpty) return null;
-    return CultureContentModel.fromJson(maps.first);
+      if (maps.isNotEmpty) {
+        return CultureContentModel.fromJson(maps.first);
+      }
+      
+      // Fallback to sample content
+      final sampleContent = SampleCultureContent.getSampleCultureContent();
+      return sampleContent.firstWhere((c) => c.id == id, orElse: () => sampleContent.first);
+    } catch (e) {
+      return SampleCultureContent.getSampleCultureContent().first;
+    }
   }
 
   @override
   Future<HistoricalContentModel?> getHistoricalContentById(String id) async {
-    final maps = await (await _db).query(
-      'historical_content',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    try {
+      final maps = await (await _db).query(
+        'historical_content',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
 
-    if (maps.isEmpty) return null;
-    return HistoricalContentModel.fromJson(maps.first);
+      if (maps.isNotEmpty) {
+        return HistoricalContentModel.fromJson(maps.first);
+      }
+      
+      // Fallback to sample content
+      final sampleContent = SampleCultureContent.getSampleHistoricalContent();
+      return sampleContent.firstWhere((c) => c.id == id, orElse: () => sampleContent.first);
+    } catch (e) {
+      return SampleCultureContent.getSampleHistoricalContent().first;
+    }
   }
 
   @override
   Future<YembaContentModel?> getYembaContentById(String id) async {
-    final maps = await (await _db).query(
-      'yemba_content',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    try {
+      final maps = await (await _db).query(
+        'yemba_content',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
 
-    if (maps.isEmpty) return null;
-    return YembaContentModel.fromJson(maps.first);
+      if (maps.isNotEmpty) {
+        return YembaContentModel.fromJson(maps.first);
+      }
+      
+      // Fallback to sample content
+      final sampleContent = SampleCultureContent.getSampleYembaContent();
+      return sampleContent.firstWhere((c) => c.id == id, orElse: () => sampleContent.first);
+    } catch (e) {
+      return SampleCultureContent.getSampleYembaContent().first;
+    }
   }
 
   @override

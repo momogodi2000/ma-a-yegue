@@ -142,6 +142,12 @@ enum Permission {
   // Payment permissions
   processPayments,
   viewPaymentHistory,
+
+  // Culture permissions
+  viewCulture,
+  createCultureContent,
+  editCultureContent,
+  deleteCultureContent,
 }
 
 /// Features that can be accessed by roles
@@ -156,6 +162,7 @@ enum Feature {
   userManagement,
   contentCreation,
   paymentManagement,
+  culture,
 }
 
 /// Navigation item for role-based menus
@@ -178,6 +185,7 @@ const Map<UserRole, Set<Permission>> _permissions = {
   UserRole.visitor: {
     Permission.viewLessons, // Limited access
     Permission.viewDictionary, // Read-only
+    Permission.viewCulture, // Culture content access
   },
 
   UserRole.learner: {
@@ -189,6 +197,7 @@ const Map<UserRole, Set<Permission>> _permissions = {
     Permission.useAiAssistant,
     Permission.playGames,
     Permission.viewPaymentHistory,
+    Permission.viewCulture,
   },
 
   UserRole.teacher: {
@@ -210,6 +219,9 @@ const Map<UserRole, Set<Permission>> _permissions = {
     Permission.playGames,
     Permission.createGames,
     Permission.viewPaymentHistory,
+    Permission.viewCulture,
+    Permission.createCultureContent,
+    Permission.editCultureContent,
   },
 
   UserRole.admin: {
@@ -223,6 +235,7 @@ const Map<UserRole, Set<Feature>> _featureAccess = {
   UserRole.visitor: {
     Feature.lessons, // Limited
     Feature.dictionary, // Read-only
+    Feature.culture, // Cultural content
   },
 
   UserRole.learner: {
@@ -232,6 +245,7 @@ const Map<UserRole, Set<Feature>> _featureAccess = {
     Feature.community,
     Feature.assessments,
     Feature.aiAssistant,
+    Feature.culture,
   },
 
   UserRole.teacher: {
@@ -243,6 +257,7 @@ const Map<UserRole, Set<Feature>> _featureAccess = {
     Feature.aiAssistant,
     Feature.analytics, // Limited
     Feature.contentCreation,
+    Feature.culture,
   },
 
   UserRole.admin: {
@@ -254,16 +269,9 @@ const Map<UserRole, Set<Feature>> _featureAccess = {
 /// Navigation items for each role
 final Map<UserRole, List<NavigationItem>> _navigationItems = {
   UserRole.visitor: [
-    NavigationItem(
-      title: 'Explorer',
-      route: '/explore',
-      icon: 'explore',
-    ),
-    NavigationItem(
-      title: 'Connexion',
-      route: '/login',
-      icon: 'login',
-    ),
+    NavigationItem(title: 'Explorer', route: '/explore', icon: 'explore'),
+    NavigationItem(title: 'Culture', route: '/culture', icon: 'museum'),
+    NavigationItem(title: 'Connexion', route: '/login', icon: 'login'),
   ],
 
   UserRole.learner: [
@@ -272,36 +280,12 @@ final Map<UserRole, List<NavigationItem>> _navigationItems = {
       route: '/dashboard',
       icon: 'dashboard',
     ),
-    NavigationItem(
-      title: 'Leçons',
-      route: '/lessons',
-      icon: 'school',
-    ),
-    NavigationItem(
-      title: 'Dictionnaire',
-      route: '/dictionary',
-      icon: 'book',
-    ),
-    NavigationItem(
-      title: 'Jeux',
-      route: '/games',
-      icon: 'games',
-    ),
-    NavigationItem(
-      title: 'Communauté',
-      route: '/community',
-      icon: 'people',
-    ),
-    NavigationItem(
-      title: 'Assistant IA',
-      route: '/ai',
-      icon: 'smart_toy',
-    ),
-    NavigationItem(
-      title: 'Profil',
-      route: '/profile',
-      icon: 'person',
-    ),
+    NavigationItem(title: 'Leçons', route: '/lessons', icon: 'school'),
+    NavigationItem(title: 'Dictionnaire', route: '/dictionary', icon: 'book'),
+    NavigationItem(title: 'Jeux', route: '/games', icon: 'games'),
+    NavigationItem(title: 'Communauté', route: '/community', icon: 'people'),
+    NavigationItem(title: 'Assistant IA', route: '/ai', icon: 'smart_toy'),
+    NavigationItem(title: 'Profil', route: '/profile', icon: 'person'),
   ],
 
   UserRole.teacher: [
@@ -347,21 +331,13 @@ final Map<UserRole, List<NavigationItem>> _navigationItems = {
       route: '/teacher/students',
       icon: 'group',
     ),
-    NavigationItem(
-      title: 'Communauté',
-      route: '/community',
-      icon: 'people',
-    ),
+    NavigationItem(title: 'Communauté', route: '/community', icon: 'people'),
     NavigationItem(
       title: 'Statistiques',
       route: '/teacher/analytics',
       icon: 'analytics',
     ),
-    NavigationItem(
-      title: 'Profil',
-      route: '/profile',
-      icon: 'person',
-    ),
+    NavigationItem(title: 'Profil', route: '/profile', icon: 'person'),
   ],
 
   UserRole.admin: [
@@ -456,7 +432,9 @@ class RoleManager {
 
   /// Get all roles that have a specific permission
   static List<UserRole> getRolesWithPermission(Permission permission) {
-    return UserRole.values.where((role) => role.hasPermission(permission)).toList();
+    return UserRole.values
+        .where((role) => role.hasPermission(permission))
+        .toList();
   }
 
   /// Get all roles that can access a specific feature

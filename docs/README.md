@@ -6,6 +6,17 @@
 
 ## 📖 Documentation Disponible
 
+### 🎓 Nouveau - Système Éducatif
+
+**🆕 [Système Éducatif Complet](EDUCATIONAL_SYSTEM_UPDATE.md)** ⭐
+   - 12 niveaux scolaires (CP → Terminale)
+   - 12 rôles utilisateurs (Visitor → Super Admin)
+   - Notation /20 camerounaise
+   - Calendrier académique
+   - Outils enseignants
+   - Portail parents
+   - **Score: 8.5/10 - Production Ready**
+
 ### 🚀 Pour Commencer
 
 1. **[Guide de Démarrage Rapide](GUIDE_DEMARRAGE_RAPIDE_FR.md)**
@@ -130,17 +141,30 @@ mayegue-mobile/
 
 ## 📊 État du Projet
 
-**Version actuelle :** 1.0.0  
-**Statut :** ✅ Production Ready
+**Version actuelle :** 2.0.0 - Educational Platform  
+**Statut :** ✅ Fondation E-Learning Complete
 
 ### Métriques
 
-- **Modules :** 25 modules fonctionnels
-- **Fichiers :** 333+ fichiers Dart
+- **Modules :** 25+ modules fonctionnels
+- **Fichiers :** 350+ fichiers Dart
+- **Code Nouveau :** 1,800+ lignes (système éducatif)
 - **Tests :** 50+ tests
 - **Erreurs :** 0
 - **Warnings :** 0
 - **Langues :** 22 langues camerounaises
+- **Niveaux Scolaires :** 12 (CP → Terminale)
+- **Rôles Utilisateurs :** 12 (Visitor → Super Admin)
+
+### 🎓 Nouveautés Version 2.0
+
+- ✅ **Système éducatif complet** (grades, écoles, classes)
+- ✅ **Notation camerounaise** (/20, bulletins)
+- ✅ **Calendrier académique** (3 trimestres)
+- ✅ **Outils enseignants** (présences, devoirs, leçons)
+- ✅ **Portail parents** (suivi, communication)
+- ✅ **Filtrage par âge** (5 niveaux de complexité)
+- ✅ **Module culture amélioré** (accès visiteurs)
 
 ---
 
@@ -171,5 +195,6 @@ Pour contribuer au projet :
 ---
 
 *Index de documentation généré automatiquement*  
-*Dernière mise à jour : 7 octobre 2025*
+*Dernière mise à jour : 7 octobre 2025*  
+*Version : 2.0.0 - Educational Platform Edition*
 

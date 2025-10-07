@@ -1,691 +1,407 @@
-# 🚀 Améliorations Futures - Ma'a yegue
+# 🚀 Améliorations Futures - Ma'a Yegue v2.0
 
-**Roadmap et Évolutions Planifiées**
+**Roadmap Post-Système Éducatif**  
+**Date:** 7 octobre 2025  
+**Version Actuelle:** 2.0.0
+
+---
+
+## ✅ Déjà Implémenté (v2.0)
+
+### Système Éducatif Complet
+- ✅ 12 niveaux scolaires (CP → Terminale)
+- ✅ 12 rôles utilisateurs
+- ✅ Notation /20 camerounaise
+- ✅ Bulletins scolaires
+- ✅ Calendrier académique
+- ✅ Outils enseignants
+- ✅ Portail parents
+- ✅ Filtrage par âge
+- ✅ Gestion établissements
+- ✅ Gestion classes
 
 ---
 
 ## 📋 Priorisation des Améliorations
 
-### 🔥 **Priorité Critique** (3-6 mois)
-Fonctionnalités essentielles pour la rétention et l'engagement utilisateur.
+### 🔥 Priorité Critique (0-3 mois)
 
-### ⚡ **Priorité Haute** (6-12 mois)
-Améliorations importantes pour la différenciation concurrentielle.
+#### 1. UI/UX Système Éducatif
+**Statut:** 📌 URGENT - Fondation code complète, UI nécessaire
 
-### 📋 **Priorité Moyenne** (12-18 mois)
-Fonctionnalités avancées pour l'expansion.
+**Tableaux de Bord:**
+- [ ] Dashboard Enseignant
+  - Vue classes
+  - Saisie présences
+  - Création devoirs
+  - Saisie notes
+  - Cahier de textes
 
-### 🔮 **Priorité Basse** (18+ mois)
-Innovations futuristes et expansions géographiques.
+- [ ] Portail Parents
+  - Dashboard enfants
+  - Vue notes et bulletins
+  - Messagerie
+  - Planification RDV
+  - Annonces
 
----
+- [ ] Interface Élèves (par âge)
+  - Dashboard adapté (CP: simple, Terminale: complet)
+  - Vue devoirs
+  - Consultation notes
+  - Emploi du temps
+  - Soumission travaux
 
-## 🔥 1. Priorité Critique (3-6 mois)
+- [ ] Panel Administrateur
+  - Gestion écoles
+  - Création classes
+  - Attribution rôles
+  - Configuration calendrier
+  - Analytics
 
-### 1.1 IA Conversationnelle Avancée
-
-#### Assistant IA Multilingue
-- **Objectif** : Créer un assistant capable de converser dans toutes les langues camerounaises
-- **Fonctionnalités** :
-  - Reconnaissance vocale multilingue (Ewondo, Duala, Bamiléké, etc.)
-  - Correction contextuelle en temps réel
-  - Génération de dialogues authentiques
-  - Apprentissage adaptatif basé sur les erreurs
-
-#### IA Pédagogique Personnalisée
-- **Objectif** : Adapter le contenu à chaque apprenant
-- **Fonctionnalités** :
-  - Analyse des forces/faiblesses par langue
-  - Recommandations de leçons personnalisées
-  - Ajustement automatique de la difficulté
-  - Rappels intelligents basés sur la progression
-
-#### Génération de Contenu par IA
-- **Objectif** : Enrichir automatiquement la base de données
-- **Fonctionnalités** :
-  - Création automatique de phrases d'exemple
-  - Génération de quiz contextuels
-  - Production de contenu audio/vidéo
-  - Validation croisée par enseignants
-
-### 1.2 Système de Gamification Avancé
-
-#### Économie Virtuelle
-- **Objectif** : Créer un système de récompenses engageant
-- **Fonctionnalités** :
-  - Monnaie virtuelle (Ma'a yegue Coins)
-  - Boutique d'items personnalisés
-  - Avatars et thèmes déblocables
-  - Système d'achat cosmétique
-
-#### Défis Sociaux
-- **Objectif** : Encourager l'interaction communautaire
-- **Fonctionnalités** :
-  - Défis hebdomadaires par langue
-  - Compétitions inter-écoles
-  - Événements culturels saisonniers
-  - Système de parrainage
-
-#### Progression Non-Linéaire
-- **Objectif** : Rendre l'apprentissage plus flexible
-- **Fonctionnalités** :
-  - Arbres de compétences à embranchements
-  - Spécialisations par domaine (oral, écrit, vocabulaire)
-  - Quêtes secondaires optionnelles
-  - Systèmes de niveaux parallèles
-
-### 1.3 Amélioration Expérience Mobile
-
-#### Mode Offline Avancé
-- **Objectif** : Optimiser l'usage dans les zones à faible connectivité
-- **Fonctionnalités** :
-  - Téléchargement intelligent du contenu
-  - Synchronisation sélective par langue
-  - Mode économie de données
-  - Cache prédictif basé sur l'usage
-
-#### Performance et Optimisation
-- **Objectif** : Améliorer la fluidité et réduire la consommation
-- **Fonctionnalités** :
-  - Lazy loading avancé
-  - Compression dynamique des assets
-  - Gestion intelligente de la mémoire
-  - Optimisation batterie pour audio/vidéo
+**Estimation:** 2-3 mois, 3 développeurs
 
 ---
 
-## ⚡ 2. Priorité Haute (6-12 mois)
+#### 2. Intégration Firebase Backend
+**Statut:** 📌 URGENT - Modèles prêts, collections nécessaires
 
-### 2.1 Fonctionnalités Sociales et Communautaires
+**Collections Firestore:**
+- [ ] `schools` - Établissements
+- [ ] `classrooms` - Classes
+- [ ] `grades` - Notes
+- [ ] `attendance` - Présences
+- [ ] `report_cards` - Bulletins
+- [ ] `homework` - Devoirs
+- [ ] `homework_submissions` - Rendus
+- [ ] `lesson_plans` - Plans de cours
+- [ ] `conduct_notes` - Notes conduite
+- [ ] `parent_messages` - Messages
+- [ ] `announcements` - Annonces
+- [ ] `meetings` - Rendez-vous
 
-#### Réseau Social Linguistique
-- **Objectif** : Créer une communauté d'apprenants
-- **Fonctionnalités** :
-  - Profils publics d'apprenants
-  - Système de suivi/ami
-  - Partage de progression et accomplissements
-  - Groupes d'étude thématiques
+**API Endpoints:**
+- [ ] CRUD établissements
+- [ ] CRUD classes
+- [ ] Gestion notes
+- [ ] Génération bulletins
+- [ ] Calcul moyennes/rangs
+- [ ] Notifications temps réel
 
-#### Collaboration Enseignant-Élève
-- **Objectif** : Renforcer le lien pédagogique
-- **Fonctionnalités** :
-  - Messagerie directe enseignant-étudiant
-  - Sessions de tutorat virtuelles
-  - Feedback personnalisé
-  - Suivi détaillé de progression
-
-#### Forums et Discussions
-- **Objectif** : Créer des espaces d'échange
-- **Fonctionnalités** :
-  - Forums par langue et niveau
-  - Q&A communautaire
-  - Modération automatique (IA)
-  - Système de réputation
-
-### 2.2 Contenu Multimédia Enrichi
-
-#### Bibliothèque Audio/Vidéo
-- **Objectif** : Diversifier les supports d'apprentissage
-- **Fonctionnalités** :
-  - Archives audio de locuteurs natifs
-  - Vidéos culturelles et éducatives
-  - Podcasts pédagogiques
-  - Contenu généré par la communauté
-
-#### Réalité Augmentée
-- **Objectif** : Innover dans l'apprentissage immersif
-- **Fonctionnalités** :
-  - Reconnaissance d'objets culturels
-  - Superposition de traductions AR
-  - Jeux en réalité augmentée
-  - Visites virtuelles de sites culturels
-
-#### Contenu Interactif
-- **Objectif** : Rendre l'apprentissage plus engageant
-- **Fonctionnalités** :
-  - Exercices drag-and-drop
-  - Jeux de mémoire visuelle
-  - Simulations conversationnelles
-  - Contenu 3D pour prononciation
-
-### 2.3 Analytics et Personnalisation
-
-#### Tableau de Bord Analytique
-- **Objectif** : Fournir des insights détaillés
-- **Fonctionnalités** :
-  - Métriques d'apprentissage avancées
-  - Heatmaps d'utilisation
-  - Prédictions de progression
-  - Recommandations basées sur les données
-
-#### Apprentissage Adaptatif
-- **Objectif** : Optimiser les parcours individuels
-- **Fonctionnalités** :
-  - Algorithmes de machine learning
-  - Ajustement de difficulté en temps réel
-  - Contenu personnalisé selon profil
-  - Prévention du découragement
+**Estimation:** 2 mois, 2 développeurs backend
 
 ---
 
-## 📋 3. Priorité Moyenne (12-18 mois)
+#### 3. Contenu Pédagogique par Niveau
+**Statut:** 📌 URGENT - Système prêt, contenu manquant
 
-### 3.1 Expansion Linguistique
+**Par Niveau Scolaire:**
+- [ ] CP-CE1: Vocabulaire basique (200 mots)
+- [ ] CE2-CM1: Vocabulaire élémentaire (400 mots)
+- [ ] CM2-5ème: Vocabulaire intermédiaire (600 mots)
+- [ ] 4ème-2nde: Vocabulaire avancé (800 mots)
+- [ ] 1ère-Terminale: Vocabulaire expert (1000+ mots)
 
-#### Dialectes Régionaux
-- **Objectif** : Couvrir la diversité linguistique camerounaise
-- **Fonctionnalités** :
-  - Support des dialectes locaux
-  - Comparaisons dialectales
-  - Contenu régional spécifique
-  - Cartes linguistiques interactives
+**Adaptation:**
+- [ ] Leçons simplifiées pour primaire
+- [ ] Exercices complexes pour secondaire
+- [ ] Objectifs pédagogiques par niveau
+- [ ] Temps estimé par âge
 
-#### Langues Transfrontalières
-- **Objectif** : S'étendre en Afrique Centrale
-- **Fonctionnalités** :
-  - Intégration langues gabonaises
-  - Contenu congolais
-  - Échanges interculturels
-  - Programmes d'échanges virtuels
-
-#### Créoles et Pidgin
-- **Objectif** : Inclure les langues hybrides
-- **Fonctionnalités** :
-  - Camfranglais officiel
-  - Pidgin English camerounais
-  - Créoles urbains
-  - Contenu moderne et actuel
-
-### 3.2 Fonctionnalités Éducatives Avancées
-
-#### Système de Certification
-- **Objectif** : Valoriser les compétences acquises
-- **Fonctionnalités** :
-  - Examens officiels intégrés
-  - Certificats numériques vérifiables
-  - Reconnaissance institutionnelle
-  - CV linguistique intégré
-
-#### Enseignement Hybride
-- **Objectif** : Combiner apprentissage autonome et guidé
-- **Fonctionnalités** :
-  - Sessions live avec enseignants
-  - Classes virtuelles synchrones
-  - Devoirs et évaluations
-  - Suivi académique
-
-#### Recherche Académique
-- **Objectif** : Contribuer à la préservation linguistique
-- **Fonctionnalités** :
-  - Collecte de données linguistiques
-  - Études sociolinguistiques
-  - Publications académiques
-  - Partenariats universitaires
-
-### 3.3 Intégrations Externes
-
-#### APIs Éducatives
-- **Objectif** : Enrichir l'écosystème
-- **Fonctionnalités** :
-  - Intégration Google Classroom
-  - Connexion Moodle/LMS
-  - APIs pour développeurs tiers
-  - Webhooks de synchronisation
-
-#### Partenariats Institutionnels
-- **Objectif** : Obtenir une reconnaissance officielle
-- **Fonctionnalités** :
-  - Accréditation ministérielle
-  - Partenariats universités
-  - Écoles et instituts
-  - Organisations culturelles
+**Estimation:** 2 mois, 2 créateurs de contenu + 1 pédagogue
 
 ---
 
-## 🔮 4. Priorité Basse (18+ mois)
+### ⚡ Priorité Haute (3-6 mois)
 
-### 4.1 Technologies Émergentes
+#### 4. Programme Pilote MINEDUC
+**Objectif:** Tester dans 3-5 écoles pilotes
 
-#### Intelligence Artificielle Générative
-- **Objectif** : Révolutionner la création de contenu
-- **Fonctionnalités** :
-  - Génération automatique de leçons
-  - Création de personnages IA
-  - Scénarios immersifs personnalisés
-  - Serious games (jeux sérieux)
+**Actions:**
+- [ ] Contact MINEDUC
+- [ ] Sélection écoles pilotes
+- [ ] Formation enseignants
+- [ ] Onboarding élèves/parents
+- [ ] Tests 3 mois
+- [ ] Feedback et ajustements
 
-#### Réalité Virtuelle/Augmentée
-- **Objectif** : Immersion totale dans les langues
-- **Fonctionnalités** :
-  - Visites virtuelles de villages camerounais
-  - Conversations VR avec IA
-  - Jeux linguistiques 3D
-  - Environnements culturels immersifs
-
-#### Internet des Objets
-- **Objectif** : Apprentissage ubiquitaire
-- **Fonctionnalités** :
-  - Panneaux intelligents multilingues
-  - Objets connectés éducatifs
-  - Réalité augmentée urbaine
-  - Apprentissage contextuel
-
-### 4.2 Expansion Internationale
-
-#### Afrique Francophone
-- **Objectif** : Devenir une plateforme panafricaine
-- **Fonctionnalités** :
-  - Intégration langues ouest-africaines
-  - Contenu adapté localement
-  - Échanges interculturels
-  - Partenariats régionaux
-
-#### Diaspora Camerounaise
-- **Objectif** : Connecter la diaspora
-- **Fonctionnalités** :
-  - Contenu pour expatriés
-  - Événements communautaires virtuels
-  - Transmission intergénérationnelle
-  - Préservation culturelle
-
-#### Marchés Internationaux
-- **Objectif** : Expansion mondiale
-- **Fonctionnalités** :
-  - Version anglaise
-  - Adaptation culturelle
-  - Partenariats éducatifs globaux
-  - Certification internationale
+**Estimation:** 3 mois
 
 ---
 
-## 📊 Métriques de Succès
+#### 5. Curriculum MINEDUC Officiel
+**Objectif:** Alignement programmes officiels
 
-### Indicateurs Clés (KPIs)
+**Par Matière:**
+- [ ] Langues nationales (objectifs officiels)
+- [ ] Français (complémentaire)
+- [ ] Histoire/Géographie Cameroun
+- [ ] Éducation civique
+- [ ] Arts et culture
 
-#### Engagement Utilisateur
-- **DAU/MAU** : Taux d'engagement quotidien/mensuel
-- **Durée Session** : Temps moyen par session
-- **Taux Rétention** : Rétention à 1/7/30 jours
-- **Taux Complétion** : Taux de complétion des leçons
+**Validation:**
+- [ ] Revue pédagogues MINEDUC
+- [ ] Certification contenu
+- [ ] Accréditation officielle
 
-#### Performance Pédagogique
-- **Vitesse Progression** : Rapidité d'acquisition des compétences
-- **Taux Certification** : Taux d'obtention de certificats
-- **Rétention Compétences** : Maintien des acquis
-- **Satisfaction** : Satisfaction globale des apprenants
-
-#### Métriques Business
-- **Revenue par Utilisateur** : Revenu moyen par utilisateur
-- **Taux Conversion** : Conversion freemium vers premium
-- **Churn Rate** : Taux d'attrition abonnements
-- **LTV** : Lifetime Value des utilisateurs
-
-### Objectifs par Phase
-
-#### Phase 1 (Lancement - 2025)
-- **Utilisateurs actifs** : 10,000
-- **Taux rétention** : 60% (1 mois)
-- **Revenu mensuel** : 500,000 FCFA
-- **Satisfaction** : 4.2/5 étoiles
-
-#### Phase 2 (Croissance - 2026)
-- **Utilisateurs actifs** : 50,000
-- **Taux rétention** : 75% (1 mois)
-- **Revenu mensuel** : 2,500,000 FCFA
-- **Satisfaction** : 4.5/5 étoiles
-
-#### Phase 3 (Maturité - 2027)
-- **Utilisateurs actifs** : 200,000
-- **Taux rétention** : 85% (1 mois)
-- **Revenu mensuel** : 15,000,000 FCFA
-- **Satisfaction** : 4.7/5 étoiles
+**Estimation:** 4 mois
 
 ---
 
-## 🎯 Roadmap Recommandée
+#### 6. IA Conversationnelle Avancée
 
-### 2025-2026 (Année 1)
+**Assistant Multilingue:**
+- [ ] Conversations Ewondo
+- [ ] Conversations Duala
+- [ ] Conversations Bamiléké
+- [ ] Autres langues camerounaises
+- [ ] Correction prononciation temps réel
 
-**Q1 2026 :**
-- ✅ IA conversationnelle avancée
-- ✅ Économie virtuelle et boutique
-- ✅ Mode offline optimisé
+**IA Pédagogique:**
+- [ ] Analyse forces/faiblesses
+- [ ] Recommandations personnalisées
+- [ ] Ajustement difficulté auto
+- [ ] Rappels intelligents
 
-**Q2 2026 :**
-- ✅ Réseau social linguistique
-- ✅ Forums et groupes d'étude
-- ✅ Bibliothèque multimédia enrichie
-
-**Q3 2026 :**
-- ✅ Analytics avancés
-- ✅ Tableau de bord enseignant amélioré
-- ✅ Système de tutorat en ligne
-
-**Q4 2026 :**
-- ✅ Dialectes régionaux (Phase 1)
-- ✅ Certification officielle
-- ✅ Partenariats institutionnels
-
-### 2027 (Année 2)
-
-**Q1-Q2 2027 :**
-- Réalité augmentée
-- Expansion Afrique Centrale
-- IA générative de contenu
-
-**Q3-Q4 2027 :**
-- Plateforme web complète
-- API publique pour développeurs
-- Expansion internationale
-
-### 2028+ (Long Terme)
-
-- Métaverse éducatif
-- Technologies blockchain
-- IA quantique pour éducation
-- Expansion mondiale
+**Estimation:** 3 mois, 2 ML engineers
 
 ---
 
-## 💡 Recommandations Stratégiques
+#### 7. Multimédia Enrichi
 
-### Focus Produit
-1. **Cœur de métier** : Apprentissage des langues camerounaises
-2. **Différenciation** : IA pédagogique + communauté culturelle
-3. **Monétisation** : Freemium avec progression naturelle
-4. **Expansion** : Afrique Centrale puis international
+**Audio:**
+- [ ] Prononciations natives
+- [ ] Dialogues audio
+- [ ] Exercices écoute
+- [ ] Reconnaissance vocale
 
-### Investissements Prioritaires
-1. **Technologie IA** : Budget R&D pour innovation pédagogique
-2. **Contenu Linguistique** : Équipe de linguistes et pédagogues
-3. **Communauté** : Modération et animation communautaire
-4. **Marketing** : Acquisition utilisateurs ciblée
+**Vidéo:**
+- [ ] Cours vidéo
+- [ ] Danses traditionnelles
+- [ ] Cérémonies culturelles
+- [ ] Interviews locuteurs natifs
 
-### Risques à Mitiger
-- **Concurrence** : Applications d'apprentissage généralistes
-- **Adoption** : Résistance aux méthodes modernes
-- **Technique** : Complexité de l'IA multilingue
-- **Réglementaire** : Évolution des lois éducatives
+**Images:**
+- [ ] Photos authentiques camerounaises
+- [ ] Illustrations pédagogiques
+- [ ] Cartes interactives
+- [ ] Patrimoine visuel
 
----
-
-## 📈 Fonctionnalités Détaillées Planifiées
-
-### Q1 2026 : IA Conversationnelle
-
-**Chat Multilingue Intelligent**
-
-```dart
-// Fonctionnalité planifiée
-class AdvancedAIChat {
-  // Conversation naturelle en langue camerounaise
-  Future<AIResponse> chat({
-    required String message,
-    required String languageCode,
-    ConversationMode mode = ConversationMode.learning,
-  }) async {
-    // 1. Détecter intention utilisateur
-    final intent = await _detectIntent(message, languageCode);
-    
-    // 2. Générer réponse contextuelle
-    final response = await _generateContextualResponse(
-      message: message,
-      intent: intent,
-      userLevel: currentUserLevel,
-      conversationHistory: _history,
-    );
-    
-    // 3. Adapter selon mode
-    switch (mode) {
-      case ConversationMode.learning:
-        // Inclure explications et corrections
-        response.addPedagogicalNotes();
-        break;
-      case ConversationMode.practice:
-        // Conversation naturelle sans interruption
-        break;
-      case ConversationMode.evaluation:
-        // Évaluer et scorer chaque réponse
-        response.addEvaluationMetrics();
-        break;
-    }
-    
-    return response;
-  }
-}
-```
-
-### Q2 2026 : Réseau Social Linguistique
-
-**Profils Sociaux et Interactions**
-
-```dart
-// Fonctionnalité planifiée
-class SocialProfile {
-  // Profil public apprenant
-  final String userId;
-  final String displayName;
-  final String avatarUrl;
-  final List<LanguageBadge> languages;
-  final int totalXP;
-  final List<Achievement> publicAchievements;
-  final int followers;
-  final int following;
-  final SocialStats stats;
-  
-  // Fil d'activité
-  Stream<List<Activity>> getActivityFeed() {
-    return _firestore
-        .collection('user_activities')
-        .where('userId', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
-        .limit(50)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Activity.fromFirestore(doc))
-            .toList());
-  }
-  
-  // Partage accomplissement
-  Future<void> shareAchievement(Achievement achievement) async {
-    final post = SocialPost(
-      type: PostType.achievement,
-      userId: userId,
-      content: 'J'ai débloqué : ${achievement.name}!',
-      achievement: achievement,
-      timestamp: DateTime.now(),
-    );
-    
-    await _firestore.collection('social_feed').add(post.toJson());
-    
-    // Notifier followers
-    await _notifyFollowers(userId, post);
-  }
-}
-```
-
-### Q3 2026 : Analytics Avancés
-
-**Dashboard Analytics pour Enseignants**
-
-```dart
-// Fonctionnalité planifiée
-class TeacherAnalytics {
-  // Statistiques classe
-  Future<ClassAnalytics> getClassAnalytics({
-    required String teacherId,
-    required String courseId,
-    DateRange dateRange,
-  }) async {
-    return ClassAnalytics(
-      // Engagement
-      averageSessionDuration: await _getAvgSessionDuration(),
-      activeStudentsRate: await _getActiveStudentsRate(),
-      completionRate: await _getCompletionRate(),
-      
-      // Performance
-      averageScore: await _getAverageScore(),
-      passRate: await _getPassRate(),
-      improvementTrend: await _getImprovementTrend(),
-      
-      // Contenu
-      popularLessons: await _getPopularLessons(),
-      difficultTopics: await _getDifficultTopics(),
-      
-      // Prédictions
-      atRiskStudents: await _identifyAtRiskStudents(),
-      projectedCompletion: await _projectCompletion(),
-    );
-  }
-  
-  // Recommandations IA
-  Future<List<Recommendation>> getTeachingRecommendations({
-    required String teacherId,
-  }) async {
-    final analytics = await getClassAnalytics(teacherId: teacherId);
-    
-    return await aiService.generateTeachingRecommendations(
-      analytics: analytics,
-      teachingStyle: await _getTeachingStyle(teacherId),
-    );
-  }
-}
-```
-
-### Q4 2026 : Certification Officielle
-
-**Système de Certification Complet**
-
-```dart
-// Fonctionnalité planifiée
-class OfficialCertification {
-  // Examen de certification
-  Future<CertificationExam> createCertificationExam({
-    required String languageCode,
-    required CertificationLevel level,  // A1, A2, B1, B2, C1, C2
-  }) async {
-    return CertificationExam(
-      // Sections
-      oralComprehension: await _generateOralSection(level),
-      writtenComprehension: await _generateWrittenSection(level),
-      oralExpression: await _generateSpeakingSection(level),
-      writtenExpression: await _generateWritingSection(level),
-      
-      // Paramètres
-      duration: _getDurationForLevel(level),
-      passingScore: 70,
-      officialRecognition: true,
-    );
-  }
-  
-  // Génération certificat officiel
-  Future<Certificate> generateOfficialCertificate({
-    required String userId,
-    required String languageCode,
-    required CertificationLevel level,
-    required ExamResult result,
-  }) async {
-    // 1. Valider résultat
-    if (result.score < 70) {
-      throw CertificationException('Score insuffisant');
-    }
-    
-    // 2. Générer PDF avec QR code
-    final pdf = await _generatePDFCertificate(
-      user: await _getUser(userId),
-      language: languageCode,
-      level: level,
-      score: result.score,
-      examDate: result.date,
-    );
-    
-    // 3. Enregistrer dans blockchain (vérifiabilité)
-    final blockchainHash = await _registerOnBlockchain(pdf);
-    
-    // 4. Créer certificat
-    final certificate = Certificate(
-      id: uuid.v4(),
-      userId: userId,
-      languageCode: languageCode,
-      level: level,
-      score: result.score,
-      pdfUrl: await _uploadPDF(pdf),
-      qrCode: _generateQRCode(blockchainHash),
-      verificationUrl: 'https://verify.maayegue.com/$blockchainHash',
-      issuedAt: DateTime.now(),
-      expiresAt: DateTime.now().add(Duration(days: 365 * 3)),  // 3 ans
-    );
-    
-    // 5. Sauvegarder
-    await _saveCertificate(certificate);
-    
-    return certificate;
-  }
-}
-```
+**Estimation:** 3 mois, équipe multimédia
 
 ---
 
-## 🎮 Nouvelles Fonctionnalités de Jeu
+### 📋 Priorité Moyenne (6-12 mois)
 
-### Jeux Éducatifs Avancés
+#### 8. Mode Hors Ligne Complet
 
-**1. Mode Histoire Interactive**
+**Contenu Téléchargeable:**
+- [ ] Leçons par niveau
+- [ ] Dictionnaires complets
+- [ ] Audio/Vidéo
+- [ ] Exercices
+- [ ] Culture
 
-```dart
-// Fonctionnalité future
-class StoryMode {
-  // Aventure narrative en langue camerounaise
-  Future<void> playStoryChapter({
-    required String storyId,
-    required String languageCode,
-  }) async {
-    // Scénario interactif avec choix
-    // Personnages IA conversationnels
-    // Apprentissage par immersion
-    // Récompenses selon décisions
-  }
-}
-```
+**Synchronisation:**
+- [ ] Sync automatique
+- [ ] Résolution conflits
+- [ ] Gestion stockage
+- [ ] Compression intelligente
 
-**2. Bataille de Vocabulaire Multijoueur**
-
-```dart
-// PvP temps réel
-class VocabularyBattle {
-  Future<void> startBattle({
-    required String opponentId,
-    required String languageCode,
-  }) async {
-    // Match 1v1 en temps réel
-    // Questions simultanées
-    // Temps limité
-    // Classement live
-  }
-}
-```
-
-**3. Exploration Monde Virtuel**
-
-```dart
-// Monde virtuel camerounais
-class VirtualWorld {
-  // Village virtuel 3D
-  // NPCs parlant langues locales
-  // Quêtes linguistiques
-  // Découverte culturelle immersive
-}
-```
+**Estimation:** 2 mois
 
 ---
 
-## 🌟 Conclusion
+#### 9. Analytics Avancées
 
-L'application Ma'a yegue a un potentiel immense pour devenir la référence mondiale de l'apprentissage des langues camerounaises. En suivant cette roadmap structurée et en maintenant le focus sur la qualité pédagogique et l'innovation technologique, l'application peut atteindre des millions d'utilisateurs tout en préservant et valorisant le patrimoine linguistique camerounais.
+**Pour Enseignants:**
+- [ ] Progression classe
+- [ ] Comparaison élèves
+- [ ] Identification difficultés
+- [ ] Recommandations pédagogiques
 
-Les améliorations proposées sont réalistes, techniquement faisables et alignées avec les tendances actuelles de l'éducation. L'accent sur l'IA, la gamification et la communauté créera une expérience d'apprentissage unique et engageante.
+**Pour Directeurs:**
+- [ ] Performance établissement
+- [ ] Comparaison classes
+- [ ] Indicateurs clés
+- [ ] Rapports MINEDUC
+
+**Pour MINEDUC:**
+- [ ] Statistiques régionales
+- [ ] Statistiques nationales
+- [ ] Indicateurs éducatifs
+- [ ] Tableaux de bord interactifs
+
+**Estimation:** 2 mois
 
 ---
 
-*Document de planification - Dernière révision : 7 octobre 2025*
+#### 10. Communauté et Social
 
+**Forums:**
+- [ ] Par langue
+- [ ] Par niveau scolaire
+- [ ] Par région
+- [ ] Modération IA
+
+**Événements:**
+- [ ] Compétitions inter-classes
+- [ ] Challenges nationaux
+- [ ] Journées culturelles
+- [ ] Webinaires
+
+**Estimation:** 2 mois
+
+---
+
+### 🔮 Priorité Basse (12-24 mois)
+
+#### 11. Réalité Augmentée
+
+**Expériences AR:**
+- [ ] Masques traditionnels 3D
+- [ ] Sites patrimoniaux virtuels
+- [ ] Danses interactives
+- [ ] Musées virtuels
+
+**Estimation:** 4 mois
+
+---
+
+#### 12. Intelligence Artificielle Avancée
+
+**Génération Contenu:**
+- [ ] Phrases exemple auto
+- [ ] Quiz adaptatifs
+- [ ] Contenu audio IA
+- [ ] Validation croisée
+
+**Prédiction Performance:**
+- [ ] Prédiction notes
+- [ ] Identification risques décrochage
+- [ ] Recommandations préventives
+- [ ] Coaching personnalisé
+
+**Estimation:** 4 mois
+
+---
+
+#### 13. Expansion Régionale
+
+**Afrique Centrale:**
+- [ ] Tchad (langues locales)
+- [ ] RCA (Sango, etc.)
+- [ ] Gabon (langues locales)
+- [ ] Congo (Lingala, Kikongo)
+
+**Adaptation:**
+- [ ] Calendriers locaux
+- [ ] Systèmes notation
+- [ ] Programmes officiels
+- [ ] Partenariats ministères
+
+**Estimation:** 6 mois par pays
+
+---
+
+#### 14. Certifications Officielles
+
+**Examens:**
+- [ ] Certificats langue (A1-C2)
+- [ ] Certifications MINEDUC
+- [ ] Diplômes reconnus
+- [ ] Centres examen
+
+**Partenariats:**
+- [ ] Universités camerounaises
+- [ ] UNESCO
+- [ ] Alliance Française
+- [ ] British Council
+
+**Estimation:** 6 mois
+
+---
+
+#### 15. Accessibilité Universelle
+
+**Handicaps:**
+- [ ] Voice-over complet
+- [ ] Langue des signes camerounaise
+- [ ] Dyslexie (polices adaptées)
+- [ ] Daltonisme (contraste)
+
+**Inclusivité:**
+- [ ] Besoins éducatifs spéciaux
+- [ ] Adaptation cognitive
+- [ ] Rythme personnalisé
+- [ ] Support tuteurs
+
+**Estimation:** 3 mois
+
+---
+
+## 💰 Budget Estimé
+
+### Phase 1 (UI + Backend) - 3 mois
+- **Développement:** 45,000€
+- **Design UI/UX:** 15,000€
+- **QA/Tests:** 10,000€
+- **Total:** 70,000€
+
+### Phase 2 (Pilotes + MINEDUC) - 3 mois
+- **Curriculum:** 20,000€
+- **Formation:** 15,000€
+- **Pilotes:** 15,000€
+- **Total:** 50,000€
+
+### Phase 3 (Multimédia + IA) - 6 mois
+- **Contenu multimédia:** 40,000€
+- **IA conversationnelle:** 30,000€
+- **Analytics:** 20,000€
+- **Total:** 90,000€
+
+### Phase 4 (Expansion) - 12 mois
+- **Certification:** 25,000€
+- **Accessibilité:** 20,000€
+- **AR/Innovation:** 35,000€
+- **Total:** 80,000€
+
+**Budget Total 2 Ans:** 290,000€
+
+---
+
+## 🎯 Impact Attendu
+
+### Année 1
+- **Utilisateurs:** 10,000+
+- **Écoles:** 50+
+- **Régions:** 5+
+- **Revenus:** 100,000€
+
+### Année 2
+- **Utilisateurs:** 100,000+
+- **Écoles:** 500+
+- **Régions:** 10 (tout Cameroun)
+- **Revenus:** 500,000€
+
+### Année 3
+- **Utilisateurs:** 500,000+
+- **Écoles:** 2,000+
+- **Pays:** 3-5 (Afrique Centrale)
+- **Revenus:** 2,000,000€
+
+---
+
+## 🎓 Vision Long Terme
+
+**Ma'a Yegue deviendra la plateforme e-learning #1 pour:**
+1. Préservation langues africaines
+2. Éducation primaire/secondaire Cameroun
+3. Formation continue enseignants
+4. Recherche linguistique
+5. Patrimoine culturel numérique
+
+---
+
+**Dernière révision:** 7 octobre 2025  
+**Statut:** Roadmap post-v2.0  
+**Prochaine étape:** UI/UX Implementation

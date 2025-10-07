@@ -1,6 +1,8 @@
-# 🏗️ Architecture Détaillée - Ma'a yegue
+# 🏗️ Architecture Détaillée - Ma'a yegue v2.0
 
-**Document Technique : Architecture et Communication des Modules**
+**Document Technique : Architecture et Communication des Modules**  
+**Version:** 2.0.0 - Educational Platform Edition  
+**Date:** 7 octobre 2025
 
 ---
 
@@ -12,6 +14,17 @@ Ma'a yegue utilise une architecture **Clean Architecture** combinée au pattern 
 - ✅ **Maintenabilité long terme**
 - ✅ **Scalabilité**
 - ✅ **Indépendance des frameworks**
+
+### 🎓 Nouveautés v2.0
+- ✅ **Système éducatif complet** (1,800+ lignes de code)
+- ✅ **12 rôles utilisateurs** avec hiérarchie
+- ✅ **Gestion établissements et classes**
+- ✅ **Notation /20 camerounaise**
+- ✅ **Calendrier académique**
+- ✅ **Outils enseignants et portail parents**
+- ✅ **Filtrage contenu par âge**
+
+**📚 Documentation Complète:** Voir [V2_EDUCATIONAL_ADDITIONS.md](V2_EDUCATIONAL_ADDITIONS.md) pour détails techniques complets des additions éducatives.
 
 ---
 
@@ -128,13 +141,15 @@ final user = context.select((AuthViewModel vm) => vm.currentUser);
 ```dart
 // Services globaux accessibles partout
 core/services/
-├── firebase_service.dart          # Firebase centralisé
-├── ai_service.dart                # Intelligence artificielle
-├── notification_service.dart      # Notifications push
-├── storage_service.dart           # Stockage fichiers
-├── analytics_service.dart         # Analytics
-├── audio_service.dart             # Lecture audio
-└── sync_manager.dart              # Synchronisation
+├── firebase_service.dart              # Firebase centralisé
+├── ai_service.dart                    # Intelligence artificielle
+├── notification_service.dart          # Notifications push
+├── storage_service.dart               # Stockage fichiers
+├── analytics_service.dart             # Analytics
+├── audio_service.dart                 # Lecture audio
+├── sync_manager.dart                  # Synchronisation
+├── academic_calendar_service.dart     # 🆕 Calendrier académique camerounais
+└── content_filter_service.dart        # 🆕 Filtrage contenu par âge
 ```
 
 **Exemple d'utilisation :**

@@ -266,7 +266,8 @@ class AppRouter {
             state.matchedLocation == Routes.dashboard ||
             state.matchedLocation == Routes.languages ||
             state.matchedLocation == Routes.dictionary ||
-            state.matchedLocation == Routes.courses;
+            state.matchedLocation == Routes.courses ||
+            state.matchedLocation == Routes.culture;
 
         // If not authenticated and trying to access protected route, redirect to landing
         if (!isAuthenticated && !isGuestAllowedRoute && !isOnboardingRoute) {

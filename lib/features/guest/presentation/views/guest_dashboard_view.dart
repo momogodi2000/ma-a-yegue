@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/routes.dart';
 import '../../../../core/constants/supported_languages.dart';
 import '../../../../shared/themes/colors.dart';
 import '../viewmodels/guest_dashboard_viewmodel.dart';
@@ -80,6 +81,7 @@ class _GuestDashboardViewState extends State<GuestDashboardView>
             slivers: [
               _buildHeroSection(),
               _buildLanguagesShowcase(viewModel),
+              _buildCultureShowcase(),
               _buildDemoLessonsSection(viewModel),
               _buildFeaturesSection(),
               _buildTestimonialsSection(viewModel),
@@ -384,6 +386,150 @@ class _GuestDashboardViewState extends State<GuestDashboardView>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCultureShowcase() {
+    return SliverToBoxAdapter(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 24),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.deepOrange.shade50, Colors.amber.shade50],
+          ),
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.museum, size: 32, color: Colors.deepOrange.shade700),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Culture & Histoire',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange.shade700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Découvrez la richesse culturelle et historique des peuples du Cameroun',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[700],
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Culture categories grid
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.5,
+              children: [
+                _buildCultureCategoryCard(
+                  'Traditions',
+                  Icons.celebration,
+                  Colors.purple,
+                  'Cérémonies et rituels ancestraux',
+                ),
+                _buildCultureCategoryCard(
+                  'Histoire',
+                  Icons.history_edu,
+                  Colors.blue,
+                  'Événements marquants et figures historiques',
+                ),
+                _buildCultureCategoryCard(
+                  'Yemba',
+                  Icons.language,
+                  Colors.green,
+                  'Culture et langue du peuple Bamiléké',
+                ),
+                _buildCultureCategoryCard(
+                  'Patrimoine',
+                  Icons.account_balance,
+                  Colors.orange,
+                  'Sites et monuments culturels',
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            ElevatedButton.icon(
+              onPressed: () => context.go(Routes.culture),
+              icon: const Icon(Icons.explore),
+              label: const Text('Explorer la Culture Camerounaise'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange.shade700,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCultureCategoryCard(
+    String title,
+    IconData icon,
+    Color color,
+    String description,
+  ) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3 * 255),
+            width: 2,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );
