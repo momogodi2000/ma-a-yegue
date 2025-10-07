@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import '../models/user_role.dart';
 import 'firebase_service.dart';
 
 /// Service for managing user roles in Firestore
@@ -7,6 +8,36 @@ class UserRoleService {
   final FirebaseService _firebaseService;
 
   UserRoleService(this._firebaseService);
+
+  /// Normalize role string to one of the 4 main roles
+  /// Maps legacy aliases (student -> learner, instructor -> teacher)
+  String _normalizeRole(String role) {
+    switch (role.toLowerCase()) {
+      case 'visitor':
+      case 'guest':
+        return 'visitor';
+      case 'learner':
+      case 'student':
+        return 'learner';
+      case 'teacher':
+      case 'instructor':
+        return 'teacher';
+      case 'admin':
+      case 'administrator':
+        return 'admin';
+      default:
+        if (kDebugMode) {
+          print('Unknown role "$role", defaulting to learner');
+        }
+        return 'learner'; // Default fallback
+    }
+  }
+
+  /// Validate that a role is one of the 4 main application roles
+  bool _isValidRole(String role) {
+    const validRoles = ['visitor', 'learner', 'teacher', 'admin'];
+    return validRoles.contains(role.toLowerCase());
+  }
 
   /// Get user role from Firestore
   Future<String> getUserRole(String userId) async {
@@ -24,7 +55,7 @@ class UserRoleService {
       }
 
       final role = userDoc.data()!['role'] as String?;
-      return role ?? 'learner';
+      return _normalizeRole(role ?? 'learner');
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching user role: $e');
@@ -36,19 +67,20 @@ class UserRoleService {
   /// Update user role (admin only)
   Future<void> updateUserRole(String userId, String newRole) async {
     try {
-      // Validate role
-      final validRoles = ['learner', 'teacher', 'admin', 'instructor', 'student'];
-      if (!validRoles.contains(newRole.toLowerCase())) {
-        throw Exception('Invalid role: $newRole');
+      // Normalize and validate role
+      final normalizedRole = _normalizeRole(newRole);
+      
+      if (!_isValidRole(normalizedRole)) {
+        throw Exception('Invalid role: $newRole (normalized: $normalizedRole)');
       }
 
       await _firebaseService.firestore.collection('users').doc(userId).update({
-        'role': newRole.toLowerCase(),
+        'role': normalizedRole,
         'roleUpdatedAt': FieldValue.serverTimestamp(),
       });
 
       if (kDebugMode) {
-        print('User role updated: $userId -> $newRole');
+        print('User role updated: $userId -> $normalizedRole');
       }
     } catch (e) {
       throw Exception('Failed to update user role: $e');
@@ -58,11 +90,10 @@ class UserRoleService {
   /// Assign role to user (for new users or role changes)
   Future<void> assignRole(String userId, String role) async {
     try {
-      final validRoles = ['learner', 'teacher', 'admin', 'instructor', 'student'];
-      final normalizedRole = role.toLowerCase();
+      final normalizedRole = _normalizeRole(role);
 
-      if (!validRoles.contains(normalizedRole)) {
-        throw Exception('Invalid role: $role');
+      if (!_isValidRole(normalizedRole)) {
+        throw Exception('Invalid role: $role (normalized: $normalizedRole)');
       }
 
       await _firebaseService.firestore.collection('users').doc(userId).set({
@@ -82,7 +113,8 @@ class UserRoleService {
   Future<bool> hasRole(String userId, String role) async {
     try {
       final userRole = await getUserRole(userId);
-      return userRole.toLowerCase() == role.toLowerCase();
+      final normalizedRole = _normalizeRole(role);
+      return userRole == normalizedRole;
     } catch (e) {
       if (kDebugMode) {
         print('Error checking user role: $e');
@@ -98,22 +130,27 @@ class UserRoleService {
 
   /// Check if user is teacher
   Future<bool> isTeacher(String userId) async {
-    final userRole = await getUserRole(userId);
-    return userRole == 'teacher' || userRole == 'instructor';
+    return await hasRole(userId, 'teacher');
   }
 
   /// Check if user is learner
   Future<bool> isLearner(String userId) async {
-    final userRole = await getUserRole(userId);
-    return userRole == 'learner' || userRole == 'student';
+    return await hasRole(userId, 'learner');
+  }
+
+  /// Check if user is visitor/guest
+  Future<bool> isVisitor(String userId) async {
+    return await hasRole(userId, 'visitor');
   }
 
   /// Get all users with a specific role
   Future<List<Map<String, dynamic>>> getUsersByRole(String role) async {
     try {
+      final normalizedRole = _normalizeRole(role);
+      
       final querySnapshot = await _firebaseService.firestore
           .collection('users')
-          .where('role', isEqualTo: role.toLowerCase())
+          .where('role', isEqualTo: normalizedRole)
           .get();
 
       return querySnapshot.docs
@@ -139,11 +176,10 @@ class UserRoleService {
     Map<String, dynamic>? additionalData,
   }) async {
     try {
-      final validRoles = ['learner', 'teacher', 'admin', 'instructor', 'student'];
-      final normalizedRole = role.toLowerCase();
+      final normalizedRole = _normalizeRole(role);
 
-      if (!validRoles.contains(normalizedRole)) {
-        throw Exception('Invalid role: $role');
+      if (!_isValidRole(normalizedRole)) {
+        throw Exception('Invalid role: $role (normalized: $normalizedRole)');
       }
 
       final userData = {
@@ -192,6 +228,7 @@ class UserRoleService {
           .get();
 
       final stats = <String, int>{
+        'visitor': 0,
         'admin': 0,
         'teacher': 0,
         'learner': 0,
@@ -199,14 +236,8 @@ class UserRoleService {
       };
 
       for (final doc in usersSnapshot.docs) {
-        final role = doc.data()['role'] as String? ?? 'learner';
-        if (role == 'admin') {
-          stats['admin'] = (stats['admin'] ?? 0) + 1;
-        } else if (role == 'teacher' || role == 'instructor') {
-          stats['teacher'] = (stats['teacher'] ?? 0) + 1;
-        } else {
-          stats['learner'] = (stats['learner'] ?? 0) + 1;
-        }
+        final role = _normalizeRole(doc.data()['role'] as String? ?? 'learner');
+        stats[role] = (stats[role] ?? 0) + 1;
       }
 
       return stats;
@@ -214,7 +245,12 @@ class UserRoleService {
       if (kDebugMode) {
         print('Error getting role statistics: $e');
       }
-      return {'admin': 0, 'teacher': 0, 'learner': 0, 'total': 0};
+      return {'visitor': 0, 'admin': 0, 'teacher': 0, 'learner': 0, 'total': 0};
     }
+  }
+
+  /// Get UserRole enum from string
+  UserRole getUserRoleEnum(String role) {
+    return UserRoleExtension.fromString(_normalizeRole(role));
   }
 }

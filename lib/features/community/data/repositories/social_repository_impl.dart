@@ -1,3 +1,4 @@
+import '../../../../core/models/user_role.dart';
 import '../../domain/entities/community_entity.dart';
 import '../../domain/repositories/social_repository.dart';
 import '../datasources/community_remote_datasource.dart';
@@ -38,18 +39,26 @@ class SocialRepositoryImpl implements SocialRepository {
 
   @override
   Future<void> shareProgress(
-      String userId, Map<String, dynamic> progressData) async {
+    String userId,
+    Map<String, dynamic> progressData,
+  ) async {
     await _remoteDataSource.shareProgress(userId, progressData);
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getProgressFeed(String userId,
-      {int limit = 20}) async {
+  Future<List<Map<String, dynamic>>> getProgressFeed(
+    String userId, {
+    int limit = 20,
+  }) async {
     return await _remoteDataSource.getProgressFeed(userId, limit: limit);
   }
 
   // Helper method to map model to entity
   CommunityUserEntity _mapModelToEntity(CommunityUserModel model) {
+    // IMPORTANT: The model's 'role' field contains the community role (member, moderator, admin)
+    // which is separate from the main app role (visitor, learner, teacher, admin)
+    // The main app role should be fetched from the user's authentication profile
+    // For now, we default to UserRole.learner - this should be improved to fetch the actual role
     return CommunityUserEntity(
       id: model.id,
       name: model.name,
@@ -58,7 +67,9 @@ class SocialRepositoryImpl implements SocialRepository {
       bio: model.bio,
       location: model.location,
       languages: model.languages,
-      role: _mapStringToUserRole(model.role),
+      role: UserRole
+          .learner, // TODO: Fetch actual main role from user's auth profile
+      communityRole: _mapStringToCommunityRole(model.role),
       reputation: model.reputation,
       postsCount: model.postsCount,
       likesReceived: model.likesReceived,
@@ -69,16 +80,16 @@ class SocialRepositoryImpl implements SocialRepository {
     );
   }
 
-  UserRole _mapStringToUserRole(String role) {
-    switch (role) {
+  /// Maps string community role to CommunityRole enum
+  /// Community roles are for moderation purposes only, separate from main app roles
+  CommunityRole _mapStringToCommunityRole(String role) {
+    switch (role.toLowerCase()) {
       case 'moderator':
-        return UserRole.moderator;
+        return CommunityRole.moderator;
       case 'admin':
-        return UserRole.admin;
-      case 'superAdmin':
-        return UserRole.superAdmin;
+        return CommunityRole.admin;
       default:
-        return UserRole.member;
+        return CommunityRole.member;
     }
   }
 }

@@ -1,15 +1,52 @@
+import '../../../../core/models/user_role.dart';
 import '../../domain/entities/community_entity.dart';
 import '../../domain/repositories/community_repository.dart';
 import '../datasources/community_remote_datasource.dart';
 import '../models/community_user_model.dart';
 
 /// Implementation of CommunityRepository
+/// Note: Many methods are not yet fully implemented and will throw UnimplementedError
 class CommunityRepositoryImpl implements CommunityRepository {
   final CommunityRemoteDataSource _remoteDataSource;
 
   CommunityRepositoryImpl(this._remoteDataSource);
 
-  // User operations
+  // Helper method to map model to entity
+  CommunityUserEntity _mapModelToEntity(CommunityUserModel model) {
+    // The model's 'role' field contains the community role (member, moderator, admin)
+    // The main user role should be fetched from the auth profile separately
+    return CommunityUserEntity(
+      id: model.id,
+      name: model.name,
+      email: model.email,
+      avatar: model.avatar,
+      bio: model.bio,
+      location: model.location,
+      languages: model.languages,
+      role: UserRole.learner, // TODO: Fetch from user's auth profile
+      communityRole: _mapStringToCommunityRole(model.role),
+      reputation: model.reputation,
+      postsCount: model.postsCount,
+      likesReceived: model.likesReceived,
+      joinedAt: model.joinedAt,
+      lastSeenAt: model.lastSeenAt,
+      isOnline: model.isOnline,
+      preferences: model.preferences,
+    );
+  }
+
+  CommunityRole _mapStringToCommunityRole(String role) {
+    switch (role.toLowerCase()) {
+      case 'moderator':
+        return CommunityRole.moderator;
+      case 'admin':
+        return CommunityRole.admin;
+      default:
+        return CommunityRole.member;
+    }
+  }
+
+  // ===== User operations (Implemented) =====
   @override
   Future<List<CommunityUserEntity>> getUsers({
     int limit = 20,
@@ -49,7 +86,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     return _mapModelToEntity(model);
   }
 
-  // Following operations (not in original interface, but needed for social features)
+  // ===== Following operations (Implemented) =====
   @override
   Future<void> followUser(String followerId, String followedId) async {
     await _remoteDataSource.followUser(followerId, followedId);
@@ -77,7 +114,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     return await _remoteDataSource.isFollowing(followerId, followedId);
   }
 
-  // Progress sharing operations
+  // ===== Progress sharing operations (Implemented) =====
   @override
   Future<void> shareProgress(
     String userId,
@@ -94,88 +131,15 @@ class CommunityRepositoryImpl implements CommunityRepository {
     return await _remoteDataSource.getProgressFeed(userId, limit: limit);
   }
 
-  // Helper method to map model to entity
-  CommunityUserEntity _mapModelToEntity(CommunityUserModel model) {
-    return CommunityUserEntity(
-      id: model.id,
-      name: model.name,
-      email: model.email,
-      avatar: model.avatar,
-      bio: model.bio,
-      location: model.location,
-      languages: model.languages,
-      role: _mapStringToUserRole(model.role),
-      reputation: model.reputation,
-      postsCount: model.postsCount,
-      likesReceived: model.likesReceived,
-      joinedAt: model.joinedAt,
-      lastSeenAt: model.lastSeenAt,
-      isOnline: model.isOnline,
-      preferences: model.preferences,
-    );
-  }
-
-  // Helper methods for comment mapping
-  CommentEntity _mapCommentModelToEntity(dynamic model) {
-    return CommentEntity(
-      id: model.id,
-      postId: model.postId,
-      content: model.content,
-      authorId: model.authorId,
-      authorName: model.authorName,
-      authorAvatar: model.authorAvatar,
-      parentCommentId: model.parentCommentId,
-      likesCount: model.likesCount ?? 0,
-      isEdited: model.isEdited ?? false,
-      editedAt: model.editedAt,
-      attachments: model.attachments ?? [],
-      metadata: model.metadata ?? {},
-      createdAt: model.createdAt,
-      updatedAt: model.updatedAt,
-    );
-  }
-
-  dynamic _mapCommentEntityToModel(CommentEntity entity) {
-    return {
-      'id': entity.id,
-      'postId': entity.postId,
-      'content': entity.content,
-      'authorId': entity.authorId,
-      'authorName': entity.authorName,
-      'authorAvatar': entity.authorAvatar,
-      'parentCommentId': entity.parentCommentId,
-      'likesCount': entity.likesCount,
-      'isEdited': entity.isEdited,
-      'editedAt': entity.editedAt,
-      'attachments': entity.attachments,
-      'metadata': entity.metadata,
-      'createdAt': entity.createdAt,
-      'updatedAt': entity.updatedAt,
-    };
-  }
-
-  UserRole _mapStringToUserRole(String role) {
-    switch (role) {
-      case 'moderator':
-        return UserRole.moderator;
-      case 'admin':
-        return UserRole.admin;
-      case 'superAdmin':
-        return UserRole.superAdmin;
-      default:
-        return UserRole.member;
-    }
-  }
-
-  // Placeholder implementations for forum operations (not implemented yet)
+  // ===== Forum operations (Not yet implemented) =====
   @override
   Future<List<ForumEntity>> getForums(String language) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
   Future<ForumEntity?> getForumById(String forumId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
@@ -184,12 +148,12 @@ class CommunityRepositoryImpl implements CommunityRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
   Future<TopicEntity?> getTopicById(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
@@ -198,22 +162,23 @@ class CommunityRepositoryImpl implements CommunityRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
   Future<PostEntity?> getPostById(String postId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
+  // ===== Forum content creation (Not yet implemented) =====
   @override
   Future<TopicEntity> createTopic(TopicEntity topic) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
   Future<PostEntity> createPost(PostEntity post) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
@@ -221,7 +186,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String topicId,
     Map<String, dynamic> updates,
   ) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
@@ -229,68 +194,68 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String postId,
     Map<String, dynamic> updates,
   ) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
   Future<void> deleteTopic(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
   @override
   Future<void> deletePost(String postId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
+    throw UnimplementedError('Forum operations not yet implemented');
   }
 
+  // ===== Forum interactions (Not yet implemented) =====
   @override
   Future<void> likePost(String postId, String userId) async {
-    try {
-      await _remoteDataSource.likePost(postId, userId);
-    } catch (e) {
-      // Handle error appropriately
-      throw Exception('Failed to like post: $e');
-    }
+    await _remoteDataSource.likePost(postId, userId);
   }
 
   @override
   Future<void> unlikePost(String postId, String userId) async {
-    try {
-      await _remoteDataSource.unlikePost(postId, userId);
-    } catch (e) {
-      // Handle error appropriately
-      throw Exception('Failed to unlike post: $e');
-    }
+    await _remoteDataSource.unlikePost(postId, userId);
   }
 
-  // Comment operations implementation
+  @override
+  Future<void> markTopicAsSolved(String topicId) async {
+    throw UnimplementedError('Forum operations not yet implemented');
+  }
+
+  @override
+  Future<void> pinTopic(String topicId) async {
+    throw UnimplementedError('Forum operations not yet implemented');
+  }
+
+  @override
+  Future<void> unpinTopic(String topicId) async {
+    throw UnimplementedError('Forum operations not yet implemented');
+  }
+
+  @override
+  Future<void> lockTopic(String topicId) async {
+    throw UnimplementedError('Forum operations not yet implemented');
+  }
+
+  @override
+  Future<void> unlockTopic(String topicId) async {
+    throw UnimplementedError('Forum operations not yet implemented');
+  }
+
+  // ===== Comment operations (Not yet implemented) =====
   @override
   Future<List<CommentEntity>> getComments(
     String postId, {
     int limit = 20,
     int offset = 0,
   }) async {
-    try {
-      final models = await _remoteDataSource.getComments(
-        postId,
-        limit: limit,
-        offset: offset,
-      );
-      return models.map(_mapCommentModelToEntity).toList();
-    } catch (e) {
-      throw Exception('Failed to get comments: $e');
-    }
+    throw UnimplementedError('Comment operations not yet implemented');
   }
 
   @override
   Future<CommentEntity> createComment(CommentEntity comment) async {
-    try {
-      final model = await _remoteDataSource.createComment(
-        _mapCommentEntityToModel(comment),
-      );
-      return _mapCommentModelToEntity(model);
-    } catch (e) {
-      throw Exception('Failed to create comment: $e');
-    }
+    throw UnimplementedError('Comment operations not yet implemented');
   }
 
   @override
@@ -298,76 +263,35 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String commentId,
     Map<String, dynamic> updates,
   ) async {
-    try {
-      final model = await _remoteDataSource.updateComment(commentId, updates);
-      return _mapCommentModelToEntity(model);
-    } catch (e) {
-      throw Exception('Failed to update comment: $e');
-    }
+    throw UnimplementedError('Comment operations not yet implemented');
   }
 
   @override
   Future<void> deleteComment(String commentId) async {
-    try {
-      await _remoteDataSource.deleteComment(commentId);
-    } catch (e) {
-      throw Exception('Failed to delete comment: $e');
-    }
+    throw UnimplementedError('Comment operations not yet implemented');
   }
 
   @override
   Future<void> likeComment(String commentId, String userId) async {
-    try {
-      await _remoteDataSource.likeComment(commentId, userId);
-    } catch (e) {
-      throw Exception('Failed to like comment: $e');
-    }
+    throw UnimplementedError('Comment operations not yet implemented');
   }
 
   @override
   Future<void> unlikeComment(String commentId, String userId) async {
-    try {
-      await _remoteDataSource.unlikeComment(commentId, userId);
-    } catch (e) {
-      throw Exception('Failed to unlike comment: $e');
-    }
+    throw UnimplementedError('Comment operations not yet implemented');
   }
 
-  @override
-  Future<void> markTopicAsSolved(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
-  }
-
-  @override
-  Future<void> pinTopic(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
-  }
-
-  @override
-  Future<void> unpinTopic(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
-  }
-
-  @override
-  Future<void> lockTopic(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
-  }
-
-  @override
-  Future<void> unlockTopic(String topicId) async {
-    throw UnimplementedError('Forum operations not implemented yet');
-  }
-
+  // ===== Chat operations (Not yet implemented) =====
   @override
   Future<List<ChatConversationEntity>> getConversations(String userId) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<ChatConversationEntity?> getConversationById(
     String conversationId,
   ) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
@@ -376,34 +300,35 @@ class CommunityRepositoryImpl implements CommunityRepository {
     int limit = 50,
     int offset = 0,
   }) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<ChatMessageEntity> sendMessage(ChatMessageEntity message) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<ChatConversationEntity> createConversation(
     ChatConversationEntity conversation,
   ) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<void> updateMessage(String messageId, String content) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<void> deleteMessage(String messageId) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
+  // ===== Chat interactions (Not yet implemented) =====
   @override
   Future<void> markMessageAsRead(String conversationId, String userId) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
@@ -411,12 +336,12 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String conversationId,
     String userId,
   ) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<void> archiveConversation(String conversationId, String userId) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
@@ -424,30 +349,31 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String conversationId,
     String userId,
   ) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<void> muteConversation(String conversationId, String userId) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
   @override
   Future<void> unmuteConversation(String conversationId, String userId) async {
-    throw UnimplementedError('Chat operations not implemented yet');
+    throw UnimplementedError('Chat operations not yet implemented');
   }
 
+  // ===== Search operations (Not yet implemented) =====
   @override
   Future<List<TopicEntity>> searchTopics(
     String query, {
     String? forumId,
   }) async {
-    throw UnimplementedError('Search operations not implemented yet');
+    throw UnimplementedError('Search operations not yet implemented');
   }
 
   @override
   Future<List<PostEntity>> searchPosts(String query, {String? topicId}) async {
-    throw UnimplementedError('Search operations not implemented yet');
+    throw UnimplementedError('Search operations not yet implemented');
   }
 
   @override
@@ -455,9 +381,10 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String query,
     String conversationId,
   ) async {
-    throw UnimplementedError('Search operations not implemented yet');
+    throw UnimplementedError('Search operations not yet implemented');
   }
 
+  // ===== Moderation operations (Not yet implemented) =====
   @override
   Future<void> reportContent(
     String contentId,
@@ -465,7 +392,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String reason,
     String reporterId,
   ) async {
-    throw UnimplementedError('Moderation operations not implemented yet');
+    throw UnimplementedError('Moderation operations not yet implemented');
   }
 
   @override
@@ -473,7 +400,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    throw UnimplementedError('Moderation operations not implemented yet');
+    throw UnimplementedError('Moderation operations not yet implemented');
   }
 
   @override
@@ -482,7 +409,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String action,
     String moderatorId,
   ) async {
-    throw UnimplementedError('Moderation operations not implemented yet');
+    throw UnimplementedError('Moderation operations not yet implemented');
   }
 
   @override
@@ -492,56 +419,61 @@ class CommunityRepositoryImpl implements CommunityRepository {
     DateTime until,
     String moderatorId,
   ) async {
-    throw UnimplementedError('Moderation operations not implemented yet');
+    throw UnimplementedError('Moderation operations not yet implemented');
   }
 
   @override
   Future<void> unbanUser(String userId, String moderatorId) async {
-    throw UnimplementedError('Moderation operations not implemented yet');
+    throw UnimplementedError('Moderation operations not yet implemented');
   }
 
+  // ===== Statistics (Not yet implemented) =====
   @override
   Future<Map<String, dynamic>> getCommunityStats() async {
-    throw UnimplementedError('Statistics not implemented yet');
+    throw UnimplementedError('Statistics operations not yet implemented');
   }
 
   @override
   Future<Map<String, dynamic>> getUserStats(String userId) async {
-    throw UnimplementedError('Statistics not implemented yet');
+    throw UnimplementedError('Statistics operations not yet implemented');
   }
 
   @override
   Future<List<Map<String, dynamic>>> getTopContributors({
     int limit = 10,
   }) async {
-    throw UnimplementedError('Statistics not implemented yet');
+    throw UnimplementedError('Statistics operations not yet implemented');
   }
 
+  // ===== Notifications (Not yet implemented) =====
   @override
   Future<List<Map<String, dynamic>>> getNotifications(
     String userId, {
     int limit = 20,
     int offset = 0,
   }) async {
-    throw UnimplementedError('Notifications not implemented yet');
+    throw UnimplementedError('Notification operations not yet implemented');
   }
 
   @override
   Future<void> markNotificationAsRead(String notificationId) async {
-    throw UnimplementedError('Notifications not implemented yet');
+    throw UnimplementedError('Notification operations not yet implemented');
   }
 
   @override
   Future<void> markAllNotificationsAsRead(String userId) async {
-    throw UnimplementedError('Notifications not implemented yet');
+    throw UnimplementedError('Notification operations not yet implemented');
   }
 
+  // ===== Language exchange (Not yet implemented) =====
   @override
   Future<List<CommunityUserEntity>> findLanguagePartners(
     String userId,
     String targetLanguage,
   ) async {
-    throw UnimplementedError('Language exchange not implemented yet');
+    throw UnimplementedError(
+      'Language exchange operations not yet implemented',
+    );
   }
 
   @override
@@ -550,39 +482,46 @@ class CommunityRepositoryImpl implements CommunityRepository {
     String partnerId,
     String language,
   ) async {
-    throw UnimplementedError('Language exchange not implemented yet');
+    throw UnimplementedError(
+      'Language exchange operations not yet implemented',
+    );
   }
 
   @override
   Future<void> acceptLanguagePartnership(String partnershipId) async {
-    throw UnimplementedError('Language exchange not implemented yet');
+    throw UnimplementedError(
+      'Language exchange operations not yet implemented',
+    );
   }
 
   @override
   Future<void> declineLanguagePartnership(String partnershipId) async {
-    throw UnimplementedError('Language exchange not implemented yet');
+    throw UnimplementedError(
+      'Language exchange operations not yet implemented',
+    );
   }
 
+  // ===== Events (Not yet implemented) =====
   @override
   Future<List<Map<String, dynamic>>> getCommunityEvents({
     int limit = 20,
     int offset = 0,
   }) async {
-    throw UnimplementedError('Events not implemented yet');
+    throw UnimplementedError('Event operations not yet implemented');
   }
 
   @override
   Future<Map<String, dynamic>?> getEventById(String eventId) async {
-    throw UnimplementedError('Events not implemented yet');
+    throw UnimplementedError('Event operations not yet implemented');
   }
 
   @override
   Future<void> joinEvent(String eventId, String userId) async {
-    throw UnimplementedError('Events not implemented yet');
+    throw UnimplementedError('Event operations not yet implemented');
   }
 
   @override
   Future<void> leaveEvent(String eventId, String userId) async {
-    throw UnimplementedError('Events not implemented yet');
+    throw UnimplementedError('Event operations not yet implemented');
   }
 }

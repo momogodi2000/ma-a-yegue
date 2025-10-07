@@ -321,7 +321,7 @@ class _LoginViewState extends State<LoginView> {
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
                       vertical: 12,
@@ -329,10 +329,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   child: const Text(
                     "Mot de passe oublié ?",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -343,7 +340,7 @@ class _LoginViewState extends State<LoginView> {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -351,10 +348,7 @@ class _LoginViewState extends State<LoginView> {
                   children: [
                     const Text(
                       "Pas encore de compte ?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(

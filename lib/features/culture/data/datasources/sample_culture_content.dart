@@ -33,7 +33,7 @@ La société Bamiléké est structurée autour du **Fo** (chef traditionnel), co
 
 - **Le Trône Royal (Nji)** - Siège sacré du pouvoir
 - **Le Chapeau à Plumes** - Signe distinctif de royauté
-- **Le Bâton de Commandement** - Symbole d\'autorité
+- **Le Bâton de Commandement** - Symbole d'autorité
 - **Les Masques Sacrés** - Connexion avec les ancêtres
 
 ## Rôles et Responsabilités
@@ -49,14 +49,14 @@ Le Fo assure:
 La succession suit des règles strictes:
 - Transmission généralement au fils aîné
 - Validation par les notables
-- Rituels d\'initiation secrets
+- Rituels d'initiation secrets
 - Bénédiction des ancêtres
 ''',
         language: 'Français',
         category: CultureCategory.traditions,
         imageUrl: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800',
-        tags: ['chefferie', 'bamiléké', 'tradition', 'organisation sociale', 'pouvoir'],
-        metadata: {
+        tags: const ['chefferie', 'bamiléké', 'tradition', 'organisation sociale', 'pouvoir'],
+        metadata: const {
           'region': 'Ouest Cameroun',
           'ethnic_group': 'Bamiléké',
           'complexity': 'intermediate',
@@ -76,7 +76,7 @@ La succession suit des règles strictes:
 
 ### 1. La Demande en Mariage (Nkap Nkong)
 
-La famille du prétendant envoie des émissaires pour manifester l\'intérêt:
+La famille du prétendant envoie des émissaires pour manifester l'intérêt:
 - Présentation officielle
 - Remise de cadeaux symboliques (vin de palme, noix de kola)
 - Dialogue avec la famille de la jeune fille
@@ -86,7 +86,7 @@ La famille du prétendant envoie des émissaires pour manifester l\'intérêt:
 La dot représente la reconnaissance et le respect:
 - **Éléments traditionnels**: chèvres, vin de palme, huile, sel
 - **Éléments modernes**: argent, tissus, bijoux
-- **Valeur symbolique** plus qu\'économique
+- **Valeur symbolique** plus qu'économique
 
 ### 3. La Cérémonie Principale
 
@@ -103,7 +103,7 @@ La dot représente la reconnaissance et le respect:
 ### Le Vin de Palme
 - Symbole de vie et de fertilité
 - Partage entre les deux familles
-- Sceau de l\'union
+- Sceau de l'union
 
 ### Les Tenues Traditionnelles
 - **Toghu** pour les hommes (robe brodée)
@@ -119,7 +119,7 @@ La dot représente la reconnaissance et le respect:
 ## Valeurs Transmises
 
 Le mariage traditionnel incarne:
-- L\'union de deux familles (pas seulement deux individus)
+- L'union de deux familles (pas seulement deux individus)
 - Le respect des aînés et des traditions
 - La bénédiction des ancêtres
 - La continuité de la lignée
@@ -127,8 +127,8 @@ Le mariage traditionnel incarne:
         language: 'Français',
         category: CultureCategory.ceremonies,
         imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
-        tags: ['mariage', 'cérémonie', 'dot', 'famille', 'tradition'],
-        metadata: {
+        tags: const ['mariage', 'cérémonie', 'dot', 'famille', 'tradition'],
+        metadata: const {
           'region': 'National',
           'complexity': 'beginner',
           'estimated_read_time': '6 minutes',
@@ -142,7 +142,7 @@ Le mariage traditionnel incarne:
         title: 'Le Conte de la Tortue et l\'Éléphant',
         description: 'Un conte traditionnel africain enseignant que l\'intelligence vaut mieux que la force brute.',
         content: '''
-# La Tortue et l\'Éléphant - Conte Traditionnel
+# La Tortue et l'Éléphant - Conte Traditionnel
 
 ## Le Récit
 
@@ -150,56 +150,56 @@ Il était une fois, dans la grande forêt camerounaise, une **tortue** très rus
 
 ### Le Défi
 
-Un jour, l\'éléphant se moqua de la tortue:
+Un jour, l'éléphant se moqua de la tortue:
 > "Tu es si petite et lente ! À quoi sers-tu dans cette forêt ?"
 
 La tortue répondit calmement:
-> "La taille n\'est pas tout, mon ami. L\'intelligence surpasse la force."
+> "La taille n'est pas tout, mon ami. L'intelligence surpasse la force."
 
-Vexé, l\'éléphant proposa un défi:
-> "Prouve-le ! Nous tirerons chacun un bout d\'une liane. Celui qui fait tomber l\'autre gagne."
+Vexé, l'éléphant proposa un défi:
+> "Prouve-le ! Nous tirerons chacun un bout d'une liane. Celui qui fait tomber l'autre gagne."
 
 ### La Ruse de Kulu
 
-La tortue accepta, mais secrètement, elle attacha l\'autre bout de la liane à un **hippopotame** endormi au bord de la rivière.
+La tortue accepta, mais secrètement, elle attacha l'autre bout de la liane à un **hippopotame** endormi au bord de la rivière.
 
-Quand l\'éléphant commença à tirer, il se retrouva en fait en compétition avec l\'hippopotame ! Chacun pensait affronter la petite tortue.
+Quand l'éléphant commença à tirer, il se retrouva en fait en compétition avec l'hippopotame ! Chacun pensait affronter la petite tortue.
 
-Après des heures d\'efforts épuisants, les deux géants abandonnèrent, impressionnés par la "force" de la tortue.
+Après des heures d'efforts épuisants, les deux géants abandonnèrent, impressionnés par la "force" de la tortue.
 
 ### La Leçon
 
 La tortue révéla sa ruse aux animaux de la forêt:
-> "Vous voyez, mes amis, j\'ai utilisé mon intelligence plutôt que ma force. C\'est la sagesse qui l\'emporte toujours."
+> "Vous voyez, mes amis, j'ai utilisé mon intelligence plutôt que ma force. C'est la sagesse qui l'emporte toujours."
 
 ## Morale du Conte
 
-**L\'intelligence et la ruse triomphent de la force brute.**
+**L'intelligence et la ruse triomphent de la force brute.**
 
 Ce conte enseigne aux enfants:
 - La valeur de la réflexion
-- L\'importance de l\'humilité
+- L'importance de l'humilité
 - Le danger de sous-estimer les autres
-- La force de l\'ingéniosité
+- La force de l'ingéniosité
 
 ## Utilisation Pédagogique
 
 **Valeurs transmises:**
 - Respect de tous, peu importe la taille
 - Résolution créative de problèmes
-- Prudence face à l\'arrogance
+- Prudence face à l'arrogance
 - Sagesse ancestrale
 
 **Discussion avec les enfants:**
 - Quelles autres solutions la tortue aurait-elle pu trouver ?
-- Pourquoi l\'éléphant était-il arrogant ?
-- Comment appliquer cette leçon à l\'école ?
+- Pourquoi l'éléphant était-il arrogant ?
+- Comment appliquer cette leçon à l'école ?
 ''',
         language: 'Français',
         category: CultureCategory.folklore,
         imageUrl: 'https://images.unsplash.com/photo-1601001815894-4bb6c81416d7?w=800',
-        tags: ['conte', 'folklore', 'sagesse', 'enfants', 'morale'],
-        metadata: {
+        tags: const ['conte', 'folklore', 'sagesse', 'enfants', 'morale'],
+        metadata: const {
           'age_group': 'Tous âges',
           'complexity': 'beginner',
           'estimated_read_time': '4 minutes',
@@ -216,7 +216,7 @@ Ce conte enseigne aux enfants:
         content: '''
 # Le Ndolé - Fierté Culinaire Camerounaise
 
-## Qu\'est-ce que le Ndolé ?
+## Qu'est-ce que le Ndolé ?
 
 Le **Ndolé** est considéré comme le **plat national du Cameroun**, particulièrement apprécié dans les régions du Littoral et du Centre.
 
@@ -224,7 +224,7 @@ Le **Ndolé** est considéré comme le **plat national du Cameroun**, particuli�
 
 **Base végétale:**
 - Feuilles de ndolé (vernonia amara) - épinards amers
-- Pâte d\'arachide (cacahuètes grillées et moulues)
+- Pâte d'arachide (cacahuètes grillées et moulues)
 
 **Protéines:**
 - Viande de bœuf
@@ -242,7 +242,7 @@ Le **Ndolé** est considéré comme le **plat national du Cameroun**, particuli�
 
 **Étape 1: Préparation des Feuilles**
 1. Laver les feuilles de ndolé plusieurs fois
-2. Faire bouillir 3 fois pour réduire l\'amertume
+2. Faire bouillir 3 fois pour réduire l'amertume
 3. Hacher finement
 
 **Étape 2: Cuisson des Protéines**
@@ -251,11 +251,11 @@ Le **Ndolé** est considéré comme le **plat national du Cameroun**, particuli�
 3. Laisser mijoter
 
 **Étape 3: Assemblage**
-1. Diluer la pâte d\'arachide avec le bouillon
+1. Diluer la pâte d'arachide avec le bouillon
 2. Ajouter les feuilles de ndolé
 3. Incorporer huile de palme
 4. Laisser mijoter 30 minutes
-5. Rectifier l\'assaisonnement
+5. Rectifier l'assaisonnement
 
 **Accompagnement:**
 - Miondo (bâtons de manioc)
@@ -277,7 +277,7 @@ Le ndolé est servi lors de:
 
 La recette se transmet de mère en fille:
 - Techniques de lavage des feuilles
-- Dosage de l\'amertume
+- Dosage de l'amertume
 - Équilibre des saveurs
 - Secrets familiaux
 
@@ -291,9 +291,9 @@ La recette se transmet de mère en fille:
 
 ## Variantes Régionales
 
-- **Douala:** Plus d\'huile de palme, très riche
+- **Douala:** Plus d'huile de palme, très riche
 - **Yaoundé:** Version plus légère
-- **Bafoussam:** Ajout d\'épices locales
+- **Bafoussam:** Ajout d'épices locales
 - **Version moderne:** Sans viande (végétarien)
 
 ## Proverbe Associé
@@ -305,8 +305,8 @@ La recette se transmet de mère en fille:
         language: 'Français',
         category: CultureCategory.cuisine,
         imageUrl: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800',
-        tags: ['cuisine', 'ndolé', 'recette', 'gastronomie', 'tradition'],
-        metadata: {
+        tags: const ['cuisine', 'ndolé', 'recette', 'gastronomie', 'tradition'],
+        metadata: const {
           'difficulty': 'intermediate',
           'preparation_time': '2 heures',
           'servings': '6-8 personnes',
@@ -339,7 +339,7 @@ Le **Makossa** est né dans les quartiers populaires de **Douala**, capitale éc
 - Jazz américain
 - Highlife ghanéen
 
-### L\'Âge d\'Or (1970-1980)
+### L'Âge d'Or (1970-1980)
 
 **Pionniers légendaires:**
 - **Manu Dibango** - "Soul Makossa" (1972) - Hit mondial
@@ -397,14 +397,14 @@ La danse se transmet:
 ## Impact Culturel
 
 ### Au Cameroun
-- Symbole d\'identité nationale
+- Symbole d'identité nationale
 - Unification des ethnies
 - Expression de la fierté camerounaise
 
 ### International
 - "Soul Makossa" samplé par Michael Jackson
 - Influence sur la musique mondiale
-- Représentation du Cameroun à l\'étranger
+- Représentation du Cameroun à l'étranger
 
 ## Artistes Contemporains
 
@@ -422,7 +422,7 @@ La danse se transmet:
 
 ## Citations Célèbres
 
-> "Le Makossa, c\'est le cœur du Cameroun qui bat"
+> "Le Makossa, c'est le cœur du Cameroun qui bat"
 > - Manu Dibango
 
 > "Quand le Makossa joue, les ethnies dansent ensemble"
@@ -437,14 +437,14 @@ La danse se transmet:
 
 **Apprendre:**
 - Cours de danse Makossa à Douala
-- Documentaires sur l\'histoire du genre
+- Documentaires sur l'histoire du genre
 - Ateliers de percussions
 ''',
         language: 'Français',
         category: CultureCategory.music,
         imageUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-        tags: ['makossa', 'musique', 'danse', 'Manu Dibango', 'culture'],
-        metadata: {
+        tags: const ['makossa', 'musique', 'danse', 'Manu Dibango', 'culture'],
+        metadata: const {
           'complexity': 'intermediate',
           'estimated_read_time': '7 minutes',
           'region': 'Littoral - Douala',
@@ -471,11 +471,11 @@ Dans les cultures camerounaises, les **masques ne sont pas de simples objets dé
 
 ## Types de Masques par Région
 
-### Région de l\'Ouest (Bamiléké)
+### Région de l'Ouest (Bamiléké)
 
 **1. Masque du Roi (Mask du Fo)**
 - Représente la puissance royale
-- Utilisé lors des cérémonies d\'investiture
+- Utilisé lors des cérémonies d'investiture
 - Décoré de perles, cauris et plumes
 - Accès réservé au chef et notables
 
@@ -497,7 +497,7 @@ Dans les cultures camerounaises, les **masques ne sont pas de simples objets dé
 
 **4. Masque Ngondo**
 - Utilisé lors du festival Ngondo
-- Lien avec l\'eau et les esprits aquatiques
+- Lien avec l'eau et les esprits aquatiques
 - Cérémonies de purification
 - Rituels de divination
 
@@ -507,8 +507,8 @@ Dans les cultures camerounaises, les **masques ne sont pas de simples objets dé
 - **Bois sacré** (fromager, ébène)
 - **Raphia** tissé
 - **Perles** et cauris
-- **Plumes** d\'oiseaux rares
-- **Peaux** d\'animaux
+- **Plumes** d'oiseaux rares
+- **Peaux** d'animaux
 - **Pigments naturels** (argile, charbon)
 
 ### Processus de Création
@@ -522,13 +522,13 @@ Dans les cultures camerounaises, les **masques ne sont pas de simples objets dé
 
 ## Cérémonies et Utilisation
 
-### Contextes d\'Apparition
+### Contextes d'Apparition
 
 **Occasions sacrées:**
 - Funérailles de personnalités
 - Intronisation de chefs
 - Fêtes des moissons
-- Rites d\'initiation
+- Rites d'initiation
 - Cérémonies de purification
 
 ### Règles Strictes
@@ -536,7 +536,7 @@ Dans les cultures camerounaises, les **masques ne sont pas de simples objets dé
 **Interdictions:**
 - Les femmes ne peuvent souvent pas voir certains masques
 - Toucher un masque sans initiation est tabou
-- Nommer l\'esprit du masque à haute voix
+- Nommer l'esprit du masque à haute voix
 - Photographier sans permission
 
 ## Symbolisme des Formes
@@ -593,20 +593,20 @@ Dans les cultures camerounaises, les **masques ne sont pas de simples objets dé
 
 Les masques camerounais ont inspiré:
 - Pablo Picasso et le cubisme
-- Mouvement d\'art africain
+- Mouvement d'art africain
 - Designers contemporains
 - Collectionneurs internationaux
 
 ### Artistes Modernes
 
 Sculpteurs contemporains qui perpétuent:
-- Intégration dans l\'art moderne
+- Intégration dans l'art moderne
 - Respect des traditions sacrées
 - Fusion tradition-modernité
 
 ## Proverbe Traditionnel
 
-> "Le masque ne danse jamais seul - c\'est l\'esprit qui le guide"
+> "Le masque ne danse jamais seul - c'est l'esprit qui le guide"
 > 
 > Rappel que les masques sont habités par des forces spirituelles
 
@@ -627,8 +627,8 @@ Sculpteurs contemporains qui perpétuent:
         language: 'Français',
         category: CultureCategory.art,
         imageUrl: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800',
-        tags: ['masques', 'art', 'spiritualité', 'tradition', 'ancêtres'],
-        metadata: {
+        tags: const ['masques', 'art', 'spiritualité', 'tradition', 'ancêtres'],
+        metadata: const {
           'complexity': 'advanced',
           'estimated_read_time': '10 minutes',
           'sacred_content': true,
@@ -649,7 +649,7 @@ Sculpteurs contemporains qui perpétuent:
         title: 'L\'Indépendance du Cameroun - 1er Janvier 1960',
         description: 'Retour sur la lutte pour l\'indépendance et la naissance de la République du Cameroun.',
         content: '''
-# L\'Indépendance du Cameroun
+# L'Indépendance du Cameroun
 
 ## Contexte Historique
 
@@ -662,7 +662,7 @@ Le Cameroun fut sous domination:
 ### Mouvements Nationalistes
 
 **Figures clés:**
-- **Um Nyobé Ruben** - Leader de l\'UPC (Union des Populations du Cameroun)
+- **Um Nyobé Ruben** - Leader de l'UPC (Union des Populations du Cameroun)
 - **Ahmadou Ahidjo** - Premier Président
 - **Félix-Roland Moumié** - Militant indépendantiste
 
@@ -672,14 +672,14 @@ Le Cameroun fut sous domination:
 - Cérémonie officielle à Yaoundé
 - Descente du drapeau français
 - Levée du drapeau camerounais (vert-rouge-jaune)
-- Discours d\'Ahmadou Ahidjo
+- Discours d'Ahmadou Ahidjo
 - Liesse populaire
 
 ## Héritage
 
-L\'indépendance apporte:
+L'indépendance apporte:
 - Souveraineté nationale
-- Siège à l\'ONU
+- Siège à l'ONU
 - Développement économique
 - Affirmation culturelle
 
@@ -695,10 +695,10 @@ Chaque 1er janvier, le Cameroun célèbre:
         period: 'Indépendance',
         eventDate: DateTime(1960, 1, 1),
         location: 'Yaoundé, Cameroun',
-        figures: ['Ahmadou Ahidjo', 'Um Nyobé Ruben', 'Félix-Roland Moumié'],
+        figures: const ['Ahmadou Ahidjo', 'Um Nyobé Ruben', 'Félix-Roland Moumié'],
         imageUrl: 'https://images.unsplash.com/photo-1555992336-fb0d29498b13?w=800',
-        sources: ['Archives nationales', 'Bibliothèque nationale du Cameroun'],
-        metadata: {
+        sources: const ['Archives nationales', 'Bibliothèque nationale du Cameroun'],
+        metadata: const {
           'importance': 'majeure',
           'complexity': 'intermediate',
           'estimated_read_time': '5 minutes',
@@ -719,7 +719,7 @@ Le royaume Bamoun fut fondé vers **1394** par **Nchare Yen**, figure légendair
 
 ### Succession des Rois (Sultans)
 
-Liste des 19 sultans jusqu\'à aujourd\'hui:
+Liste des 19 sultans jusqu'à aujourd'hui:
 1. Nchare Yen (Fondateur)
 2. Ngouonmbe
 ...
@@ -730,14 +730,14 @@ Liste des 19 sultans jusqu\'à aujourd\'hui:
 **Règne:** 1889-1933
 
 **Réalisations majeures:**
-- Création de l\'**alphabet Bamoun** (A-ka-u-ku)
+- Création de l'**alphabet Bamoun** (A-ka-u-ku)
 - Construction du palais royal de Foumban
 - Modernisation du royaume
 - Cartographie et architecture
 
-### L\'Alphabet A-ka-u-ku
+### L'Alphabet A-ka-u-ku
 
-Un système d\'écriture unique:
+Un système d'écriture unique:
 - 80+ caractères originaux
 - Inspiré des rêves du Sultan
 - Utilisé pour archives royales
@@ -749,7 +749,7 @@ Un système d\'écriture unique:
 
 - Architecture unique mêlant styles
 - Musée des Arts et Traditions Bamoun
-- Collections d\'objets royaux
+- Collections d'objets royaux
 - Site touristique majeur
 
 ### Artisanat Renommé
@@ -772,10 +772,10 @@ Foumban reste:
         period: 'Précolonial et Colonial',
         eventDate: DateTime(1394),
         location: 'Foumban, Région de l\'Ouest',
-        figures: ['Nchare Yen', 'Sultan Njoya', 'Ibrahim Mbombo Njoya'],
+        figures: const ['Nchare Yen', 'Sultan Njoya', 'Ibrahim Mbombo Njoya'],
         imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-        sources: ['Palais Royal de Foumban', 'Archives Bamoun'],
-        metadata: {
+        sources: const ['Palais Royal de Foumban', 'Archives Bamoun'],
+        metadata: const {
           'dynasty_duration': '600+ ans',
           'complexity': 'advanced',
           'estimated_read_time': '6 minutes',
@@ -824,17 +824,17 @@ Foumban reste:
         difficulty: 'beginner',
         audioUrl: null, // Can be populated with real audio files
         imageUrl: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800',
-        examples: [
+        examples: const [
           'Mbèhguà ! Comment vas-tu ce matin ?',
           'Mètèghe, ghà mbè ? - Bonjour, comment vas-tu ?',
           'Ghè mbè pù ! - Je vais très bien !',
         ],
-        translations: {
+        translations: const {
           'fr': 'Salutations de base',
           'en': 'Basic Greetings',
         },
-        tags: ['salutations', 'débutant', 'essentiel', 'quotidien'],
-        metadata: {
+        tags: const ['salutations', 'débutant', 'essentiel', 'quotidien'],
+        metadata: const {
           'lesson_number': 1,
           'complexity': 'beginner',
           'practice_exercises': 5,
@@ -878,17 +878,17 @@ Foumban reste:
 ''',
         category: YembaCategory.numbers,
         difficulty: 'beginner',
-        examples: [
+        examples: const [
           'Compter jusqu\'à 10',
           'Dire son âge: Mè ntàhù mèbù - J\'ai 5 ans',
           'Compter des objets quotidiens',
         ],
-        translations: {
+        translations: const {
           'fr': 'Nombres 1-20',
           'en': 'Numbers 1-20',
         },
-        tags: ['nombres', 'compter', 'mathématiques', 'débutant'],
-        metadata: {
+        tags: const ['nombres', 'compter', 'mathématiques', 'débutant'],
+        metadata: const {
           'lesson_number': 2,
           'complexity': 'beginner',
           'quiz_available': true,
@@ -908,27 +908,27 @@ Foumban reste:
 
 **Traduction littérale:** La sagesse marche avec les cheveux blancs
 
-**Sens:** L\'expérience et la sagesse viennent avec l\'âge
+**Sens:** L'expérience et la sagesse viennent avec l'âge
 
-## Contexte d\'Utilisation
+## Contexte d'Utilisation
 
 Ce proverbe est utilisé pour:
 - Montrer respect aux aînés
-- Enseigner l\'humilité aux jeunes
-- Valoriser l\'expérience de vie
-- Justifier l\'écoute des conseils anciens
+- Enseigner l'humilité aux jeunes
+- Valoriser l'expérience de vie
+- Justifier l'écoute des conseils anciens
 
 ## Leçon Culturelle
 
 Dans la culture Bamiléké/Yemba:
 - Les anciens sont très respectés
 - Leurs conseils sont précieux
-- L\'âge apporte la sagesse
+- L'âge apporte la sagesse
 - Les jeunes doivent écouter
 
-## Exemples d\'Application
+## Exemples d'Application
 
-**À l\'école:**
+**À l'école:**
 "Écoute ton professeur, ntùè tù kàh nè mbèlè"
 
 **En famille:**
@@ -939,17 +939,17 @@ Les chefs et notables sont consultés car ils portent la sagesse
 ''',
         category: YembaCategory.proverbs,
         difficulty: 'intermediate',
-        examples: [
+        examples: const [
           'Contexte familial',
           'Conseils communautaires',
           'Transmission intergénérationnelle',
         ],
-        translations: {
+        translations: const {
           'fr': 'La sagesse vient avec l\'âge',
           'en': 'Wisdom comes with age',
         },
-        tags: ['proverbe', 'sagesse', 'respect', 'ancêtres', 'culture'],
-        metadata: {
+        tags: const ['proverbe', 'sagesse', 'respect', 'ancêtres', 'culture'],
+        metadata: const {
           'cultural_value': 'high',
           'complexity': 'intermediate',
           'discussion_topic': true,

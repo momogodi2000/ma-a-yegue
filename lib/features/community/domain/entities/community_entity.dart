@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../core/models/user_role.dart';
 
 /// Forum entity
 class ForumEntity extends Equatable {
@@ -551,7 +552,8 @@ class CommunityUserEntity extends Equatable {
   final String? bio;
   final String? location;
   final List<String> languages;
-  final UserRole role;
+  final UserRole role; // Main application role: visitor, learner, teacher, admin
+  final CommunityRole communityRole; // Community-specific role for moderation
   final int reputation;
   final int postsCount;
   final int likesReceived;
@@ -569,6 +571,7 @@ class CommunityUserEntity extends Equatable {
     this.location,
     required this.languages,
     required this.role,
+    this.communityRole = CommunityRole.member, // Default to member
     required this.reputation,
     required this.postsCount,
     required this.likesReceived,
@@ -588,6 +591,7 @@ class CommunityUserEntity extends Equatable {
     location,
     languages,
     role,
+    communityRole,
     reputation,
     postsCount,
     likesReceived,
@@ -606,6 +610,7 @@ class CommunityUserEntity extends Equatable {
     String? location,
     List<String>? languages,
     UserRole? role,
+    CommunityRole? communityRole,
     int? reputation,
     int? postsCount,
     int? likesReceived,
@@ -623,6 +628,7 @@ class CommunityUserEntity extends Equatable {
       location: location ?? this.location,
       languages: languages ?? this.languages,
       role: role ?? this.role,
+      communityRole: communityRole ?? this.communityRole,
       reputation: reputation ?? this.reputation,
       postsCount: postsCount ?? this.postsCount,
       likesReceived: likesReceived ?? this.likesReceived,
@@ -639,7 +645,10 @@ enum ChatType { direct, group, channel }
 
 enum MessageType { text, image, audio, video, file, location, sticker }
 
-enum UserRole { member, moderator, admin, superAdmin }
+/// Community-specific role for forum/chat moderation
+/// Note: This is separate from the main UserRole (visitor, learner, teacher, admin)
+/// and represents roles within the community feature only
+enum CommunityRole { member, moderator, admin }
 
 /// Forum categories
 enum ForumCategory {

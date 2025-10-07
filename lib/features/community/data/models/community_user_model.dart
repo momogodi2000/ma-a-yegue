@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 /// Community user model for data serialization
+/// Note: This model stores the community-specific role (member, moderator, admin)
+/// The main app role (visitor, learner, teacher, admin) should be fetched from the user's auth profile
 class CommunityUserModel extends Equatable {
   final String id;
   final String name;
@@ -9,7 +11,7 @@ class CommunityUserModel extends Equatable {
   final String? bio;
   final String? location;
   final List<String> languages;
-  final String role;
+  final String role; // Community role: 'member', 'moderator', or 'admin'
   final int reputation;
   final int postsCount;
   final int likesReceived;
@@ -82,20 +84,20 @@ class CommunityUserModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        email,
-        avatar,
-        bio,
-        location,
-        languages,
-        role,
-        reputation,
-        postsCount,
-        likesReceived,
-        joinedAt,
-        lastSeenAt,
-        isOnline,
-        preferences,
-      ];
+    id,
+    name,
+    email,
+    avatar,
+    bio,
+    location,
+    languages,
+    role,
+    reputation,
+    postsCount,
+    likesReceived,
+    joinedAt,
+    lastSeenAt,
+    isOnline,
+    preferences,
+  ];
 }

@@ -54,121 +54,112 @@ enum EducationLevel {
   final int order;
 }
 
-/// Enhanced user roles with school hierarchy
-enum UserRole {
-  // Public
-  visitor,
+/// User profile extension for educational context
+/// Works with existing 4 roles: visitor, learner, teacher, admin
+class StudentProfile {
+  final String userId;
+  final GradeLevel gradeLevel;
+  final String? schoolId;
+  final String? classroomId;
+  final String academicYear;
 
-  // Students
-  student,
+  const StudentProfile({
+    required this.userId,
+    required this.gradeLevel,
+    this.schoolId,
+    this.classroomId,
+    required this.academicYear,
+  });
 
-  // Parents/Guardians
-  parent,
+  Map<String, dynamic> toJson() => {
+    'userId': userId,
+    'gradeLevel': gradeLevel.code,
+    'schoolId': schoolId,
+    'classroomId': classroomId,
+    'academicYear': academicYear,
+  };
 
-  // Teaching Staff
-  teacher,
-  substitute,
+  factory StudentProfile.fromJson(Map<String, dynamic> json) => StudentProfile(
+    userId: json['userId'] as String,
+    gradeLevel: GradeLevel.values.firstWhere(
+      (e) => e.code == json['gradeLevel'],
+      orElse: () => GradeLevel.cp,
+    ),
+    schoolId: json['schoolId'] as String?,
+    classroomId: json['classroomId'] as String?,
+    academicYear: json['academicYear'] as String,
+  );
+}
 
-  // Administrative Staff
-  schoolDirector,
-  viceDirector,
-  educationalCounselor,
+/// Teacher profile extension
+/// Role: teacher (from existing UserRole)
+class TeacherProfile {
+  final String userId;
+  final String? schoolId;
+  final List<String> classroomIds;
+  final List<String> subjects;
 
-  // Regional/National
-  inspector,
-  minEducOfficial,
+  const TeacherProfile({
+    required this.userId,
+    this.schoolId,
+    this.classroomIds = const [],
+    this.subjects = const [],
+  });
 
-  // System
-  admin,
-  superAdmin;
+  Map<String, dynamic> toJson() => {
+    'userId': userId,
+    'schoolId': schoolId,
+    'classroomIds': classroomIds,
+    'subjects': subjects,
+  };
 
-  String get displayName {
-    switch (this) {
-      case UserRole.visitor:
-        return 'Visiteur';
-      case UserRole.student:
-        return 'Élève';
-      case UserRole.parent:
-        return 'Parent/Tuteur';
-      case UserRole.teacher:
-        return 'Enseignant';
-      case UserRole.substitute:
-        return 'Remplaçant';
-      case UserRole.schoolDirector:
-        return 'Directeur d\'Établissement';
-      case UserRole.viceDirector:
-        return 'Directeur Adjoint';
-      case UserRole.educationalCounselor:
-        return 'Conseiller Pédagogique';
-      case UserRole.inspector:
-        return 'Inspecteur';
-      case UserRole.minEducOfficial:
-        return 'Officiel MINEDUC';
-      case UserRole.admin:
-        return 'Administrateur';
-      case UserRole.superAdmin:
-        return 'Super Administrateur';
-    }
-  }
+  factory TeacherProfile.fromJson(Map<String, dynamic> json) => TeacherProfile(
+    userId: json['userId'] as String,
+    schoolId: json['schoolId'] as String?,
+    classroomIds:
+        (json['classroomIds'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        const [],
+    subjects:
+        (json['subjects'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        const [],
+  );
+}
 
-  String get description {
-    switch (this) {
-      case UserRole.visitor:
-        return 'Accès limité aux contenus gratuits';
-      case UserRole.student:
-        return 'Élève inscrit dans un établissement';
-      case UserRole.parent:
-        return 'Tuteur légal d\'un ou plusieurs élèves';
-      case UserRole.teacher:
-        return 'Enseignant affecté à des classes';
-      case UserRole.substitute:
-        return 'Enseignant remplaçant temporaire';
-      case UserRole.schoolDirector:
-        return 'Direction d\'un établissement scolaire';
-      case UserRole.viceDirector:
-        return 'Assistance à la direction';
-      case UserRole.educationalCounselor:
-        return 'Conseil et orientation pédagogique';
-      case UserRole.inspector:
-        return 'Inspection et supervision régionale';
-      case UserRole.minEducOfficial:
-        return 'Représentant du Ministère de l\'Éducation';
-      case UserRole.admin:
-        return 'Administration complète de la plateforme';
-      case UserRole.superAdmin:
-        return 'Contrôle total du système';
-    }
-  }
+/// Parent info as metadata on learner profile
+class ParentInfo {
+  final String parentName;
+  final String parentEmail;
+  final String parentPhone;
+  final String relationType; // mother, father, guardian
 
-  int get hierarchyLevel {
-    switch (this) {
-      case UserRole.visitor:
-        return 0;
-      case UserRole.student:
-      case UserRole.parent:
-        return 1;
-      case UserRole.teacher:
-      case UserRole.substitute:
-        return 2;
-      case UserRole.educationalCounselor:
-        return 3;
-      case UserRole.viceDirector:
-        return 4;
-      case UserRole.schoolDirector:
-        return 5;
-      case UserRole.inspector:
-        return 6;
-      case UserRole.minEducOfficial:
-        return 7;
-      case UserRole.admin:
-        return 8;
-      case UserRole.superAdmin:
-        return 9;
-    }
-  }
+  const ParentInfo({
+    required this.parentName,
+    required this.parentEmail,
+    required this.parentPhone,
+    required this.relationType,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'parentName': parentName,
+    'parentEmail': parentEmail,
+    'parentPhone': parentPhone,
+    'relationType': relationType,
+  };
+
+  factory ParentInfo.fromJson(Map<String, dynamic> json) => ParentInfo(
+    parentName: json['parentName'] as String,
+    parentEmail: json['parentEmail'] as String,
+    parentPhone: json['parentPhone'] as String,
+    relationType: json['relationType'] as String,
+  );
 }
 
 /// School/Establishment entity
+/// Managed by admin role
 class School {
   final String id;
   final String name;
@@ -180,8 +171,8 @@ class School {
   final String phoneNumber;
   final String? email;
   final String? website;
-  final String directorId; // School Director user ID
-  final List<String> viceDirectorIds;
+  final String directorId; // Admin user ID managing this school
+  final List<String> teacherIds; // List of teacher IDs in this school
   final DateTime foundedDate;
   final int maxCapacity;
   final int currentEnrollment;
@@ -200,7 +191,7 @@ class School {
     this.email,
     this.website,
     required this.directorId,
-    this.viceDirectorIds = const [],
+    this.teacherIds = const [],
     required this.foundedDate,
     required this.maxCapacity,
     this.currentEnrollment = 0,
@@ -220,7 +211,7 @@ class School {
     'email': email,
     'website': website,
     'directorId': directorId,
-    'viceDirectorIds': viceDirectorIds,
+    'teacherIds': teacherIds,
     'foundedDate': foundedDate.toIso8601String(),
     'maxCapacity': maxCapacity,
     'currentEnrollment': currentEnrollment,
@@ -240,8 +231,8 @@ class School {
     email: json['email'] as String?,
     website: json['website'] as String?,
     directorId: json['directorId'] as String,
-    viceDirectorIds:
-        (json['viceDirectorIds'] as List<dynamic>?)
+    teacherIds:
+        (json['teacherIds'] as List<dynamic>?)
             ?.map((e) => e as String)
             .toList() ??
         const [],

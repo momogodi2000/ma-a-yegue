@@ -32,25 +32,17 @@ class _LandingViewState extends State<LandingView>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutBack,
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutBack,
+          ),
+        );
 
     _animationController.forward();
   }
@@ -345,7 +337,8 @@ class _LandingViewState extends State<LandingView>
                                     width: 8,
                                     height: 8,
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 4),
+                                      horizontal: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: _currentPage == index
@@ -382,10 +375,7 @@ class _LandingViewState extends State<LandingView>
                       const Text(
                         'La première plateforme dédiée à la préservation et l\'apprentissage des langues camerounaises',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 32),
 
@@ -395,11 +385,11 @@ class _LandingViewState extends State<LandingView>
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1.2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
                         itemCount: _benefits.length,
                         itemBuilder: (context, index) =>
                             _buildBenefitCard(_benefits[index]),
@@ -439,18 +429,17 @@ class _LandingViewState extends State<LandingView>
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.purple.shade700, Colors.deepPurple.shade900],
+                      colors: [
+                        Colors.purple.shade700,
+                        Colors.deepPurple.shade900,
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                   ),
                   child: Column(
                     children: [
-                      const Icon(
-                        Icons.museum,
-                        size: 64,
-                        color: Colors.white,
-                      ),
+                      const Icon(Icons.museum, size: 64, color: Colors.white),
                       const SizedBox(height: 16),
                       const Text(
                         'Découvrez le Module Culture',
@@ -472,16 +461,22 @@ class _LandingViewState extends State<LandingView>
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // Culture Features
                       Wrap(
                         alignment: WrapAlignment.center,
                         spacing: 16,
                         runSpacing: 16,
                         children: [
-                          _buildCultureFeature(Icons.history_edu, 'Histoire Riche'),
+                          _buildCultureFeature(
+                            Icons.history_edu,
+                            'Histoire Riche',
+                          ),
                           _buildCultureFeature(Icons.celebration, 'Traditions'),
-                          _buildCultureFeature(Icons.music_note, 'Musique & Art'),
+                          _buildCultureFeature(
+                            Icons.music_note,
+                            'Musique & Art',
+                          ),
                           _buildCultureFeature(Icons.restaurant, 'Gastronomie'),
                         ],
                       ),
@@ -545,11 +540,11 @@ class _LandingViewState extends State<LandingView>
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1.1,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.1,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
                         itemCount: _appHighlights.length,
                         itemBuilder: (context, index) =>
                             _buildHighlightCard(_appHighlights[index]),
@@ -564,12 +559,12 @@ class _LandingViewState extends State<LandingView>
                   color: Colors.green.shade50,
                   child: Column(
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.new_releases, color: Colors.green),
-                          const SizedBox(width: 8),
-                          const Text(
+                          Icon(Icons.new_releases, color: Colors.green),
+                          SizedBox(width: 8),
+                          Text(
                             'Nouveautés & Mises à Jour',
                             style: TextStyle(
                               fontSize: 24,
@@ -646,19 +641,21 @@ class _LandingViewState extends State<LandingView>
                 // CTA Section
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
+                  decoration: const BoxDecoration(color: Colors.white),
                   child: Column(
                     children: [
                       // Features preview
                       Row(
                         children: [
                           _buildFeatureItem(
-                              Icons.school, 'Leçons\nInteractives'),
+                            Icons.school,
+                            'Leçons\nInteractives',
+                          ),
                           _buildFeatureItem(Icons.mic, 'Prononciation\nGuide'),
                           _buildFeatureItem(
-                              Icons.psychology, 'IA\nPersonnalisée'),
+                            Icons.psychology,
+                            'IA\nPersonnalisée',
+                          ),
                           _buildFeatureItem(Icons.groups, 'Communauté\nActive'),
                         ],
                       ),
@@ -836,10 +833,7 @@ class _LandingViewState extends State<LandingView>
           Text(
             '${language['group']} • ${language['region']}',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 16),
           Container(
@@ -871,10 +865,7 @@ class _LandingViewState extends State<LandingView>
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
       ),
@@ -902,11 +893,7 @@ class _LandingViewState extends State<LandingView>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            benefit['icon'] as IconData,
-            color: Colors.green,
-            size: 32,
-          ),
+          Icon(benefit['icon'] as IconData, color: Colors.green, size: 32),
           const SizedBox(height: 12),
           Text(
             benefit['title'] as String,
@@ -948,10 +935,7 @@ class _LandingViewState extends State<LandingView>
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
       ),
@@ -996,10 +980,7 @@ class _LandingViewState extends State<LandingView>
                     ),
                     Text(
                       '${testimonial['location']} • ${testimonial['language']}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -1007,11 +988,8 @@ class _LandingViewState extends State<LandingView>
               Row(
                 children: List.generate(
                   testimonial['rating'] as int,
-                  (index) => const Icon(
-                    Icons.star,
-                    color: Colors.orange,
-                    size: 16,
-                  ),
+                  (index) =>
+                      const Icon(Icons.star, color: Colors.orange, size: 16),
                 ),
               ),
             ],
@@ -1039,12 +1017,12 @@ class _LandingViewState extends State<LandingView>
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (highlight['color'] as Color).withOpacity(0.3),
+          color: (highlight['color'] as Color).withValues(alpha: 0.3),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -1090,10 +1068,13 @@ class _LandingViewState extends State<LandingView>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green.withOpacity(0.3), width: 2),
+        border: Border.all(
+          color: Colors.green.withValues(alpha: 0.3),
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -1131,10 +1112,7 @@ class _LandingViewState extends State<LandingView>
                     ),
                     Text(
                       'Version ${update['version']} • ${update['date']}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -1171,9 +1149,12 @@ class _LandingViewState extends State<LandingView>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -34,7 +34,9 @@ class _RegisterViewState extends State<RegisterView> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final displayName = '${firstNameController.text.trim()} ${lastNameController.text.trim()}'.trim();
+    final displayName =
+        '${firstNameController.text.trim()} ${lastNameController.text.trim()}'
+            .trim();
     final authViewModel = context.read<AuthViewModel>();
     final success = await authViewModel.register(
       emailController.text.trim(),
@@ -90,7 +92,8 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                 ),
 
-              if (authViewModel.errorMessage != null) const SizedBox(height: 15),
+              if (authViewModel.errorMessage != null)
+                const SizedBox(height: 15),
 
               // First name field
               TextFormField(
@@ -138,7 +141,8 @@ class _RegisterViewState extends State<RegisterView> {
                   fillColor: AppColors.surface,
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return null; // Age is optional
+                  if (value == null || value.isEmpty)
+                    return null; // Age is optional
                   final age = int.tryParse(value);
                   if (age == null || age < 5 || age > 120) {
                     return "Entrez un âge valide (5-120)";
@@ -187,7 +191,10 @@ class _RegisterViewState extends State<RegisterView> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.onPrimary,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 50,
+                    vertical: 15,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -200,7 +207,9 @@ class _RegisterViewState extends State<RegisterView> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : const Text(
@@ -219,7 +228,7 @@ class _RegisterViewState extends State<RegisterView> {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -227,10 +236,7 @@ class _RegisterViewState extends State<RegisterView> {
                   children: [
                     const Text(
                       "Déjà inscrit ?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
