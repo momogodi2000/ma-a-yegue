@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:maa_yegue/core/database/database_helper.dart';
+import 'package:maa_yegue/core/database/unified_database_service.dart';
 import 'package:maa_yegue/features/lessons/domain/entities/course.dart';
 import 'package:maa_yegue/features/lessons/domain/entities/lesson.dart';
 import 'package:maa_yegue/features/lessons/domain/entities/lesson_content.dart';
 
 /// Service for managing courses, lessons, and content
 class CourseService {
+  final _db = UnifiedDatabaseService.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// Initialize database tables for courses
@@ -98,7 +99,7 @@ class CourseService {
 
   /// Create a new course
   Future<String> createCourse(Course course) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now();
     final courseId = course.id.isEmpty ? _generateId() : course.id;
 
@@ -131,7 +132,7 @@ class CourseService {
 
   /// Get all courses for a teacher
   Future<List<Course>> getCoursesByTeacher(String teacherId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final results = await db.query(
       'courses',
@@ -151,7 +152,7 @@ class CourseService {
 
   /// Get course by ID
   Future<Course?> getCourseById(String courseId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final results = await db.query(
       'courses',
@@ -167,7 +168,7 @@ class CourseService {
 
   /// Update course
   Future<void> updateCourse(Course course) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now();
 
     final courseData = {
@@ -198,7 +199,7 @@ class CourseService {
 
   /// Delete course (soft delete)
   Future<void> deleteCourse(String courseId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now();
 
     await db.update(
@@ -221,7 +222,7 @@ class CourseService {
 
   /// Create a new lesson
   Future<String> createLesson(Lesson lesson) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now();
     final lessonId = lesson.id.isEmpty ? _generateId() : lesson.id;
 
@@ -261,7 +262,7 @@ class CourseService {
 
   /// Get lessons for a course
   Future<List<Lesson>> getLessonsByCourse(String courseId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final results = await db.query(
       'lessons',
@@ -281,7 +282,7 @@ class CourseService {
 
   /// Update lesson
   Future<void> updateLesson(Lesson lesson) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now();
 
     final lessonData = {
@@ -316,7 +317,7 @@ class CourseService {
 
   /// Create lesson content
   Future<String> createLessonContent(LessonContent content) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now();
     final contentId = content.id.isEmpty ? _generateId() : content.id;
 
@@ -349,7 +350,7 @@ class CourseService {
 
   /// Get contents for a lesson
   Future<List<LessonContent>> getLessonContents(String lessonId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final results = await db.query(
       'lesson_contents',
@@ -365,7 +366,7 @@ class CourseService {
 
   /// Sync pending changes to Firebase
   Future<void> syncToFirebase() async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     // Sync courses
     final pendingCourses = await db.query('courses', where: 'needs_sync = 1');
@@ -457,7 +458,7 @@ class CourseService {
   }
 
   Future<void> _updateCourseLessonCount(String courseId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final count =
         Sqflite.firstIntValue(
@@ -480,7 +481,7 @@ class CourseService {
     String lessonId,
     List<LessonContent> contents,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     // Delete existing contents
     await db.update(

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/routes.dart';
 import '../../../../core/utils/validators.dart';
-import '../../../../core/services/two_factor_auth_service.dart';
+import '../../../../core/services/two_factor_auth_service_hybrid.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../../../../shared/themes/colors.dart';
 

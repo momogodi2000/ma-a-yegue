@@ -8,12 +8,15 @@ class SubscriptionModel extends SubscriptionEntity {
     required super.userId,
     required super.planId,
     required super.planName,
+    super.planType,
     required super.price,
     required super.currency,
     required super.interval,
     required super.status,
     required super.startDate,
     required super.endDate,
+    super.paymentId,
+    super.createdAt,
     super.cancelledAt,
     super.autoRenew,
   });
@@ -26,13 +29,17 @@ class SubscriptionModel extends SubscriptionEntity {
       userId: data['userId'] ?? '',
       planId: data['planId'] ?? '',
       planName: data['planName'] ?? '',
+      planType: data['planType'] ?? data['planId'] ?? '',
       price: (data['price'] ?? 0.0).toDouble(),
       currency: data['currency'] ?? 'XAF',
       interval: data['interval'] ?? 'monthly',
       status: data['status'] ?? 'pending',
       startDate: (data['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      endDate: (data['endDate'] as Timestamp?)?.toDate() ??
+      endDate:
+          (data['endDate'] as Timestamp?)?.toDate() ??
           DateTime.now().add(const Duration(days: 30)),
+      paymentId: data['paymentId'],
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
       cancelledAt: (data['cancelledAt'] as Timestamp?)?.toDate(),
       autoRenew: data['autoRenew'] ?? true,
     );
@@ -44,14 +51,18 @@ class SubscriptionModel extends SubscriptionEntity {
       'userId': userId,
       'planId': planId,
       'planName': planName,
+      'planType': planType,
       'price': price,
       'currency': currency,
       'interval': interval,
       'status': status,
       'startDate': Timestamp.fromDate(startDate),
       'endDate': Timestamp.fromDate(endDate),
-      'cancelledAt':
-          cancelledAt != null ? Timestamp.fromDate(cancelledAt!) : null,
+      'paymentId': paymentId,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'cancelledAt': cancelledAt != null
+          ? Timestamp.fromDate(cancelledAt!)
+          : null,
       'autoRenew': autoRenew,
     };
   }
@@ -63,12 +74,15 @@ class SubscriptionModel extends SubscriptionEntity {
       userId: entity.userId,
       planId: entity.planId,
       planName: entity.planName,
+      planType: entity.planType,
       price: entity.price,
       currency: entity.currency,
       interval: entity.interval,
       status: entity.status,
       startDate: entity.startDate,
       endDate: entity.endDate,
+      paymentId: entity.paymentId,
+      createdAt: entity.createdAt,
       cancelledAt: entity.cancelledAt,
       autoRenew: entity.autoRenew,
     );

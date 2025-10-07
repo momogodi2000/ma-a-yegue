@@ -9,7 +9,7 @@ import 'core/router.dart';
 import 'core/config/environment_config.dart';
 import 'core/database/database_initialization_service.dart';
 import 'core/database/data_seeding_service.dart';
-import 'core/database/database_helper.dart';
+import 'core/database/unified_database_service.dart';
 import 'shared/providers/app_providers.dart';
 import 'shared/themes/app_theme.dart';
 import 'shared/providers/theme_provider.dart';
@@ -68,9 +68,9 @@ Future<void> _initializeDatabasesInBackground() async {
   try {
     // Initialize databases (heavy operation - copying from assets)
     final dbFuture = DatabaseInitializationService.database;
-    final helperFuture = DatabaseHelper.database;
+    final unifiedDbFuture = UnifiedDatabaseService.instance.database;
 
-    await Future.wait([dbFuture, helperFuture], eagerError: false);
+    await Future.wait([dbFuture, unifiedDbFuture], eagerError: false);
     debugPrint('✅ Databases initialized');
 
     // Seed database (only on first run)

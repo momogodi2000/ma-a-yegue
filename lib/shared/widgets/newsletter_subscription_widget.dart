@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../../core/services/firebase_service.dart';
+import '../../core/database/unified_database_service.dart';
 
 /// Newsletter subscription widget for collecting email addresses
 class NewsletterSubscriptionWidget extends StatefulWidget {
@@ -47,16 +47,13 @@ class _NewsletterSubscriptionWidgetState
 
     try {
       final firebaseService = context.read<FirebaseService>();
+      final db = UnifiedDatabaseService.instance;
       final email = _emailController.text.trim().toLowerCase();
 
-      // Check if email already exists
-      final existingSubscription = await firebaseService.firestore
-          .collection('newsletter_subscriptions')
-          .where('email', isEqualTo: email)
-          .limit(1)
-          .get();
+      // Check if email already exists in SQLite
+      final alreadySubscribed = await db.isEmailSubscribedToNewsletter(email);
 
-      if (existingSubscription.docs.isNotEmpty) {
+      if (alreadySubscribed) {
         setState(() {
           _isLoading = false;
           _errorMessage = 'Cet email est déjà inscrit à notre newsletter';
@@ -64,17 +61,18 @@ class _NewsletterSubscriptionWidgetState
         return;
       }
 
-      // Add new subscription
-      await firebaseService.firestore
-          .collection('newsletter_subscriptions')
-          .add({
-            'email': email,
-            'subscribedAt': FieldValue.serverTimestamp(),
-            'isActive': true,
-            'source': 'web', // or 'mobile' based on platform
-            'language': 'fr',
-            'tags': ['general'],
-          });
+      // Add new subscription to SQLite
+      await db.subscribeToNewsletter(
+        email: email,
+        source: 'mobile',
+        language: 'fr',
+      );
+
+      // Log analytics event
+      await firebaseService.logEvent(
+        name: 'newsletter_subscription',
+        parameters: {'email': email, 'source': 'mobile'},
+      );
 
       setState(() {
         _isLoading = false;

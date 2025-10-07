@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/database/cameroon_languages_database_helper.dart';
+import '../../../../core/database/unified_database_service.dart';
 import '../../../profile/presentation/views/profile_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -59,13 +59,13 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadHomeData() async {
     try {
+      final db = UnifiedDatabaseService.instance;
+
       // Get featured languages from the database
-      final featuredLanguages =
-          await CameroonLanguagesDatabaseHelper.getAllLanguages();
+      final featuredLanguages = await db.getAllLanguages();
 
       // Get recent lessons
-      final recentLessons =
-          await CameroonLanguagesDatabaseHelper.getAllLessons();
+      final recentLessons = await db.getLessonsByLanguage('EWO');
 
       // Create mock user stats for now (will be replaced with real user data later)
       final userStats = {

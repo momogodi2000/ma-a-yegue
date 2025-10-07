@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/services/user_role_service.dart';
+import '../../../../core/services/user_role_service_hybrid.dart';
+import '../../../../core/database/unified_database_service.dart';
 
 /// Admin User Management View
 class UserManagementView extends StatefulWidget {
@@ -32,19 +33,8 @@ class _UserManagementViewState extends State<UserManagementView> {
       List<Map<String, dynamic>> users;
       if (_selectedRoleFilter == 'all') {
         // Load users by getting all roles
-        final admins = await userRoleService.getUsersByRole('admin');
-        final teachers = await userRoleService.getUsersByRole('teacher');
-        final learners = await userRoleService.getUsersByRole('learner');
-
-        final allUsers = [...admins, ...teachers, ...learners];
-
-        // Remove duplicates based on uid
-        final uniqueUsers = <String, Map<String, dynamic>>{};
-        for (final user in allUsers) {
-          uniqueUsers[user['uid'] as String] = user;
-        }
-
-        users = uniqueUsers.values.toList();
+        final db = UnifiedDatabaseService.instance;
+        users = await db.getAllUsers();
       } else {
         users = await userRoleService.getUsersByRole(_selectedRoleFilter);
       }

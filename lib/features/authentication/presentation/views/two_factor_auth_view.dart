@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/services/two_factor_auth_service.dart';
+import '../../../../core/services/two_factor_auth_service_hybrid.dart';
 import '../../../../core/constants/routes.dart';
 import '../../../../shared/themes/colors.dart';
 import '../viewmodels/auth_viewmodel.dart';
@@ -146,11 +146,7 @@ class _TwoFactorAuthViewState extends State<TwoFactorAuthView> {
           key: _formKey,
           child: ListView(
             children: [
-              const Icon(
-                Icons.security,
-                size: 100,
-                color: AppColors.onPrimary,
-              ),
+              const Icon(Icons.security, size: 100, color: AppColors.onPrimary),
               const SizedBox(height: 20),
 
               // Title
@@ -268,10 +264,7 @@ class _TwoFactorAuthViewState extends State<TwoFactorAuthView> {
                   onPressed: _isLoading ? null : _sendOTP,
                   child: const Text(
                     'Renvoyer le code',
-                    style: TextStyle(
-                      color: AppColors.secondary,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: AppColors.secondary, fontSize: 16),
                   ),
                 ),
 
@@ -302,10 +295,7 @@ class _TwoFactorAuthViewState extends State<TwoFactorAuthView> {
                 },
                 child: const Text(
                   'Annuler',
-                  style: TextStyle(
-                    color: AppColors.secondary,
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: AppColors.secondary, fontSize: 14),
                 ),
               ),
             ],

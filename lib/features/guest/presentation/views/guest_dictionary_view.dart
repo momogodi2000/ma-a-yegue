@@ -15,7 +15,6 @@ class GuestDictionaryView extends StatefulWidget {
 
 class _GuestDictionaryViewState extends State<GuestDictionaryView>
     with TickerProviderStateMixin {
-  
   // Controllers
   final TextEditingController _searchController = TextEditingController();
   late TabController _tabController;
@@ -67,7 +66,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
         _featuredWords = featuredContent['featured_words'] ?? [];
         _wordOfTheDay = featuredContent['word_of_the_day'];
         _stats = stats;
-        
+
         // Set default language if available
         if (_languages.isNotEmpty) {
           _selectedLanguage = _languages.first['id'];
@@ -92,7 +91,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
         languageId: _selectedLanguage,
         limit: 10,
       );
-      
+
       setState(() => _searchResults = results);
     } catch (e) {
       debugPrint('Error searching words: $e');
@@ -106,7 +105,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
         languageId: _selectedLanguage,
         limit: 15,
       );
-      
+
       setState(() => _featuredWords = words);
     } catch (e) {
       debugPrint('Error loading words by category: $e');
@@ -135,11 +134,18 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
               // Guest limitation notice
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 color: Colors.orange.shade100,
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.orange.shade900, size: 20),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.orange.shade900,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -153,12 +159,15 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
                     ),
                     TextButton(
                       onPressed: () => context.go(Routes.register),
-                      child: const Text('S\'inscrire', style: TextStyle(fontSize: 12)),
+                      child: const Text(
+                        'S\'inscrire',
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                   ],
                 ),
               ),
-              
+
               // Tabs
               TabBar(
                 controller: _tabController,
@@ -178,7 +187,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
               children: [
                 // Language selector
                 if (_languages.isNotEmpty) _buildLanguageSelector(),
-                
+
                 // Tab content
                 Expanded(
                   child: TabBarView(
@@ -238,9 +247,9 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
             ),
             onChanged: _searchWords,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Search results or featured words
           Expanded(
             child: _searchController.text.isNotEmpty
@@ -292,10 +301,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
                     if (category['description'] != null)
                       Text(
                         category['description'],
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -338,7 +344,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
             ),
             const SizedBox(height: 24),
           ],
-          
+
           // Statistics
           Card(
             child: Padding(
@@ -348,10 +354,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
                 children: [
                   const Text(
                     'Statistiques du dictionnaire',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -359,16 +362,19 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
                     children: [
                       _buildStatItem('Langues', '${_stats['languages'] ?? 0}'),
                       _buildStatItem('Mots', '${_stats['translations'] ?? 0}'),
-                      _buildStatItem('Catégories', '${_stats['categories'] ?? 0}'),
+                      _buildStatItem(
+                        'Catégories',
+                        '${_stats['categories'] ?? 0}',
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Call to action
           CustomButton(
             text: 'Accéder au dictionnaire complet',
@@ -388,10 +394,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
           children: [
             Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            Text(
-              'Aucun mot trouvé',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
+            Text('Aucun mot trouvé', style: TextStyle(color: Colors.grey[600])),
           ],
         ),
       );
@@ -402,10 +405,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Expanded(
@@ -433,10 +433,7 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
           children: [
             Text(
               word['translation'],
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.primary,
-              ),
+              style: const TextStyle(fontSize: 16, color: AppColors.primary),
             ),
             if (word['pronunciation'] != null) ...[
               const SizedBox(height: 4),
@@ -473,45 +470,60 @@ class _GuestDictionaryViewState extends State<GuestDictionaryView>
             color: AppColors.primary,
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
 
   IconData _getCategoryIcon(String categoryId) {
     switch (categoryId) {
-      case 'GRT': return Icons.waving_hand;
-      case 'NUM': return Icons.numbers;
-      case 'FAM': return Icons.family_restroom;
-      case 'FOD': return Icons.restaurant;
-      case 'BOD': return Icons.accessibility;
-      case 'TIM': return Icons.access_time;
-      case 'COL': return Icons.palette;
-      case 'ANI': return Icons.pets;
-      case 'NAT': return Icons.nature;
-      case 'VRB': return Icons.play_arrow;
-      case 'ADJ': return Icons.style;
-      case 'PHR': return Icons.chat;
-      case 'HOM': return Icons.home;
-      case 'EDU': return Icons.school;
-      case 'HEA': return Icons.medical_services;
-      case 'MON': return Icons.monetization_on;
-      default: return Icons.translate;
+      case 'GRT':
+        return Icons.waving_hand;
+      case 'NUM':
+        return Icons.numbers;
+      case 'FAM':
+        return Icons.family_restroom;
+      case 'FOD':
+        return Icons.restaurant;
+      case 'BOD':
+        return Icons.accessibility;
+      case 'TIM':
+        return Icons.access_time;
+      case 'COL':
+        return Icons.palette;
+      case 'ANI':
+        return Icons.pets;
+      case 'NAT':
+        return Icons.nature;
+      case 'VRB':
+        return Icons.play_arrow;
+      case 'ADJ':
+        return Icons.style;
+      case 'PHR':
+        return Icons.chat;
+      case 'HOM':
+        return Icons.home;
+      case 'EDU':
+        return Icons.school;
+      case 'HEA':
+        return Icons.medical_services;
+      case 'MON':
+        return Icons.monetization_on;
+      default:
+        return Icons.translate;
     }
   }
 
   Color _getDifficultyColor(String? difficulty) {
     switch (difficulty) {
-      case 'beginner': return Colors.green.shade100;
-      case 'intermediate': return Colors.orange.shade100;
-      case 'advanced': return Colors.red.shade100;
-      default: return Colors.grey.shade100;
+      case 'beginner':
+        return Colors.green.shade100;
+      case 'intermediate':
+        return Colors.orange.shade100;
+      case 'advanced':
+        return Colors.red.shade100;
+      default:
+        return Colors.grey.shade100;
     }
   }
 }

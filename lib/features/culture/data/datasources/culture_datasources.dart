@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sqflite/sqflite.dart';
-import '../../../../core/database/database_helper.dart';
+import '../../../../core/database/unified_database_service.dart';
 import '../../domain/entities/culture_entities.dart';
 import '../models/culture_models.dart';
 import 'sample_culture_content.dart';
@@ -39,9 +38,9 @@ abstract class CultureDataSource {
 
 /// Local SQLite data source for culture content
 class CultureLocalDataSource implements CultureDataSource {
-  CultureLocalDataSource();
+  final _db = UnifiedDatabaseService.instance;
 
-  Future<Database> get _db => DatabaseHelper.database;
+  CultureLocalDataSource();
 
   @override
   Future<List<CultureContentModel>> getCultureContent({
@@ -65,7 +64,8 @@ class CultureLocalDataSource implements CultureDataSource {
         whereArgs.add(category.toString().split('.').last);
       }
 
-      final maps = await (await _db).query(
+      final db = await _db.database;
+      final maps = await db.query(
         'culture_content',
         where: whereClause.isNotEmpty ? whereClause : null,
         whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
@@ -77,17 +77,21 @@ class CultureLocalDataSource implements CultureDataSource {
       // If database is empty, return sample content
       if (maps.isEmpty) {
         var sampleContent = SampleCultureContent.getSampleCultureContent();
-        
+
         // Filter by category if specified
         if (category != null) {
-          sampleContent = sampleContent.where((c) => c.category == category).toList();
+          sampleContent = sampleContent
+              .where((c) => c.category == category)
+              .toList();
         }
-        
+
         // Filter by language if specified
         if (language != null && language.isNotEmpty) {
-          sampleContent = sampleContent.where((c) => c.language.toLowerCase() == language.toLowerCase()).toList();
+          sampleContent = sampleContent
+              .where((c) => c.language.toLowerCase() == language.toLowerCase())
+              .toList();
         }
-        
+
         return sampleContent;
       }
 
@@ -120,7 +124,8 @@ class CultureLocalDataSource implements CultureDataSource {
         whereArgs.add(period);
       }
 
-      final maps = await (await _db).query(
+      final db = await _db.database;
+      final maps = await db.query(
         'historical_content',
         where: whereClause.isNotEmpty ? whereClause : null,
         whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
@@ -132,17 +137,21 @@ class CultureLocalDataSource implements CultureDataSource {
       // If database is empty, return sample content
       if (maps.isEmpty) {
         var sampleContent = SampleCultureContent.getSampleHistoricalContent();
-        
+
         // Filter by period if specified
         if (period != null) {
-          sampleContent = sampleContent.where((c) => c.period == period).toList();
+          sampleContent = sampleContent
+              .where((c) => c.period == period)
+              .toList();
         }
-        
+
         // Filter by language if specified
         if (language != null && language.isNotEmpty) {
-          sampleContent = sampleContent.where((c) => c.language.toLowerCase() == language.toLowerCase()).toList();
+          sampleContent = sampleContent
+              .where((c) => c.language.toLowerCase() == language.toLowerCase())
+              .toList();
         }
-        
+
         return sampleContent;
       }
 
@@ -175,7 +184,8 @@ class CultureLocalDataSource implements CultureDataSource {
         whereArgs.add(difficulty);
       }
 
-      final maps = await (await _db).query(
+      final db = await _db.database;
+      final maps = await db.query(
         'yemba_content',
         where: whereClause.isNotEmpty ? whereClause : null,
         whereArgs: whereArgs.isNotEmpty ? whereArgs : null,
@@ -187,17 +197,21 @@ class CultureLocalDataSource implements CultureDataSource {
       // If database is empty, return sample content
       if (maps.isEmpty) {
         var sampleContent = SampleCultureContent.getSampleYembaContent();
-        
+
         // Filter by category if specified
         if (category != null) {
-          sampleContent = sampleContent.where((c) => c.category == category).toList();
+          sampleContent = sampleContent
+              .where((c) => c.category == category)
+              .toList();
         }
-        
+
         // Filter by difficulty if specified
         if (difficulty != null) {
-          sampleContent = sampleContent.where((c) => c.difficulty == difficulty).toList();
+          sampleContent = sampleContent
+              .where((c) => c.difficulty == difficulty)
+              .toList();
         }
-        
+
         return sampleContent;
       }
 
@@ -211,7 +225,8 @@ class CultureLocalDataSource implements CultureDataSource {
   @override
   Future<CultureContentModel?> getCultureContentById(String id) async {
     try {
-      final maps = await (await _db).query(
+      final db = await _db.database;
+      final maps = await db.query(
         'culture_content',
         where: 'id = ?',
         whereArgs: [id],
@@ -220,10 +235,13 @@ class CultureLocalDataSource implements CultureDataSource {
       if (maps.isNotEmpty) {
         return CultureContentModel.fromJson(maps.first);
       }
-      
+
       // Fallback to sample content
       final sampleContent = SampleCultureContent.getSampleCultureContent();
-      return sampleContent.firstWhere((c) => c.id == id, orElse: () => sampleContent.first);
+      return sampleContent.firstWhere(
+        (c) => c.id == id,
+        orElse: () => sampleContent.first,
+      );
     } catch (e) {
       return SampleCultureContent.getSampleCultureContent().first;
     }
@@ -232,7 +250,8 @@ class CultureLocalDataSource implements CultureDataSource {
   @override
   Future<HistoricalContentModel?> getHistoricalContentById(String id) async {
     try {
-      final maps = await (await _db).query(
+      final db = await _db.database;
+      final maps = await db.query(
         'historical_content',
         where: 'id = ?',
         whereArgs: [id],
@@ -241,10 +260,13 @@ class CultureLocalDataSource implements CultureDataSource {
       if (maps.isNotEmpty) {
         return HistoricalContentModel.fromJson(maps.first);
       }
-      
+
       // Fallback to sample content
       final sampleContent = SampleCultureContent.getSampleHistoricalContent();
-      return sampleContent.firstWhere((c) => c.id == id, orElse: () => sampleContent.first);
+      return sampleContent.firstWhere(
+        (c) => c.id == id,
+        orElse: () => sampleContent.first,
+      );
     } catch (e) {
       return SampleCultureContent.getSampleHistoricalContent().first;
     }
@@ -253,7 +275,8 @@ class CultureLocalDataSource implements CultureDataSource {
   @override
   Future<YembaContentModel?> getYembaContentById(String id) async {
     try {
-      final maps = await (await _db).query(
+      final db = await _db.database;
+      final maps = await db.query(
         'yemba_content',
         where: 'id = ?',
         whereArgs: [id],
@@ -262,10 +285,13 @@ class CultureLocalDataSource implements CultureDataSource {
       if (maps.isNotEmpty) {
         return YembaContentModel.fromJson(maps.first);
       }
-      
+
       // Fallback to sample content
       final sampleContent = SampleCultureContent.getSampleYembaContent();
-      return sampleContent.firstWhere((c) => c.id == id, orElse: () => sampleContent.first);
+      return sampleContent.firstWhere(
+        (c) => c.id == id,
+        orElse: () => sampleContent.first,
+      );
     } catch (e) {
       return SampleCultureContent.getSampleYembaContent().first;
     }
@@ -273,7 +299,8 @@ class CultureLocalDataSource implements CultureDataSource {
 
   @override
   Future<List<CultureContentModel>> searchCultureContent(String query) async {
-    final maps = await (await _db).query(
+    final db = await _db.database;
+    final maps = await db.query(
       'culture_content',
       where: 'title LIKE ? OR description LIKE ? OR content LIKE ?',
       whereArgs: ['%$query%', '%$query%', '%$query%'],
@@ -284,8 +311,11 @@ class CultureLocalDataSource implements CultureDataSource {
   }
 
   @override
-  Future<List<HistoricalContentModel>> searchHistoricalContent(String query) async {
-    final maps = await (await _db).query(
+  Future<List<HistoricalContentModel>> searchHistoricalContent(
+    String query,
+  ) async {
+    final db = await _db.database;
+    final maps = await db.query(
       'historical_content',
       where: 'title LIKE ? OR description LIKE ? OR content LIKE ?',
       whereArgs: ['%$query%', '%$query%', '%$query%'],
@@ -297,7 +327,8 @@ class CultureLocalDataSource implements CultureDataSource {
 
   @override
   Future<List<YembaContentModel>> searchYembaContent(String query) async {
-    final maps = await (await _db).query(
+    final db = await _db.database;
+    final maps = await db.query(
       'yemba_content',
       where: 'title LIKE ? OR content LIKE ?',
       whereArgs: ['%$query%', '%$query%'],
@@ -314,9 +345,12 @@ class CultureRemoteDataSource implements CultureDataSource {
 
   CultureRemoteDataSource(this._firestore);
 
-  CollectionReference get _cultureCollection => _firestore.collection('culture_content');
-  CollectionReference get _historicalCollection => _firestore.collection('historical_content');
-  CollectionReference get _yembaCollection => _firestore.collection('yemba_content');
+  CollectionReference get _cultureCollection =>
+      _firestore.collection('culture_content');
+  CollectionReference get _historicalCollection =>
+      _firestore.collection('historical_content');
+  CollectionReference get _yembaCollection =>
+      _firestore.collection('yemba_content');
 
   @override
   Future<List<CultureContentModel>> getCultureContent({
@@ -332,7 +366,10 @@ class CultureRemoteDataSource implements CultureDataSource {
     }
 
     if (category != null) {
-      query = query.where('category', isEqualTo: category.toString().split('.').last);
+      query = query.where(
+        'category',
+        isEqualTo: category.toString().split('.').last,
+      );
     }
 
     if (limit != null) {
@@ -341,7 +378,12 @@ class CultureRemoteDataSource implements CultureDataSource {
 
     final snapshot = await query.get();
     return snapshot.docs
-        .map((doc) => CultureContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+        .map(
+          (doc) => CultureContentModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
+        )
         .toList();
   }
 
@@ -368,7 +410,12 @@ class CultureRemoteDataSource implements CultureDataSource {
 
     final snapshot = await query.get();
     return snapshot.docs
-        .map((doc) => HistoricalContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+        .map(
+          (doc) => HistoricalContentModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
+        )
         .toList();
   }
 
@@ -382,7 +429,10 @@ class CultureRemoteDataSource implements CultureDataSource {
     Query query = _yembaCollection.orderBy('createdAt', descending: true);
 
     if (category != null) {
-      query = query.where('category', isEqualTo: category.toString().split('.').last);
+      query = query.where(
+        'category',
+        isEqualTo: category.toString().split('.').last,
+      );
     }
 
     if (difficulty != null) {
@@ -395,7 +445,12 @@ class CultureRemoteDataSource implements CultureDataSource {
 
     final snapshot = await query.get();
     return snapshot.docs
-        .map((doc) => YembaContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+        .map(
+          (doc) => YembaContentModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
+        )
         .toList();
   }
 
@@ -403,21 +458,30 @@ class CultureRemoteDataSource implements CultureDataSource {
   Future<CultureContentModel?> getCultureContentById(String id) async {
     final doc = await _cultureCollection.doc(id).get();
     if (!doc.exists) return null;
-    return CultureContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+    return CultureContentModel.fromFirestore(
+      doc.data() as Map<String, dynamic>,
+      doc.id,
+    );
   }
 
   @override
   Future<HistoricalContentModel?> getHistoricalContentById(String id) async {
     final doc = await _historicalCollection.doc(id).get();
     if (!doc.exists) return null;
-    return HistoricalContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+    return HistoricalContentModel.fromFirestore(
+      doc.data() as Map<String, dynamic>,
+      doc.id,
+    );
   }
 
   @override
   Future<YembaContentModel?> getYembaContentById(String id) async {
     final doc = await _yembaCollection.doc(id).get();
     if (!doc.exists) return null;
-    return YembaContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+    return YembaContentModel.fromFirestore(
+      doc.data() as Map<String, dynamic>,
+      doc.id,
+    );
   }
 
   @override
@@ -426,40 +490,66 @@ class CultureRemoteDataSource implements CultureDataSource {
     // This is a basic implementation - in production, consider using Algolia or ElasticSearch
     final snapshot = await _cultureCollection.get();
     final allContent = snapshot.docs
-        .map((doc) => CultureContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+        .map(
+          (doc) => CultureContentModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
+        )
         .toList();
 
-    return allContent.where((content) =>
-        content.title.toLowerCase().contains(query.toLowerCase()) ||
-        content.description.toLowerCase().contains(query.toLowerCase()) ||
-        content.content.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    return allContent
+        .where(
+          (content) =>
+              content.title.toLowerCase().contains(query.toLowerCase()) ||
+              content.description.toLowerCase().contains(query.toLowerCase()) ||
+              content.content.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
   }
 
   @override
-  Future<List<HistoricalContentModel>> searchHistoricalContent(String query) async {
+  Future<List<HistoricalContentModel>> searchHistoricalContent(
+    String query,
+  ) async {
     final snapshot = await _historicalCollection.get();
     final allContent = snapshot.docs
-        .map((doc) => HistoricalContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+        .map(
+          (doc) => HistoricalContentModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
+        )
         .toList();
 
-    return allContent.where((content) =>
-        content.title.toLowerCase().contains(query.toLowerCase()) ||
-        content.description.toLowerCase().contains(query.toLowerCase()) ||
-        content.content.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    return allContent
+        .where(
+          (content) =>
+              content.title.toLowerCase().contains(query.toLowerCase()) ||
+              content.description.toLowerCase().contains(query.toLowerCase()) ||
+              content.content.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
   }
 
   @override
   Future<List<YembaContentModel>> searchYembaContent(String query) async {
     final snapshot = await _yembaCollection.get();
     final allContent = snapshot.docs
-        .map((doc) => YembaContentModel.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+        .map(
+          (doc) => YembaContentModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
+        )
         .toList();
 
-    return allContent.where((content) =>
-        content.title.toLowerCase().contains(query.toLowerCase()) ||
-        content.content.toLowerCase().contains(query.toLowerCase())
-    ).toList();
+    return allContent
+        .where(
+          (content) =>
+              content.title.toLowerCase().contains(query.toLowerCase()) ||
+              content.content.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
   }
 }

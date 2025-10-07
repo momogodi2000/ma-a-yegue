@@ -12,7 +12,9 @@ class PaymentModel extends PaymentEntity {
     required super.status,
     super.transactionId,
     super.reference,
+    super.subscriptionId,
     required super.createdAt,
+    super.updatedAt,
     super.completedAt,
     super.failureReason,
   });
@@ -29,7 +31,9 @@ class PaymentModel extends PaymentEntity {
       status: data['status'] ?? 'pending',
       transactionId: data['transactionId'],
       reference: data['reference'],
+      subscriptionId: data['subscriptionId'],
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
       completedAt: (data['completedAt'] as Timestamp?)?.toDate(),
       failureReason: data['failureReason'],
     );
@@ -45,9 +49,12 @@ class PaymentModel extends PaymentEntity {
       'status': status,
       'transactionId': transactionId,
       'reference': reference,
+      'subscriptionId': subscriptionId,
       'createdAt': Timestamp.fromDate(createdAt),
-      'completedAt':
-          completedAt != null ? Timestamp.fromDate(completedAt!) : null,
+      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
+      'completedAt': completedAt != null
+          ? Timestamp.fromDate(completedAt!)
+          : null,
       'failureReason': failureReason,
     };
   }
@@ -63,9 +70,14 @@ class PaymentModel extends PaymentEntity {
       status: entity.status,
       transactionId: entity.transactionId,
       reference: entity.reference,
+      subscriptionId: entity.subscriptionId,
       createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
       completedAt: entity.completedAt,
       failureReason: entity.failureReason,
     );
   }
+
+  /// Getter for backward compatibility with local datasource
+  String? get paymentMethod => method;
 }

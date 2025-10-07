@@ -24,12 +24,86 @@ def create_database():
     insert_categories(cursor)
     insert_translations(cursor)
     insert_lessons(cursor)
+    insert_quizzes(cursor)
+    insert_metadata(cursor)
     
     # Commit changes and close connection
     conn.commit()
     conn.close()
     print("OK - Cameroon Languages Database created successfully!")
     print("INFO - Database file: cameroon_languages.db")
+    print("INFO - Includes: 7 languages, thousands of translations, lessons, and quizzes")
+    print("INFO - User management, progress tracking, and daily limits ready")
+
+def insert_quizzes(cursor):
+    """Insert sample quizzes for all 7 languages"""
+    quizzes_data = [
+        # Ewondo Quizzes
+        ('EWO', 'Quiz: Salutations en Ewondo', 'Testez vos connaissances des salutations de base', 'beginner', 'GRT'),
+        ('EWO', 'Quiz: Nombres 1-10', 'Maîtrisez les nombres en Ewondo', 'beginner', 'NUM'),
+        ('EWO', 'Quiz: Famille et relations', 'Connaissez-vous les termes familiaux?', 'beginner', 'FAM'),
+        ('EWO', 'Quiz: Nourriture traditionnelle', 'Testez vos connaissances culinaires', 'intermediate', 'FOD'),
+        
+        # Duala Quizzes
+        ('DUA', 'Quiz: Salutations en Duala', 'Salutations côtières du Littoral', 'beginner', 'GRT'),
+        ('DUA', 'Quiz: Nombres 1-10', 'Comptez en Duala', 'beginner', 'NUM'),
+        ('DUA', 'Quiz: Commerce et échanges', 'Vocabulaire commercial', 'intermediate', 'MON'),
+        
+        # Fe'efe'e Quizzes
+        ('FEF', 'Quiz: Salutations Bamiléké', 'Greetings from the West Region', 'beginner', 'GRT'),
+        ('FEF', 'Quiz: Agriculture Bamiléké', 'Termes agricoles traditionnels', 'intermediate', 'FOD'),
+        
+        # Fulfulde Quizzes
+        ('FUL', 'Quiz: Salutations Peules', 'Salutations nomades', 'beginner', 'GRT'),
+        ('FUL', 'Quiz: Élevage et pastoralisme', 'Vocabulaire pastoral', 'intermediate', 'ANI'),
+        
+        # Bassa Quizzes
+        ('BAS', 'Quiz: Salutations Bassa', 'Salutations de la forêt équatoriale', 'beginner', 'GRT'),
+        ('BAS', 'Quiz: Plantes médicinales', 'Pharmacopée traditionnelle', 'advanced', 'HEA'),
+        
+        # Bamum Quizzes
+        ('BAM', 'Quiz: Salutations royales', 'Salutations du royaume Bamum', 'beginner', 'GRT'),
+        ('BAM', 'Quiz: Écriture Bamum', 'L\'écriture syllabique du roi Njoya', 'advanced', 'EDU'),
+        
+        # Yemba Quizzes
+        ('YMB', 'Quiz: Salutations Yemba-Dschang', 'Salutations traditionnelles de Dschang', 'beginner', 'GRT'),
+        ('YMB', 'Quiz: Chefferies Bamiléké', 'Structures sociales traditionnelles', 'advanced', 'REL'),
+    ]
+    
+    cursor.executemany('''
+    INSERT INTO quizzes (language_id, title, description, difficulty_level, category_id)
+    VALUES (?, ?, ?, ?, ?)
+    ''', quizzes_data)
+    
+    # Insert sample quiz questions for the first quiz
+    quiz_questions_data = [
+        # Ewondo Greetings Quiz questions
+        (1, 'Comment dit-on "Bonjour" en Ewondo?', 'multiple_choice', 'Mbolo', 
+         '["Mbolo", "Jam waali", "Kweni", "Mwa boma"]', 1, 'Mbolo est la salutation standard en Ewondo'),
+        (1, 'La prononciation de "Merci" (Akiba) est:', 'multiple_choice', 'ah-KEE-bah', 
+         '["ah-KEE-bah", "ah-kee-BAH", "AH-kee-bah", "ah-kee-bah"]', 1, 'L\'accent tonique est sur KEE'),
+        (1, 'Comment répond-on à "Comment allez-vous?" en Ewondo?', 'multiple_choice', 'Ma yem bot', 
+         '["Ma yem bot", "Ma si kala", "Ma wa", "Ma yen"]', 1, 'Ma yem bot signifie "Je vais bien"'),
+    ]
+    
+    cursor.executemany('''
+    INSERT INTO quiz_questions (quiz_id, question_text, question_type, correct_answer, options, points, explanation)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', quiz_questions_data)
+
+def insert_metadata(cursor):
+    """Insert application metadata for versioning and tracking"""
+    metadata = [
+        ('db_version', '2.0'),
+        ('created_date', datetime.now().isoformat()),
+        ('total_languages', '7'),
+        ('supports_offline', 'true'),
+        ('requires_migration', 'false'),
+    ]
+    
+    cursor.executemany('''
+    INSERT OR REPLACE INTO app_metadata (key, value) VALUES (?, ?)
+    ''', metadata)
 
 def create_tables(cursor):
     # Languages table
@@ -87,6 +161,128 @@ def create_tables(cursor):
     )
     ''')
     
+    # Quiz table for educational content
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS quizzes (
+        quiz_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        language_id VARCHAR(10) NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        difficulty_level TEXT CHECK(difficulty_level IN ('beginner', 'intermediate', 'advanced')),
+        category_id VARCHAR(10),
+        created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (language_id) REFERENCES languages(language_id),
+        FOREIGN KEY (category_id) REFERENCES categories(category_id)
+    )
+    ''')
+    
+    # Quiz questions
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS quiz_questions (
+        question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        quiz_id INTEGER NOT NULL,
+        question_text TEXT NOT NULL,
+        question_type TEXT CHECK(question_type IN ('multiple_choice', 'true_false', 'fill_blank', 'matching')),
+        correct_answer TEXT NOT NULL,
+        options TEXT,
+        points INTEGER DEFAULT 1,
+        explanation TEXT,
+        FOREIGN KEY (quiz_id) REFERENCES quizzes(quiz_id) ON DELETE CASCADE
+    )
+    ''')
+    
+    # Users table (stores local user data, synced with Firebase auth)
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        user_id TEXT PRIMARY KEY,
+        firebase_uid TEXT UNIQUE,
+        email TEXT,
+        display_name TEXT,
+        role TEXT CHECK(role IN ('guest', 'student', 'teacher', 'admin')) DEFAULT 'student',
+        subscription_status TEXT DEFAULT 'free',
+        subscription_expires_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP
+    )
+    ''')
+    
+    # Daily limits tracking for guest users
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS daily_limits (
+        limit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        device_id TEXT,
+        limit_date DATE NOT NULL,
+        lessons_count INTEGER DEFAULT 0,
+        readings_count INTEGER DEFAULT 0,
+        quizzes_count INTEGER DEFAULT 0,
+        UNIQUE(user_id, limit_date),
+        UNIQUE(device_id, limit_date),
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )
+    ''')
+    
+    # User progress tracking
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_progress (
+        progress_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        content_type TEXT CHECK(content_type IN ('lesson', 'quiz', 'translation')),
+        content_id INTEGER NOT NULL,
+        status TEXT CHECK(status IN ('started', 'in_progress', 'completed')),
+        score REAL,
+        time_spent INTEGER,
+        completed_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )
+    ''')
+    
+    # User statistics
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_statistics (
+        stat_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        total_lessons_completed INTEGER DEFAULT 0,
+        total_quizzes_completed INTEGER DEFAULT 0,
+        total_words_learned INTEGER DEFAULT 0,
+        total_study_time INTEGER DEFAULT 0,
+        current_streak INTEGER DEFAULT 0,
+        longest_streak INTEGER DEFAULT 0,
+        last_activity_date DATE,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )
+    ''')
+    
+    # Content created by teachers/admin
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user_created_content (
+        content_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id TEXT NOT NULL,
+        content_type TEXT CHECK(content_type IN ('lesson', 'quiz', 'translation')),
+        title TEXT NOT NULL,
+        content_data TEXT NOT NULL,
+        language_id VARCHAR(10),
+        status TEXT CHECK(status IN ('draft', 'published', 'archived')) DEFAULT 'draft',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (creator_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        FOREIGN KEY (language_id) REFERENCES languages(language_id)
+    )
+    ''')
+    
+    # App metadata for versioning and migrations
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS app_metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
     # Create indexes for better performance
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_language ON translations(language_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_category ON translations(category_id)')
@@ -94,6 +290,16 @@ def create_tables(cursor):
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_translations_french ON translations(french_text)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_lessons_language ON lessons(language_id)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_lessons_level ON lessons(level)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_quizzes_language ON quizzes(language_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_quiz_questions_quiz ON quiz_questions(quiz_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_firebase_uid ON users(firebase_uid)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_daily_limits_date ON daily_limits(limit_date)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_progress_user ON user_progress(user_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_progress_content ON user_progress(content_type, content_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_statistics_user ON user_statistics(user_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_created_content_creator ON user_created_content(creator_id)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_user_created_content_type ON user_created_content(content_type)')
 
 def insert_languages(cursor):
     languages_data = [

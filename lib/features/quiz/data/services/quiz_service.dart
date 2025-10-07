@@ -2,13 +2,17 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:maa_yegue/features/quiz/domain/entities/quiz_entity.dart';
 import 'package:maa_yegue/features/lessons/data/services/progress_tracking_service.dart';
-import 'package:maa_yegue/core/database/database_helper.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:maa_yegue/core/database/unified_database_service.dart';
 
 /// Service for managing quiz/assessment functionality
+///
+/// HYBRID ARCHITECTURE:
+/// - Quiz data stored in SQLite (cameroon_languages.db)
+/// - Progress/scores stored in SQLite (user_progress table)
+/// - No Firestore usage for data storage
 class QuizService {
   final ProgressTrackingService _progressService;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UnifiedDatabaseService _database = UnifiedDatabaseService.instance;
 
   // In-memory cache for active quiz attempts
   final Map<String, QuizAttempt> _activeAttempts = {};
@@ -21,19 +25,20 @@ class QuizService {
     required String languageCode,
   }) async {
     try {
-      // First try to get from Firestore (cloud)
-      final quizDoc = await _firestore
-          .collection('quizzes')
-          .where('lessonId', isEqualTo: lessonId)
-          .where('languageCode', isEqualTo: languageCode)
-          .limit(1)
-          .get();
+      // Get quiz from SQLite (cameroon_languages.db)
+      final quizzes = await _database.getQuizzesByLanguageAndLesson(
+        languageId: languageCode.toUpperCase().substring(
+          0,
+          3,
+        ), // EWO, DUA, etc.
+        lessonId: int.tryParse(lessonId),
+      );
 
-      if (quizDoc.docs.isNotEmpty) {
-        return _quizFromFirestore(quizDoc.docs.first);
+      if (quizzes.isNotEmpty) {
+        return await _quizFromSQLite(quizzes.first);
       }
 
-      // Fallback to local sample quiz for development
+      // Fallback to sample quiz for development
       return _createSampleQuiz(lessonId, languageCode);
     } catch (e) {
       debugPrint('Error getting quiz: $e');
@@ -179,7 +184,7 @@ class QuizService {
     String? languageCode,
     int limit = 20,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _database.database;
 
     String whereClause = 'user_id = ?';
     List<String> whereArgs = [userId];
@@ -258,6 +263,58 @@ class QuizService {
   }
 
   /// Create sample quiz for development/testing
+  /// Convert SQLite quiz data to QuizEntity
+  Future<QuizEntity> _quizFromSQLite(Map<String, dynamic> quizData) async {
+    try {
+      final quizId = quizData['quiz_id'] as int;
+
+      // Get questions for this quiz
+      final questions = await _database.getQuizQuestions(quizId);
+
+      final questionEntities = questions.map((q) {
+        final optionsJson = q['options'] as String?;
+        final options = optionsJson != null && optionsJson.isNotEmpty
+            ? (optionsJson.split(',').toList())
+            : <String>[];
+
+        return QuestionEntity(
+          id: q['question_id'].toString(),
+          quizId: quizId.toString(),
+          type: QuestionType.multipleChoice,
+          question: q['question_text'] as String,
+          options: options,
+          correctAnswer: q['correct_answer'] as String,
+          explanation: q['explanation'] as String? ?? '',
+          hints: const [],
+          points: q['points'] as int? ?? 1,
+          timeLimitSeconds: 60,
+          audioUrl: null,
+          imageUrl: null,
+          metadata: {},
+        );
+      }).toList();
+
+      return QuizEntity(
+        id: quizId.toString(),
+        lessonId: '0', // Not associated with a specific lesson
+        languageCode: quizData['language_id'] as String,
+        title: quizData['title'] as String,
+        description: quizData['description'] as String? ?? '',
+        questions: questionEntities,
+        timeLimitMinutes: 15,
+        passingScore: 70,
+        difficulty: QuizDifficulty.beginner,
+        skillsTested: const ['vocabulary', 'grammar'],
+        isAdaptive: false,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+    } catch (e) {
+      debugPrint('Error converting SQLite quiz: $e');
+      rethrow;
+    }
+  }
+
   QuizEntity _createSampleQuiz(String lessonId, String languageCode) {
     final questions = [
       QuestionEntity(
@@ -316,48 +373,12 @@ class QuizService {
     );
   }
 
-  /// Convert Firestore document to QuizEntity
-  QuizEntity _quizFromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-
-    final questions = (data['questions'] as List<dynamic>).map((q) {
-      return QuestionEntity(
-        id: q['id'],
-        quizId: q['quizId'],
-        type: QuestionType.values[q['type']],
-        question: q['question'],
-        options: List<String>.from(q['options']),
-        correctAnswer: q['correctAnswer'],
-        explanation: q['explanation'],
-        hints: List<String>.from(q['hints']),
-        points: q['points'],
-        timeLimitSeconds: q['timeLimitSeconds'],
-        audioUrl: q['audioUrl'],
-        imageUrl: q['imageUrl'],
-        metadata: q['metadata'],
-      );
-    }).toList();
-
-    return QuizEntity(
-      id: doc.id,
-      lessonId: data['lessonId'],
-      languageCode: data['languageCode'],
-      title: data['title'],
-      description: data['description'],
-      questions: questions,
-      timeLimitMinutes: data['timeLimitMinutes'],
-      passingScore: data['passingScore'],
-      difficulty: QuizDifficulty.values[data['difficulty']],
-      skillsTested: List<String>.from(data['skillsTested']),
-      isAdaptive: data['isAdaptive'],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
-    );
-  }
+  // Note: Firestore quiz support removed for hybrid architecture
+  // All quiz data is now in SQLite
 
   /// Save quiz attempt to database
   Future<void> _saveQuizAttempt(QuizAttempt attempt) async {
-    final db = await DatabaseHelper.database;
+    final db = await _database.database;
 
     await db.insert('quiz_attempts', {
       'id': attempt.id,
@@ -393,7 +414,7 @@ class QuizService {
 
   /// Load quiz attempt from database
   Future<QuizAttempt?> _loadQuizAttempt(String attemptId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _database.database;
 
     final results = await db.query(
       'quiz_attempts',
@@ -479,34 +500,9 @@ class QuizService {
 
   /// Sync quiz attempt to Firebase
   Future<void> _syncQuizAttemptToFirebase(QuizAttempt attempt) async {
-    try {
-      await _firestore
-          .collection('users')
-          .doc(attempt.userId)
-          .collection('quiz_attempts')
-          .doc(attempt.id)
-          .set({
-            'quizId': attempt.quizId,
-            'totalScore': attempt.totalScore,
-            'maxScore': attempt.maxScore,
-            'percentage': attempt.percentage,
-            'passed': attempt.passed,
-            'timeSpentSeconds': attempt.timeSpentSeconds,
-            'startedAt': attempt.startedAt,
-            'completedAt': attempt.completedAt,
-            'answers': attempt.answers
-                .map(
-                  (a) => {
-                    'questionId': a.questionId,
-                    'isCorrect': a.isCorrect,
-                    'timeSpentSeconds': a.timeSpentSeconds,
-                    'pointsEarned': a.pointsEarned,
-                  },
-                )
-                .toList(),
-          }, SetOptions(merge: true));
-    } catch (e) {
-      debugPrint('⚠️ Firebase sync failed: $e');
-    }
+    // HYBRID ARCHITECTURE: Quiz attempts are stored in SQLite
+    // Firebase Firestore is NOT used for primary data storage
+    // This method is kept for compatibility but does nothing
+    debugPrint('Quiz attempt saved locally in SQLite: ${attempt.id}');
   }
 }

@@ -1,32 +1,40 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:convert';
 import '../config/environment_config.dart';
+import '../database/unified_database_service.dart';
 import 'firebase_service.dart';
 
-/// Service for setting up the default admin user
-class AdminSetupService {
+/// Admin Setup Service - Hybrid Architecture
+///
+/// ✅ Uses Firebase Auth for authentication only
+/// ✅ Uses SQLite for all admin user data and permissions storage
+///
+/// Manages admin user creation, permissions, and role management
+class AdminSetupServiceHybrid {
   final FirebaseService _firebaseService;
+  final UnifiedDatabaseService _database = UnifiedDatabaseService.instance;
 
-  AdminSetupService(this._firebaseService);
+  AdminSetupServiceHybrid(this._firebaseService);
 
-  /// Check if default admin exists
+  /// Check if default admin exists in SQLite
   Future<bool> defaultAdminExists() async {
     try {
       final adminEmail = EnvironmentConfig.defaultAdminEmail;
+      final db = await _database.database;
 
-      // Check in Firestore
-      final querySnapshot = await _firebaseService.firestore
-          .collection('users')
-          .where('email', isEqualTo: adminEmail)
-          .where('role', isEqualTo: 'admin')
-          .limit(1)
-          .get();
+      final results = await db.query(
+        'users',
+        where: 'email = ? AND role = ?',
+        whereArgs: [adminEmail, 'admin'],
+        limit: 1,
+      );
 
-      return querySnapshot.docs.isNotEmpty;
+      return results.isNotEmpty;
     } catch (e) {
       if (kDebugMode) {
-        print('Error checking if admin exists: $e');
+        print('❌ Error checking if admin exists: $e');
       }
       return false;
     }
@@ -41,23 +49,19 @@ class AdminSetupService {
 
       // Validate credentials
       if (adminEmail.isEmpty || adminPassword.isEmpty) {
-        throw Exception(
-          'Default admin credentials not set in environment configuration',
-        );
+        throw Exception('Admin credentials not set in environment');
       }
 
       if (adminPassword.length < 8) {
-        throw Exception(
-          'Default admin password must be at least 8 characters long',
-        );
+        throw Exception('Admin password must be at least 8 characters');
       }
 
       // Check if admin already exists
       if (await defaultAdminExists()) {
-        throw Exception('Default admin user already exists');
+        throw Exception('Default admin already exists');
       }
 
-      // Create Firebase Auth user
+      // Step 1: Create Firebase Auth user
       final userCredential = await _firebaseService.auth
           .createUserWithEmailAndPassword(
             email: adminEmail,
@@ -69,26 +73,22 @@ class AdminSetupService {
         throw Exception('Failed to create admin user');
       }
 
-      // Update display name
       await user.updateDisplayName(adminName);
 
-      // Create admin profile in Firestore with all privileges
-      final now = FieldValue.serverTimestamp();
-      await _firebaseService.firestore.collection('users').doc(user.uid).set({
-        'uid': user.uid,
+      // Step 2: Store admin profile in SQLite with all privileges
+      final now = DateTime.now().toIso8601String();
+      final userId = await _database.upsertUser({
+        'firebase_uid': user.uid,
         'email': adminEmail,
-        'displayName': adminName,
+        'display_name': adminName,
         'role': 'admin',
-        'photoURL': null,
-        'phoneNumber': null,
-        'isEmailVerified': false,
-        'isActive': true,
-        'isDefaultAdmin': true,
-        'createdAt': now,
-        'lastLoginAt': now,
-        'authProvider': 'email',
-        'twoFactorEnabled': false,
-        'permissions': [
+        'is_active': 1,
+        'is_default_admin': 1,
+        'created_at': now,
+        'last_login_at': now,
+        'auth_provider': 'email',
+        'two_factor_enabled': 0,
+        'permissions': jsonEncode([
           'view_lessons',
           'create_lessons',
           'edit_lessons',
@@ -98,50 +98,43 @@ class AdminSetupService {
           'edit_dictionary_entries',
           'delete_dictionary_entries',
           'review_dictionary_entries',
-          'take_assessments',
-          'create_assessments',
-          'view_assessment_results',
-          'participate_in_community',
-          'moderate_community',
-          'use_ai_assistant',
-          'configure_ai_settings',
-          'play_games',
-          'create_games',
           'manage_users',
           'view_analytics',
           'system_configuration',
           'content_moderation',
           'process_payments',
           'view_payment_history',
-        ],
-        'profile': {
+        ]),
+        'profile_data': jsonEncode({
           'bio': 'Administrateur par défaut de la plateforme Ma\'a yegue',
           'preferredLanguage': 'fr',
           'timezone': 'Africa/Douala',
-        },
-        'stats': {
-          'lessonsCreated': 0,
-          'dictionaryEntriesAdded': 0,
-          'usersManaged': 0,
-        },
+        }),
       });
 
       // Send email verification
       await user.sendEmailVerification();
 
+      // Log analytics
+      await _firebaseService.logEvent(
+        name: 'admin_created',
+        parameters: {'type': 'default_admin'},
+      );
+
       if (kDebugMode) {
-        print('Default admin user created successfully: $adminEmail');
+        print('✅ Default admin created: $adminEmail');
       }
 
       return {
         'success': true,
         'uid': user.uid,
+        'userId': userId,
         'email': adminEmail,
-        'message': 'Admin par défaut créé avec succès',
+        'message': 'Admin créé avec succès',
       };
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
-        print('Firebase Auth error creating admin: ${e.code} - ${e.message}');
+        print('❌ Firebase Auth error: ${e.code} - ${e.message}');
       }
 
       String errorMessage;
@@ -156,146 +149,237 @@ class AdminSetupService {
           errorMessage = 'Mot de passe trop faible';
           break;
         default:
-          errorMessage = 'Erreur lors de la création: ${e.message}';
+          errorMessage = 'Erreur: ${e.message}';
       }
 
       throw Exception(errorMessage);
     } catch (e) {
       if (kDebugMode) {
-        print('Error creating default admin: $e');
+        print('❌ Error creating admin: $e');
       }
-      throw Exception('Erreur inattendue lors de la création de l\'admin: $e');
+      await _firebaseService.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to create default admin',
+      );
+      throw Exception('Erreur: $e');
     }
   }
 
-  /// Reset admin password (for recovery)
+  /// Reset admin password
   Future<void> resetAdminPassword() async {
     try {
       final adminEmail = EnvironmentConfig.defaultAdminEmail;
       await _firebaseService.auth.sendPasswordResetEmail(email: adminEmail);
 
       if (kDebugMode) {
-        print('Password reset email sent to admin: $adminEmail');
+        print('✅ Password reset email sent to: $adminEmail');
       }
     } catch (e) {
-      throw Exception('Failed to send password reset email: $e');
+      if (kDebugMode) {
+        print('❌ Failed to send password reset email: $e');
+      }
+      throw Exception('Failed to send password reset: $e');
     }
   }
 
-  /// Get admin users count
+  /// Get admin users count from SQLite
   Future<int> getAdminCount() async {
     try {
-      final querySnapshot = await _firebaseService.firestore
-          .collection('users')
-          .where('role', isEqualTo: 'admin')
-          .get();
+      final db = await _database.database;
+      final result = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM users WHERE role = ?',
+        ['admin'],
+      );
 
-      return querySnapshot.docs.length;
+      return Sqflite.firstIntValue(result) ?? 0;
     } catch (e) {
       if (kDebugMode) {
-        print('Error getting admin count: $e');
+        print('❌ Error getting admin count: $e');
       }
       return 0;
     }
   }
 
-  /// Promote a user to admin
-  Future<void> promoteToAdmin(
-    String userId, {
-    required String promotedBy,
-  }) async {
+  /// Promote user to admin role
+  Future<void> promoteToAdmin(String userId) async {
     try {
-      await _firebaseService.firestore.collection('users').doc(userId).update({
-        'role': 'admin',
-        'promotedToAdminAt': FieldValue.serverTimestamp(),
-        'promotedBy': promotedBy,
-        'permissions': FieldValue.arrayUnion([
-          'manage_users',
-          'view_analytics',
-          'system_configuration',
-          'content_moderation',
-          'process_payments',
-        ]),
+      final db = await _database.database;
+
+      // Get current user
+      final users = await db.query(
+        'users',
+        where: 'user_id = ?',
+        whereArgs: [userId],
+        limit: 1,
+      );
+
+      if (users.isEmpty) {
+        throw Exception('User not found');
+      }
+
+      final user = users.first;
+      if (user['role'] == 'admin') {
+        throw Exception('User is already an admin');
+      }
+
+      // Update role to admin with permissions
+      await db.update(
+        'users',
+        {
+          'role': 'admin',
+          'promoted_to_admin_at': DateTime.now().toIso8601String(),
+          'permissions': jsonEncode([
+            'view_lessons',
+            'create_lessons',
+            'edit_lessons',
+            'delete_lessons',
+            'view_dictionary',
+            'add_dictionary_entries',
+            'edit_dictionary_entries',
+            'delete_dictionary_entries',
+            'manage_users',
+            'view_analytics',
+            'content_moderation',
+          ]),
+        },
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+
+      // Log admin promotion
+      await db.insert('admin_logs', {
+        'action': 'user_promoted',
+        'user_id': userId,
+        'details': jsonEncode({'role': 'admin'}),
+        'timestamp': DateTime.now().toIso8601String(),
       });
 
-      // Log the action
-      await _firebaseService.firestore.collection('admin_logs').add({
-        'action': 'promote_to_admin',
-        'userId': userId,
-        'performedBy': promotedBy,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _firebaseService.logEvent(
+        name: 'user_promoted_to_admin',
+        parameters: {'userId': userId},
+      );
 
       if (kDebugMode) {
-        print('User $userId promoted to admin by $promotedBy');
+        print('✅ User $userId promoted to admin');
       }
     } catch (e) {
-      throw Exception('Failed to promote user to admin: $e');
+      if (kDebugMode) {
+        print('❌ Error promoting user to admin: $e');
+      }
+      throw Exception('Failed to promote user: $e');
     }
   }
 
-  /// Demote an admin to regular user
-  Future<void> demoteAdmin(String userId, {required String demotedBy}) async {
+  /// Demote admin to regular user
+  Future<void> demoteFromAdmin(String userId) async {
     try {
-      // Check if it's the default admin
-      final userDoc = await _firebaseService.firestore
-          .collection('users')
-          .doc(userId)
-          .get();
+      final db = await _database.database;
 
-      if (userDoc.data()?['isDefaultAdmin'] == true) {
-        throw Exception('Cannot demote the default admin');
+      // Check if this is the default admin
+      final users = await db.query(
+        'users',
+        where: 'user_id = ?',
+        whereArgs: [userId],
+        limit: 1,
+      );
+
+      if (users.isEmpty) {
+        throw Exception('User not found');
       }
 
-      await _firebaseService.firestore.collection('users').doc(userId).update({
-        'role': 'learner',
-        'demotedFromAdminAt': FieldValue.serverTimestamp(),
-        'demotedBy': demotedBy,
-        'permissions': [
-          'view_lessons',
-          'view_dictionary',
-          'take_assessments',
-          'view_assessment_results',
-          'participate_in_community',
-          'use_ai_assistant',
-          'play_games',
-          'view_payment_history',
-        ],
+      final user = users.first;
+      if (user['is_default_admin'] == 1) {
+        throw Exception('Cannot demote default admin');
+      }
+
+      if (user['role'] != 'admin') {
+        throw Exception('User is not an admin');
+      }
+
+      // Update role to student with basic permissions
+      await db.update(
+        'users',
+        {
+          'role': 'student',
+          'demoted_from_admin_at': DateTime.now().toIso8601String(),
+          'permissions': jsonEncode(['view_lessons', 'view_dictionary']),
+        },
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+
+      // Log admin demotion
+      await db.insert('admin_logs', {
+        'action': 'user_demoted',
+        'user_id': userId,
+        'details': jsonEncode({'from_role': 'admin', 'to_role': 'student'}),
+        'timestamp': DateTime.now().toIso8601String(),
       });
 
-      // Log the action
-      await _firebaseService.firestore.collection('admin_logs').add({
-        'action': 'demote_from_admin',
-        'userId': userId,
-        'performedBy': demotedBy,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _firebaseService.logEvent(
+        name: 'user_demoted_from_admin',
+        parameters: {'userId': userId},
+      );
 
       if (kDebugMode) {
-        print('User $userId demoted from admin by $demotedBy');
+        print('✅ User $userId demoted from admin');
       }
     } catch (e) {
-      throw Exception('Failed to demote admin: $e');
+      if (kDebugMode) {
+        print('❌ Error demoting admin: $e');
+      }
+      throw Exception('Failed to demote user: $e');
     }
   }
 
-  /// Get all admin users
+  /// Get all admin users from SQLite
   Future<List<Map<String, dynamic>>> getAllAdmins() async {
     try {
-      final querySnapshot = await _firebaseService.firestore
-          .collection('users')
-          .where('role', isEqualTo: 'admin')
-          .orderBy('createdAt', descending: true)
-          .get();
+      final db = await _database.database;
+      final admins = await db.query(
+        'users',
+        where: 'role = ?',
+        whereArgs: ['admin'],
+        orderBy: 'created_at DESC',
+      );
 
-      return querySnapshot.docs
-          .map((doc) => {...doc.data(), 'id': doc.id})
-          .toList();
+      return admins;
     } catch (e) {
       if (kDebugMode) {
-        print('Error getting all admins: $e');
+        print('❌ Error getting admin list: $e');
       }
       return [];
     }
   }
+
+  /// Initialize admin account on first launch
+  Future<void> initializeAdminOnFirstLaunch() async {
+    try {
+      final adminCount = await getAdminCount();
+
+      if (adminCount == 0) {
+        if (kDebugMode) {
+          print('ℹ️ No admin found. Creating default admin...');
+        }
+        await createDefaultAdmin();
+      } else {
+        if (kDebugMode) {
+          print('✓ Admin account(s) already exist: $adminCount');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('⚠️ Error initializing admin: $e');
+      }
+      await _firebaseService.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to initialize admin on first launch',
+      );
+    }
+  }
 }
+
+// Backward compatibility alias
+typedef AdminSetupService = AdminSetupServiceHybrid;

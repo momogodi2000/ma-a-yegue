@@ -1,5 +1,5 @@
 import 'package:sqflite/sqflite.dart';
-import '../../../../core/database/cameroon_languages_database_helper.dart';
+import '../../../../core/database/unified_database_service.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/lesson.dart';
 import '../models/lesson_model.dart';
@@ -28,9 +28,9 @@ class LessonLocalDataSource implements LessonDataSource {
   @override
   Future<List<LessonModel>> getLessonsByCourse(String courseId) async {
     try {
+      final db = UnifiedDatabaseService.instance;
       // courseId maps to language_id in the database
-      final lessonsData =
-          await CameroonLanguagesDatabaseHelper.getLessonsByLanguage(courseId);
+      final lessonsData = await db.getLessonsByLanguage(courseId);
       return lessonsData.map((data) => _mapDbToLessonModel(data)).toList();
     } catch (e) {
       throw CacheFailure('Failed to get lessons: $e');
@@ -40,8 +40,8 @@ class LessonLocalDataSource implements LessonDataSource {
   @override
   Future<LessonModel> getLessonById(String lessonId) async {
     try {
-      final lessonData = await CameroonLanguagesDatabaseHelper.getLessonById(
-          int.parse(lessonId));
+      final db = UnifiedDatabaseService.instance;
+      final lessonData = await db.getLessonById(int.parse(lessonId));
       if (lessonData == null) {
         throw CacheFailure('Lesson not found: $lessonId');
       }
@@ -56,8 +56,9 @@ class LessonLocalDataSource implements LessonDataSource {
     try {
       // Get all lessons for the course and find the next one
       final lessons = await getLessonsByCourse(courseId);
-      final nextLesson =
-          lessons.where((lesson) => lesson.order > currentOrder).toList();
+      final nextLesson = lessons
+          .where((lesson) => lesson.order > currentOrder)
+          .toList();
       if (nextLesson.isEmpty) return null;
       return nextLesson.first;
     } catch (e) {
@@ -67,12 +68,15 @@ class LessonLocalDataSource implements LessonDataSource {
 
   @override
   Future<LessonModel?> getPreviousLesson(
-      String courseId, int currentOrder) async {
+    String courseId,
+    int currentOrder,
+  ) async {
     try {
       // Get all lessons for the course and find the previous one
       final lessons = await getLessonsByCourse(courseId);
-      final previousLesson =
-          lessons.where((lesson) => lesson.order < currentOrder).toList();
+      final previousLesson = lessons
+          .where((lesson) => lesson.order < currentOrder)
+          .toList();
       if (previousLesson.isEmpty) return null;
       return previousLesson.last;
     } catch (e) {
@@ -112,7 +116,9 @@ class LessonLocalDataSource implements LessonDataSource {
   @override
   Future<LessonModel> createLesson(LessonModel lesson) async {
     try {
-      final db = await CameroonLanguagesDatabaseHelper.database;
+      final dbService = UnifiedDatabaseService.instance;
+      final db = await dbService.database;
+
       final lessonMap = {
         'language_id': lesson.courseId,
         'title': lesson.title,
@@ -125,7 +131,7 @@ class LessonLocalDataSource implements LessonDataSource {
       };
 
       final id = await db.insert(
-        'lessons',
+        'cameroon.lessons',
         lessonMap,
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -140,7 +146,9 @@ class LessonLocalDataSource implements LessonDataSource {
   @override
   Future<LessonModel> updateLesson(String lessonId, LessonModel lesson) async {
     try {
-      final db = await CameroonLanguagesDatabaseHelper.database;
+      final dbService = UnifiedDatabaseService.instance;
+      final db = await dbService.database;
+
       final lessonMap = {
         'language_id': lesson.courseId,
         'title': lesson.title,
@@ -152,7 +160,7 @@ class LessonLocalDataSource implements LessonDataSource {
       };
 
       await db.update(
-        'lessons',
+        'cameroon.lessons',
         lessonMap,
         where: 'lesson_id = ?',
         whereArgs: [int.parse(lessonId)],
@@ -169,9 +177,11 @@ class LessonLocalDataSource implements LessonDataSource {
   @override
   Future<bool> deleteLesson(String lessonId) async {
     try {
-      final db = await CameroonLanguagesDatabaseHelper.database;
+      final dbService = UnifiedDatabaseService.instance;
+      final db = await dbService.database;
+
       final rowsDeleted = await db.delete(
-        'lessons',
+        'cameroon.lessons',
         where: 'lesson_id = ?',
         whereArgs: [int.parse(lessonId)],
       );

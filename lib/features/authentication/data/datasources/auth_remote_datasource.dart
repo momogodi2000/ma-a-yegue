@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-// import 'package:sign_in_with_apple/sign_in_with_apple.dart';  // Temporarily disabled
 import '../../../../core/services/firebase_service.dart';
+import '../../../../core/database/unified_database_service.dart';
 import '../models/user_model.dart';
 import '../models/auth_response_model.dart';
 
-/// Remote data source for authentication
+/// Remote data source for authentication (HYBRID VERSION)
+/// Uses Firebase Auth for authentication, SQLite for user profiles
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> signInWithEmailAndPassword(
     String email,
@@ -36,15 +36,95 @@ abstract class AuthRemoteDataSource {
   Stream<UserModel?> get authStateChanges;
 }
 
-/// Firebase implementation of AuthRemoteDataSource
+/// Hybrid implementation: Firebase Auth + SQLite profiles
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseService firebaseService;
+  final UnifiedDatabaseService _db = UnifiedDatabaseService.instance;
   final GoogleSignIn googleSignIn;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseService,
     required this.googleSignIn,
   });
+
+  /// Create or update user profile in SQLite
+  Future<UserModel> _createOrUpdateUserProfile(
+    User firebaseUser, {
+    String? displayName,
+    String? role,
+    String? authProvider,
+  }) async {
+    final db = await _db.database;
+    
+    // Check if user exists in SQLite
+    final existingUser = await _db.getUserByFirebaseUid(firebaseUser.uid);
+    
+    final userData = {
+      'firebase_uid': firebaseUser.uid,
+      'email': firebaseUser.email,
+      'display_name': displayName ?? firebaseUser.displayName ?? 'User',
+      'photo_url': firebaseUser.photoURL,
+      'phone_number': firebaseUser.phoneNumber,
+      'role': role ?? (existingUser?['role'] as String?) ?? 'learner',
+      'auth_provider': authProvider ?? 'email',
+      'is_active': 1,
+      'is_email_verified': firebaseUser.emailVerified ? 1 : 0,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+
+    if (existingUser == null) {
+      // Create new user
+      userData['created_at'] = DateTime.now().toIso8601String();
+      userData['last_login_at'] = DateTime.now().toIso8601String();
+      
+      await db.insert('users', userData);
+      
+      return UserModel(
+        id: firebaseUser.uid, // Use Firebase UID as ID
+        email: firebaseUser.email ?? '',
+        displayName: userData['display_name'] as String,
+        photoUrl: firebaseUser.photoURL,
+        phoneNumber: firebaseUser.phoneNumber,
+        role: userData['role'] as String,
+        isEmailVerified: firebaseUser.emailVerified,
+        createdAt: DateTime.now(),
+        lastLoginAt: DateTime.now(),
+      );
+    } else {
+      // Update existing user
+      userData['last_login_at'] = DateTime.now().toIso8601String();
+      
+      await db.update(
+        'users',
+        userData,
+        where: 'firebase_uid = ?',
+        whereArgs: [firebaseUser.uid],
+      );
+      
+      // Fetch updated user
+      final updated = await _db.getUserByFirebaseUid(firebaseUser.uid);
+      return _userModelFromMap(updated!);
+    }
+  }
+
+  /// Convert SQLite map to UserModel
+  UserModel _userModelFromMap(Map<String, dynamic> data) {
+    return UserModel(
+      id: data['firebase_uid'] as String, // Use Firebase UID as ID
+      email: data['email'] as String? ?? '',
+      displayName: data['display_name'] as String? ?? 'User',
+      photoUrl: data['photo_url'] as String?,
+      phoneNumber: data['phone_number'] as String?,
+      role: data['role'] as String? ?? 'learner',
+      isEmailVerified: (data['is_email_verified'] as int?) == 1,
+      createdAt: data['created_at'] != null 
+          ? DateTime.parse(data['created_at'] as String)
+          : DateTime.now(),
+      lastLoginAt: data['last_login_at'] != null
+          ? DateTime.parse(data['last_login_at'] as String)
+          : null,
+    );
+  }
 
   @override
   Future<AuthResponseModel> signInWithEmailAndPassword(
@@ -59,42 +139,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Sign in failed: No user returned');
     }
 
-    // Update last login time in Firestore
-    final userDoc =
-        firebaseService.firestore.collection('users').doc(firebaseUser.uid);
-    final userData = await userDoc.get();
-
-    if (userData.exists) {
-      await userDoc.update({
-        'lastLoginAt': FieldValue.serverTimestamp(),
-      });
-      // Fetch complete user data from Firestore
-      final updatedUserData = await userDoc.get();
-      final user = UserModel.fromFirestore(
-        updatedUserData.data() as Map<String, dynamic>,
-        updatedUserData.id,
-      );
-      return AuthResponseModel(user: user);
-    } else {
-      // User exists in Auth but not in Firestore - create document
-      await userDoc.set({
-        'uid': firebaseUser.uid,
-        'email': firebaseUser.email,
-        'displayName': firebaseUser.displayName ?? 'User',
-        'photoURL': firebaseUser.photoURL,
-        'role': 'learner',
-        'authProvider': 'email',
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLoginAt': FieldValue.serverTimestamp(),
-        'isActive': true,
-      });
-      final newUserData = await userDoc.get();
-      final user = UserModel.fromFirestore(
-        newUserData.data() as Map<String, dynamic>,
-        newUserData.id,
-      );
-      return AuthResponseModel(user: user);
-    }
+    // Create/update user profile in SQLite
+    final user = await _createOrUpdateUserProfile(firebaseUser);
+    return AuthResponseModel(user: user);
   }
 
   @override
@@ -113,26 +160,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     await firebaseUser.updateDisplayName(displayName);
 
-    // Create user document in Firestore with default role 'learner'
-    final userDoc =
-        firebaseService.firestore.collection('users').doc(firebaseUser.uid);
-    await userDoc.set({
-      'uid': firebaseUser.uid,
-      'email': firebaseUser.email,
-      'displayName': displayName,
-      'photoURL': firebaseUser.photoURL,
-      'role': 'learner', // Default role for new registrations
-      'authProvider': 'email',
-      'createdAt': FieldValue.serverTimestamp(),
-      'lastLoginAt': FieldValue.serverTimestamp(),
-      'isActive': true,
-    });
-
-    // Fetch complete user data from Firestore
-    final userData = await userDoc.get();
-    final user = UserModel.fromFirestore(
-      userData.data() as Map<String, dynamic>,
-      userData.id,
+    // Create user profile in SQLite with default role 'learner'
+    final user = await _createOrUpdateUserProfile(
+      firebaseUser,
+      displayName: displayName,
+      role: 'learner',
+      authProvider: 'email',
     );
 
     return AuthResponseModel(user: user);
@@ -159,36 +192,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Google sign-in failed: No user returned');
     }
 
-    // Save or update user in Firestore
-    final userDoc =
-        firebaseService.firestore.collection('users').doc(firebaseUser.uid);
-    final userData = await userDoc.get();
-
-    if (!userData.exists) {
-      // Create new user document with default role 'learner'
-      await userDoc.set({
-        'uid': firebaseUser.uid,
-        'email': firebaseUser.email,
-        'displayName': firebaseUser.displayName ?? 'Google User',
-        'photoURL': firebaseUser.photoURL,
-        'role': 'learner', // Default role for new users
-        'authProvider': 'google',
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLoginAt': FieldValue.serverTimestamp(),
-        'isActive': true,
-      });
-    } else {
-      // Update last login time for existing user
-      await userDoc.update({
-        'lastLoginAt': FieldValue.serverTimestamp(),
-      });
-    }
-
-    // Fetch complete user data from Firestore
-    final updatedUserData = await userDoc.get();
-    final user = UserModel.fromFirestore(
-      updatedUserData.data() as Map<String, dynamic>,
-      updatedUserData.id,
+    // Create/update user profile in SQLite
+    final user = await _createOrUpdateUserProfile(
+      firebaseUser,
+      authProvider: 'google',
     );
 
     return AuthResponseModel(user: user);
@@ -213,36 +220,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Facebook sign-in failed: No user returned');
     }
 
-    // Save or update user in Firestore
-    final userDoc =
-        firebaseService.firestore.collection('users').doc(firebaseUser.uid);
-    final userData = await userDoc.get();
-
-    if (!userData.exists) {
-      // Create new user document with default role 'learner'
-      await userDoc.set({
-        'uid': firebaseUser.uid,
-        'email': firebaseUser.email,
-        'displayName': firebaseUser.displayName ?? 'Facebook User',
-        'photoURL': firebaseUser.photoURL,
-        'role': 'learner', // Default role for new users
-        'authProvider': 'facebook',
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLoginAt': FieldValue.serverTimestamp(),
-        'isActive': true,
-      });
-    } else {
-      // Update last login time for existing user
-      await userDoc.update({
-        'lastLoginAt': FieldValue.serverTimestamp(),
-      });
-    }
-
-    // Fetch complete user data from Firestore
-    final updatedUserData = await userDoc.get();
-    final user = UserModel.fromFirestore(
-      updatedUserData.data() as Map<String, dynamic>,
-      updatedUserData.id,
+    // Create/update user profile in SQLite
+    final user = await _createOrUpdateUserProfile(
+      firebaseUser,
+      authProvider: 'facebook',
     );
 
     return AuthResponseModel(user: user);
@@ -252,73 +233,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<AuthResponseModel> signInWithApple() async {
     // Temporarily disabled due to plugin compatibility issues
     throw Exception('Apple sign-in temporarily disabled');
-
-    /* Original code commented out:
-    try {
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
-      );
-
-      final userCredential = await firebaseService.auth.signInWithCredential(oauthCredential);
-
-      final user = userCredential.user;
-      if (user == null) {
-        throw Exception('Apple sign-in failed: No user returned');
-      }
-
-      // Create or update user profile
-      final userDoc = firebaseService.firestore.collection('users').doc(user.uid);
-      final userData = await userDoc.get();
-
-      if (!userData.exists) {
-        await userDoc.set({
-          'uid': user.uid,
-          'email': user.email,
-          'displayName': user.displayName ?? appleCredential.givenName ?? 'Apple User',
-          'photoURL': user.photoURL,
-          'role': 'learner', // Default role
-          'createdAt': FieldValue.serverTimestamp(),
-          'lastLoginAt': FieldValue.serverTimestamp(),
-          'authProvider': 'apple',
-        });
-      } else {
-        await userDoc.update({
-          'lastLoginAt': FieldValue.serverTimestamp(),
-        });
-      }
-
-      return AuthResponseModel(
-        success: true,
-        user: UserModel.fromFirebaseUser(user),
-        message: 'Connexion avec Apple réussie',
-      );
-    } catch (e) {
-      throw Exception('Échec de connexion avec Apple: $e');
-    }
-    */
   }
 
   @override
   Future<String> signInWithPhoneNumber(String phoneNumber) async {
-    // Completer to handle the async nature of verifyPhoneNumber
     final completer = Completer<String>();
 
     await firebaseService.auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       timeout: const Duration(seconds: 60),
       verificationCompleted: (PhoneAuthCredential credential) async {
-        // Auto-retrieval or instant verification on Android
-        // This callback is called when SMS is automatically retrieved
-        // We don't complete here as we want to return the verificationId
-        // for manual verification flow
+        // Auto-retrieval on Android
       },
       verificationFailed: (FirebaseAuthException e) {
         if (e.code == 'invalid-phone-number') {
@@ -332,11 +257,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }
       },
       codeSent: (String verificationId, int? resendToken) {
-        // SMS code sent successfully, return the verificationId
         completer.complete(verificationId);
       },
       codeAutoRetrievalTimeout: (String verificationId) {
-        // Auto-retrieval timeout, but we already have the verificationId
         if (!completer.isCompleted) {
           completer.complete(verificationId);
         }
@@ -352,13 +275,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String smsCode,
   ) async {
     try {
-      // Create credential with verification ID and SMS code
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: smsCode,
       );
 
-      // Sign in with the credential
       final userCredential = await firebaseService.auth.signInWithCredential(
         credential,
       );
@@ -367,34 +288,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Phone verification failed: No user returned');
       }
 
-      final user = userCredential.user!;
+      final firebaseUser = userCredential.user!;
 
-      // Create or update user profile in Firestore
-      final userDoc = firebaseService.firestore
-          .collection('users')
-          .doc(user.uid);
-      final userData = await userDoc.get();
-
-      if (!userData.exists) {
-        await userDoc.set({
-          'uid': user.uid,
-          'email': user.email,
-          'displayName': user.displayName ?? user.phoneNumber ?? 'Phone User',
-          'phoneNumber': user.phoneNumber,
-          'photoURL': user.photoURL,
-          'role': 'learner', // Default role
-          'createdAt': FieldValue.serverTimestamp(),
-          'lastLoginAt': FieldValue.serverTimestamp(),
-          'authProvider': 'phone',
-          'isEmailVerified': false,
-        });
-      } else {
-        await userDoc.update({'lastLoginAt': FieldValue.serverTimestamp()});
-      }
+      // Create/update user profile in SQLite
+      final user = await _createOrUpdateUserProfile(
+        firebaseUser,
+        authProvider: 'phone',
+      );
 
       return AuthResponseModel(
         success: true,
-        user: UserModel.fromFirebaseUser(user),
+        user: user,
         message: 'Phone verification successful',
       );
     } on FirebaseAuthException catch (e) {
@@ -423,26 +327,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     if (firebaseUser == null) return null;
 
     try {
-      // Fetch complete user data from Firestore including role
-      final userDoc = await firebaseService.firestore
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .get();
+      // Fetch user profile from SQLite
+      final userData = await _db.getUserByFirebaseUid(firebaseUser.uid);
 
-      if (userDoc.exists && userDoc.data() != null) {
-        // Return user with complete Firestore data including role
-        return UserModel.fromFirestore(
-          userDoc.data() as Map<String, dynamic>,
-          userDoc.id,
-        );
+      if (userData != null) {
+        return _userModelFromMap(userData);
       } else {
-        // Fallback: User exists in Auth but not in Firestore
-        // This shouldn't happen, but return basic user data if it does
-        return UserModel.fromFirebaseUser(firebaseUser);
+        // User exists in Firebase Auth but not in SQLite - create profile
+        return await _createOrUpdateUserProfile(firebaseUser);
       }
     } catch (e) {
-      // On error, fallback to Firebase Auth data only
-      return UserModel.fromFirebaseUser(firebaseUser);
+      // On error, create basic profile
+      return await _createOrUpdateUserProfile(firebaseUser);
     }
   }
 
@@ -461,16 +357,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final firebaseUser = firebaseService.auth.currentUser;
     if (firebaseUser == null) throw Exception('No authenticated user');
 
+    // Update Firebase Auth profile
     await firebaseUser.updateDisplayName(user.displayName);
     if (user.photoUrl != null) {
       await firebaseUser.updatePhotoURL(user.photoUrl);
     }
 
-    // Update in Firestore
-    await firebaseService.firestore
-        .collection('users')
-        .doc(user.id)
-        .update(user.toFirestore());
+    // Update SQLite profile
+    final db = await _db.database;
+    await db.update(
+      'users',
+      {
+        'display_name': user.displayName,
+        'photo_url': user.photoUrl,
+        'phone_number': user.phoneNumber,
+        'updated_at': DateTime.now().toIso8601String(),
+      },
+      where: 'firebase_uid = ?',
+      whereArgs: [user.id], // user.id is the Firebase UID
+    );
 
     return user;
   }
@@ -480,22 +385,33 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final firebaseUser = firebaseService.auth.currentUser;
     if (firebaseUser == null) throw Exception('No authenticated user');
 
-    // Delete from Firestore
-    await firebaseService.firestore
-        .collection('users')
-        .doc(firebaseUser.uid)
-        .delete();
+    // Delete from SQLite
+    final db = await _db.database;
+    await db.delete(
+      'users',
+      where: 'firebase_uid = ?',
+      whereArgs: [firebaseUser.uid],
+    );
 
-    // Delete from Auth
+    // Delete from Firebase Auth
     await firebaseUser.delete();
   }
 
   @override
   Stream<UserModel?> get authStateChanges {
-    return firebaseService.auth.authStateChanges().map((firebaseUser) {
-      return firebaseUser != null
-          ? UserModel.fromFirebaseUser(firebaseUser)
-          : null;
+    return firebaseService.auth.authStateChanges().asyncMap((firebaseUser) async {
+      if (firebaseUser == null) return null;
+      
+      try {
+        final userData = await _db.getUserByFirebaseUid(firebaseUser.uid);
+        if (userData != null) {
+          return _userModelFromMap(userData);
+        } else {
+          return await _createOrUpdateUserProfile(firebaseUser);
+        }
+      } catch (e) {
+        return UserModel.fromFirebaseUser(firebaseUser);
+      }
     });
   }
 }

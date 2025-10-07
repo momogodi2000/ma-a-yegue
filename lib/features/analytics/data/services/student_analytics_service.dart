@@ -1,16 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:maa_yegue/core/database/database_helper.dart';
+import 'package:maa_yegue/core/database/unified_database_service.dart';
 import 'package:maa_yegue/features/analytics/data/models/student_analytics_models.dart';
 
 /// Service for student analytics and performance tracking
 class StudentAnalyticsService {
+  final _db = UnifiedDatabaseService.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// Get comprehensive student analytics
   Future<StudentAnalytics> getStudentAnalytics(String userId) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     // Get learning progress data
     final progressData = await _getLearningProgress(userId, db);

@@ -6,7 +6,8 @@ import 'package:crypto/crypto.dart';
 class SecurityUtils {
   /// Generate a secure random string
   static String generateSecureToken([int length = 32]) {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final random = Random.secure();
 
     return String.fromCharCodes(
@@ -40,6 +41,54 @@ class SecurityUtils {
     final hasSpecialChar = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 
     return hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+  }
+
+  /// Validate password strength with detailed feedback
+  static Map<String, dynamic> validatePasswordStrength(String password) {
+    final errors = <String>[];
+
+    if (password.length < 8) {
+      errors.add('Le mot de passe doit contenir au moins 8 caractères');
+    }
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      errors.add('Le mot de passe doit contenir au moins une majuscule');
+    }
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      errors.add('Le mot de passe doit contenir au moins une minuscule');
+    }
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      errors.add('Le mot de passe doit contenir au moins un chiffre');
+    }
+    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      errors.add('Le mot de passe doit contenir au moins un caractère spécial');
+    }
+
+    // Calculate strength score
+    int strengthScore = 0;
+    if (password.length >= 8) strengthScore += 20;
+    if (password.length >= 12) strengthScore += 10;
+    if (password.contains(RegExp(r'[A-Z]'))) strengthScore += 20;
+    if (password.contains(RegExp(r'[a-z]'))) strengthScore += 20;
+    if (password.contains(RegExp(r'[0-9]'))) strengthScore += 20;
+    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      strengthScore += 10;
+    }
+
+    String strength;
+    if (strengthScore >= 80) {
+      strength = 'strong';
+    } else if (strengthScore >= 50) {
+      strength = 'medium';
+    } else {
+      strength = 'weak';
+    }
+
+    return {
+      'isStrong': errors.isEmpty,
+      'errors': errors,
+      'strength': strength,
+      'score': strengthScore,
+    };
   }
 
   /// Sanitize input string to prevent XSS
@@ -147,7 +196,10 @@ class SecurityUtils {
   /// Check if input contains SQL injection patterns
   static bool isSqlInjectionSafe(String input) {
     final sqlPatterns = [
-      RegExp(r'(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)', caseSensitive: false),
+      RegExp(
+        r'(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)',
+        caseSensitive: false,
+      ),
       RegExp(r'(\-\-|\#|/\*|\*/)', caseSensitive: false),
       RegExp(r'(\bOR\b|\bAND\b)\s+\d+\s*=\s*\d+', caseSensitive: false),
       RegExp(r"';\s*(\bDROP\b|\bDELETE\b|\bINSERT\b)", caseSensitive: false),
@@ -185,7 +237,10 @@ class SecurityUtils {
   }
 
   /// Check if file extension is allowed
-  static bool isAllowedFileExtension(String filename, List<String> allowedExtensions) {
+  static bool isAllowedFileExtension(
+    String filename,
+    List<String> allowedExtensions,
+  ) {
     final extension = filename.split('.').last.toLowerCase();
     return allowedExtensions.contains(extension);
   }
@@ -203,7 +258,9 @@ class SecurityUtils {
     try {
       final uri = Uri.parse(url);
       final domain = uri.host.toLowerCase();
-      return allowedDomains.any((allowed) => domain.endsWith(allowed.toLowerCase()));
+      return allowedDomains.any(
+        (allowed) => domain.endsWith(allowed.toLowerCase()),
+      );
     } catch (e) {
       return false;
     }

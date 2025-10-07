@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:maa_yegue/core/database/database_helper.dart';
+import 'package:maa_yegue/core/database/unified_database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Simple service for tracking learner progress during lessons
 /// Manages lesson_progress, skill_progress, and milestones tables
 class ProgressTrackingService {
+  final _db = UnifiedDatabaseService.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// Start a new lesson session
@@ -14,7 +15,7 @@ class ProgressTrackingService {
     required String languageCode,
     required String lessonId,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     // Check if lesson progress already exists
@@ -79,7 +80,7 @@ class ProgressTrackingService {
     required int timeSpentSeconds,
     int? currentScore,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     final existing = await db.query(
@@ -130,7 +131,7 @@ class ProgressTrackingService {
     required int finalScore,
     required int totalTimeSpent,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     final existing = await db.query(
@@ -187,7 +188,7 @@ class ProgressTrackingService {
     required String languageCode,
     required String lessonId,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final results = await db.query(
       'lesson_progress',
@@ -203,7 +204,7 @@ class ProgressTrackingService {
     required String userId,
     required String languageCode,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     return await db.query(
       'lesson_progress',
@@ -221,7 +222,7 @@ class ProgressTrackingService {
     required int proficiencyScore, // 0-100
     int practiceCount = 1,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     final existing = await db.query(
@@ -285,7 +286,7 @@ class ProgressTrackingService {
     required String languageCode,
     required String skillName,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final results = await db.query(
       'skill_progress',
@@ -301,7 +302,7 @@ class ProgressTrackingService {
     required String userId,
     required String languageCode,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     return await db.query(
       'skill_progress',
@@ -320,7 +321,7 @@ class ProgressTrackingService {
     String? description,
     Map<String, dynamic>? metadata,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     // Check if milestone already exists
@@ -359,7 +360,7 @@ class ProgressTrackingService {
     required String userId,
     required String languageCode,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     return await db.query(
       'milestones',
@@ -374,7 +375,7 @@ class ProgressTrackingService {
     required String userId,
     required String languageCode,
   }) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     // Get completed lessons count
     final completedCount =
@@ -444,7 +445,7 @@ class ProgressTrackingService {
     String userId,
     String languageCode,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
     // Get statistics
@@ -511,7 +512,7 @@ class ProgressTrackingService {
 
   /// Calculate current streak (consecutive days studied)
   Future<int> _calculateStreak(String userId, String languageCode) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final completedLessons = await db.query(
       'lesson_progress',
@@ -563,7 +564,7 @@ class ProgressTrackingService {
     String userId,
     String languageCode,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final totalStarted =
         Sqflite.firstIntValue(
@@ -591,7 +592,7 @@ class ProgressTrackingService {
     String userId,
     String languageCode,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
 
     final completedCount =
         Sqflite.firstIntValue(
@@ -661,7 +662,7 @@ class ProgressTrackingService {
     String languageCode,
     String lessonId,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final progress = await db.query(
       'lesson_progress',
       where: 'user_id = ? AND language_code = ? AND lesson_id = ?',
@@ -684,7 +685,7 @@ class ProgressTrackingService {
     String languageCode,
     String skillName,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final skill = await db.query(
       'skill_progress',
       where: 'user_id = ? AND language_code = ? AND skill_name = ?',
@@ -707,7 +708,7 @@ class ProgressTrackingService {
     String languageCode,
     String milestoneType,
   ) async {
-    final db = await DatabaseHelper.database;
+    final db = await _db.database;
     final milestone = await db.query(
       'milestones',
       where: 'user_id = ? AND language_code = ? AND milestone_type = ?',

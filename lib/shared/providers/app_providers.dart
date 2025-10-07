@@ -4,8 +4,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../core/services/firebase_service.dart';
 import '../../core/services/admin_setup_service.dart';
-import '../../core/services/two_factor_auth_service.dart';
-import '../../core/services/user_role_service.dart';
+import '../../core/services/two_factor_auth_service_hybrid.dart';
+import '../../core/services/user_role_service_hybrid.dart';
 import '../../core/services/ai_service.dart';
 import '../../core/config/environment_config.dart';
 import '../../core/sync/general_sync_manager.dart';
@@ -64,8 +64,8 @@ List<SingleChildWidget> get appProviders => [
   ProxyProvider<FirebaseService, TwoFactorAuthService>(
     update: (_, firebaseService, __) => TwoFactorAuthService(firebaseService),
   ),
-  ProxyProvider<FirebaseService, UserRoleService>(
-    update: (_, firebaseService, __) => UserRoleService(firebaseService),
+  ProxyProvider<FirebaseService, UserRoleServiceHybrid>(
+    update: (_, firebaseService, __) => UserRoleServiceHybrid(),
   ),
 
   // Theme & Locale
@@ -74,11 +74,10 @@ List<SingleChildWidget> get appProviders => [
 
   // Authentication Data Sources
   ProxyProvider<FirebaseService, AuthRemoteDataSource>(
-    update: (_, firebaseService, __) =>
-        AuthRemoteDataSourceImpl(
-          firebaseService: firebaseService,
-          googleSignIn: GoogleSignIn(),
-        ),
+    update: (_, firebaseService, __) => AuthRemoteDataSourceImpl(
+      firebaseService: firebaseService,
+      googleSignIn: GoogleSignIn(),
+    ),
   ),
   Provider<AuthLocalDataSource>(create: (_) => AuthLocalDataSourceImpl()),
 

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import '../models/dictionary_entry_model.dart';
 import '../../domain/entities/dictionary_entry_entity.dart';
-import '../../../../core/database/database_helper.dart';
+import '../../../../core/database/unified_database_service.dart';
 
 /// Local data source for dictionary entries using SQLite
 abstract class LexiconLocalDataSource {
@@ -31,7 +31,7 @@ abstract class LexiconLocalDataSource {
   Future<void> queueForSync(DictionaryEntryModel entry);
   Future<int> getEntriesCount({String? languageCode, ReviewStatus? status});
   Future<void> clearAll();
-  
+
   // Additional methods
   Future<void> cacheEntry(DictionaryEntryModel entry);
   Future<List<String>> getWordSuggestions({String? query, int? limit});
@@ -41,11 +41,14 @@ abstract class LexiconLocalDataSource {
   Future<List<DictionaryEntryModel>> getQueuedForSync();
   Future<List<String>> getQueuedDeletions();
   Future<void> removeDeletionFromQueue(String id);
-  Future<List<DictionaryEntryModel>> getEntriesByDifficulty(DifficultyLevel difficulty);
+  Future<List<DictionaryEntryModel>> getEntriesByDifficulty(
+    DifficultyLevel difficulty,
+  );
 }
 
 class LexiconLocalDataSourceImpl implements LexiconLocalDataSource {
-  Future<Database> get _database => DatabaseHelper.database;
+  final _dbService = UnifiedDatabaseService.instance;
+  Future<Database> get _database => _dbService.database;
 
   static const String _tableName = 'dictionary_entries';
 
@@ -62,7 +65,9 @@ class LexiconLocalDataSourceImpl implements LexiconLocalDataSource {
   }
 
   @override
-  Future<List<DictionaryEntryModel>> getEntriesByLanguage(String languageCode) async {
+  Future<List<DictionaryEntryModel>> getEntriesByLanguage(
+    String languageCode,
+  ) async {
     final List<Map<String, dynamic>> maps = await (await _database).query(
       _tableName,
       where: 'language_code = ? AND is_deleted = ?',
@@ -224,17 +229,17 @@ class LexiconLocalDataSourceImpl implements LexiconLocalDataSource {
   Future<void> markAsSynced(String id) async {
     await (await _database).update(
       _tableName,
-      {
-        'needs_sync': 0,
-        'last_synced': DateTime.now().millisecondsSinceEpoch,
-      },
+      {'needs_sync': 0, 'last_synced': DateTime.now().millisecondsSinceEpoch},
       where: 'id = ?',
       whereArgs: [id],
     );
   }
 
   @override
-  Future<void> markAsConflict(String id, Map<String, dynamic> conflictData) async {
+  Future<void> markAsConflict(
+    String id,
+    Map<String, dynamic> conflictData,
+  ) async {
     await (await _database).update(
       _tableName,
       {
@@ -248,7 +253,10 @@ class LexiconLocalDataSourceImpl implements LexiconLocalDataSource {
   }
 
   @override
-  Future<void> resolveConflict(String id, DictionaryEntryModel resolvedEntry) async {
+  Future<void> resolveConflict(
+    String id,
+    DictionaryEntryModel resolvedEntry,
+  ) async {
     await (await _database).update(
       _tableName,
       {
@@ -272,7 +280,10 @@ class LexiconLocalDataSourceImpl implements LexiconLocalDataSource {
   }
 
   @override
-  Future<int> getEntriesCount({String? languageCode, ReviewStatus? status}) async {
+  Future<int> getEntriesCount({
+    String? languageCode,
+    ReviewStatus? status,
+  }) async {
     String whereClause = 'is_deleted = ?';
     List<dynamic> whereArgs = [0];
 
@@ -391,7 +402,9 @@ class LexiconLocalDataSourceImpl implements LexiconLocalDataSource {
   }
 
   @override
-  Future<List<DictionaryEntryModel>> getEntriesByDifficulty(DifficultyLevel difficulty) async {
+  Future<List<DictionaryEntryModel>> getEntriesByDifficulty(
+    DifficultyLevel difficulty,
+  ) async {
     final results = await (await _database).query(
       _tableName,
       where: 'difficulty = ? AND is_deleted = ?',

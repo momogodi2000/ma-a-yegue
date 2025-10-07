@@ -8,7 +8,9 @@ class PaymentEntity {
   final String status; // 'pending', 'completed', 'failed', 'cancelled'
   final String? transactionId;
   final String? reference;
+  final String? subscriptionId;
   final DateTime createdAt;
+  final DateTime? updatedAt;
   final DateTime? completedAt;
   final String? failureReason;
 
@@ -21,7 +23,9 @@ class PaymentEntity {
     required this.status,
     this.transactionId,
     this.reference,
+    this.subscriptionId,
     required this.createdAt,
+    this.updatedAt,
     this.completedAt,
     this.failureReason,
   });
@@ -35,7 +39,9 @@ class PaymentEntity {
     String? status,
     String? transactionId,
     String? reference,
+    String? subscriptionId,
     DateTime? createdAt,
+    DateTime? updatedAt,
     DateTime? completedAt,
     String? failureReason,
   }) {
@@ -48,7 +54,9 @@ class PaymentEntity {
       status: status ?? this.status,
       transactionId: transactionId ?? this.transactionId,
       reference: reference ?? this.reference,
+      subscriptionId: subscriptionId ?? this.subscriptionId,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       completedAt: completedAt ?? this.completedAt,
       failureReason: failureReason ?? this.failureReason,
     );
