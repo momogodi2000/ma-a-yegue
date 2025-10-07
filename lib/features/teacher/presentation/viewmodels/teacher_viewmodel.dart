@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 import '../../domain/entities/teacher_entity.dart';
 import '../../domain/usecases/teacher_usecases.dart';
 
+// Export entities for use in views
+export '../../domain/entities/teacher_entity.dart';
+
 /// Teacher ViewModel for state management
 class TeacherViewModel extends ChangeNotifier {
   final GetTeacherProfile _getTeacherProfile;
@@ -63,11 +66,11 @@ class TeacherViewModel extends ChangeNotifier {
     required GetTeacherAnalytics getTeacherAnalytics,
     required GetTeacherMessages getTeacherMessages,
     required GetMessagesWithStudent getMessagesWithStudent,
-    required SendMessage sendMessage,
+    required SendMessageToStudent sendMessage,
     required GetCourseAnnouncements getCourseAnnouncements,
     required CreateAnnouncement createAnnouncement,
     required GetTeacherNotifications getTeacherNotifications,
-    required SendNotification sendNotification,
+    required SendNotificationToStudent sendNotification,
     required GetTeacherSettings getTeacherSettings,
     required UpdateTeacherSettings updateTeacherSettings,
     required GetTeacherCalendar getTeacherCalendar,
@@ -513,7 +516,12 @@ class TeacherViewModel extends ChangeNotifier {
     _setLoading(true);
     _clearError();
 
-    final result = await _sendMessage(teacherId, studentId, message, 'Message from teacher');
+    final result = await _sendMessage(
+      teacherId,
+      studentId,
+      message,
+      'Message from teacher',
+    );
     result.fold((failure) => _setError(failure.message), (_) {
       _messages.add({
         'teacherId': teacherId,

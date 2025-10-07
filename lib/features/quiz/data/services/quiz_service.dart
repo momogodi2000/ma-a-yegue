@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:maa_yegue/features/quiz/domain/entities/quiz_entity.dart';
 import 'package:maa_yegue/features/lessons/data/services/progress_tracking_service.dart';
 import 'package:maa_yegue/core/database/database_helper.dart';
@@ -35,7 +36,7 @@ class QuizService {
       // Fallback to local sample quiz for development
       return _createSampleQuiz(lessonId, languageCode);
     } catch (e) {
-      print('Error getting quiz: $e');
+      debugPrint('Error getting quiz: $e');
       return null;
     }
   }
@@ -45,7 +46,8 @@ class QuizService {
     required String userId,
     required String quizId,
   }) async {
-    final attemptId = '${userId}_${quizId}_${DateTime.now().millisecondsSinceEpoch}';
+    final attemptId =
+        '${userId}_${quizId}_${DateTime.now().millisecondsSinceEpoch}';
 
     final attempt = QuizAttempt(
       id: attemptId,
@@ -71,7 +73,7 @@ class QuizService {
       proficiencyScore: 0, // Will be updated as quiz progresses
     );
 
-    print('✅ Quiz attempt started: $attemptId');
+    debugPrint('✅ Quiz attempt started: $attemptId');
     return attemptId;
   }
 
@@ -84,7 +86,7 @@ class QuizService {
   }) async {
     final attempt = _activeAttempts[attemptId];
     if (attempt == null) {
-      print('⚠️ Quiz attempt not found: $attemptId');
+      debugPrint('⚠️ Quiz attempt not found: $attemptId');
       return false;
     }
 
@@ -101,7 +103,8 @@ class QuizService {
     );
 
     // Update attempt with new answer
-    final updatedAnswers = List<QuestionAnswer>.from(attempt.answers)..add(questionAnswer);
+    final updatedAnswers = List<QuestionAnswer>.from(attempt.answers)
+      ..add(questionAnswer);
     final updatedScore = attempt.totalScore + pointsEarned;
 
     _activeAttempts[attemptId] = attempt.copyWith(
@@ -109,7 +112,9 @@ class QuizService {
       totalScore: updatedScore,
     );
 
-    print('📝 Answer submitted: ${question.id} - ${isCorrect ? 'Correct' : 'Incorrect'} (+$pointsEarned points)');
+    debugPrint(
+      '📝 Answer submitted: ${question.id} - ${isCorrect ? 'Correct' : 'Incorrect'} (+$pointsEarned points)',
+    );
 
     return isCorrect;
   }
@@ -121,14 +126,16 @@ class QuizService {
   }) async {
     final attempt = _activeAttempts[attemptId];
     if (attempt == null) {
-      print('⚠️ Quiz attempt not found: $attemptId');
+      debugPrint('⚠️ Quiz attempt not found: $attemptId');
       return null;
     }
 
     final completedAt = DateTime.now();
     final timeSpent = completedAt.difference(attempt.startedAt).inSeconds;
 
-    final percentage = quiz.totalPoints > 0 ? (attempt.totalScore / quiz.totalPoints) * 100 : 0.0;
+    final percentage = quiz.totalPoints > 0
+        ? (attempt.totalScore / quiz.totalPoints) * 100
+        : 0.0;
     final passed = percentage >= quiz.passingScore;
 
     final completedAttempt = attempt.copyWith(
@@ -148,7 +155,9 @@ class QuizService {
     // Remove from active attempts
     _activeAttempts.remove(attemptId);
 
-    print('🎉 Quiz completed: ${completedAttempt.totalScore}/${completedAttempt.maxScore} (${percentage.toStringAsFixed(1)}%) - ${passed ? 'PASSED' : 'FAILED'}');
+    debugPrint(
+      '🎉 Quiz completed: ${completedAttempt.totalScore}/${completedAttempt.maxScore} (${percentage.toStringAsFixed(1)}%) - ${passed ? 'PASSED' : 'FAILED'}',
+    );
 
     return completedAttempt;
   }
@@ -217,16 +226,26 @@ class QuizService {
     final passedQuizzes = history.where((q) => q.passed).length;
     final passRate = (passedQuizzes / totalQuizzes) * 100;
 
-    final averageScore = history.map((q) => q.percentage).reduce((a, b) => a + b) / totalQuizzes;
-    final totalTimeSpent = history.map((q) => q.timeSpentSeconds).reduce((a, b) => a + b);
-    final bestScore = history.map((q) => q.percentage).reduce((a, b) => a > b ? a : b);
+    final averageScore =
+        history.map((q) => q.percentage).reduce((a, b) => a + b) / totalQuizzes;
+    final totalTimeSpent = history
+        .map((q) => q.timeSpentSeconds)
+        .reduce((a, b) => a + b);
+    final bestScore = history
+        .map((q) => q.percentage)
+        .reduce((a, b) => a > b ? a : b);
 
     // Recent performance (last 5 quizzes)
-    final recentPerformance = history.take(5).map((q) => {
-      'date': q.completedAt.toIso8601String(),
-      'score': q.percentage,
-      'passed': q.passed,
-    }).toList();
+    final recentPerformance = history
+        .take(5)
+        .map(
+          (q) => {
+            'date': q.completedAt.toIso8601String(),
+            'score': q.percentage,
+            'passed': q.passed,
+          },
+        )
+        .toList();
 
     return {
       'totalQuizzes': totalQuizzes,
@@ -272,7 +291,8 @@ class QuizService {
         question: '"Yemba" is a Cameroonian language.',
         options: ['True', 'False'],
         correctAnswer: 'True',
-        explanation: 'Yemba is indeed a traditional language spoken in Cameroon.',
+        explanation:
+            'Yemba is indeed a traditional language spoken in Cameroon.',
         hints: ['Check the app description'],
         points: 5,
         timeLimitSeconds: 15,
@@ -343,14 +363,19 @@ class QuizService {
       'id': attempt.id,
       'user_id': attempt.userId,
       'quiz_id': attempt.quizId,
-      'answers': attempt.answers.map((a) => {
-        'questionId': a.questionId,
-        'answer': a.answer,
-        'isCorrect': a.isCorrect ? 1 : 0,
-        'timeSpentSeconds': a.timeSpentSeconds,
-        'pointsEarned': a.pointsEarned,
-        'answeredAt': a.answeredAt.millisecondsSinceEpoch,
-      }).toList().toString(),
+      'answers': attempt.answers
+          .map(
+            (a) => {
+              'questionId': a.questionId,
+              'answer': a.answer,
+              'isCorrect': a.isCorrect ? 1 : 0,
+              'timeSpentSeconds': a.timeSpentSeconds,
+              'pointsEarned': a.pointsEarned,
+              'answeredAt': a.answeredAt.millisecondsSinceEpoch,
+            },
+          )
+          .toList()
+          .toString(),
       'total_score': attempt.totalScore,
       'max_score': attempt.maxScore,
       'percentage': attempt.percentage,
@@ -403,7 +428,10 @@ class QuizService {
   }
 
   /// Update progress tracking after quiz completion
-  Future<void> _updateProgressAfterQuiz(QuizAttempt attempt, QuizEntity quiz) async {
+  Future<void> _updateProgressAfterQuiz(
+    QuizAttempt attempt,
+    QuizEntity quiz,
+  ) async {
     // Update assessment skill proficiency
     final assessmentScore = attempt.percentage.round();
     await _progressService.updateSkillProgress(
@@ -466,15 +494,19 @@ class QuizService {
             'timeSpentSeconds': attempt.timeSpentSeconds,
             'startedAt': attempt.startedAt,
             'completedAt': attempt.completedAt,
-            'answers': attempt.answers.map((a) => {
-              'questionId': a.questionId,
-              'isCorrect': a.isCorrect,
-              'timeSpentSeconds': a.timeSpentSeconds,
-              'pointsEarned': a.pointsEarned,
-            }).toList(),
+            'answers': attempt.answers
+                .map(
+                  (a) => {
+                    'questionId': a.questionId,
+                    'isCorrect': a.isCorrect,
+                    'timeSpentSeconds': a.timeSpentSeconds,
+                    'pointsEarned': a.pointsEarned,
+                  },
+                )
+                .toList(),
           }, SetOptions(merge: true));
     } catch (e) {
-      print('⚠️ Firebase sync failed: $e');
+      debugPrint('⚠️ Firebase sync failed: $e');
     }
   }
 }

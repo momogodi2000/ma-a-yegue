@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:maa_yegue/core/database/database_helper.dart';
@@ -193,23 +194,27 @@ class StudentAnalyticsService {
     final badges = <Badge>[];
 
     // Course completion badges
-    if (progress.completedCourses >= 1)
+    if (progress.completedCourses >= 1) {
       badges.add(
         Badge(name: 'First Course', icon: '🎓', earnedAt: DateTime.now()),
       );
-    if (progress.completedCourses >= 5)
+    }
+    if (progress.completedCourses >= 5) {
       badges.add(Badge(name: 'Scholar', icon: '📚', earnedAt: DateTime.now()));
-    if (progress.completedCourses >= 10)
+    }
+    if (progress.completedCourses >= 10) {
       badges.add(
         Badge(name: 'Master Linguist', icon: '🏆', earnedAt: DateTime.now()),
       );
+    }
 
     // Streak badges
-    if (progress.currentStreak >= 7)
+    if (progress.currentStreak >= 7) {
       badges.add(
         Badge(name: 'Week Warrior', icon: '🔥', earnedAt: DateTime.now()),
       );
-    if (progress.longestStreak >= 30)
+    }
+    if (progress.longestStreak >= 30) {
       badges.add(
         Badge(
           name: 'Dedication Champion',
@@ -217,16 +222,19 @@ class StudentAnalyticsService {
           earnedAt: DateTime.now(),
         ),
       );
+    }
 
     // Study time badges
-    if (progress.totalStudyTimeMinutes >= 60)
+    if (progress.totalStudyTimeMinutes >= 60) {
       badges.add(
         Badge(name: 'Hour Master', icon: '⏰', earnedAt: DateTime.now()),
       );
-    if (progress.totalStudyTimeMinutes >= 600)
+    }
+    if (progress.totalStudyTimeMinutes >= 600) {
       badges.add(
         Badge(name: 'Study Legend', icon: '🌟', earnedAt: DateTime.now()),
       );
+    }
 
     return AchievementsData(
       earnedBadges: badges,
@@ -405,7 +413,7 @@ class StudentAnalyticsService {
         'last_updated': analytics.lastUpdated.toIso8601String(),
       });
     } catch (e) {
-      print('❌ Failed to sync analytics to Firebase: $e');
+      debugPrint('❌ Failed to sync analytics to Firebase: $e');
     }
   }
 }

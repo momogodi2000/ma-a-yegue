@@ -5,9 +5,11 @@ import 'package:maa_yegue/features/analytics/data/models/student_analytics_model
 
 /// Chart widgets for analytics dashboard
 class AnalyticsCharts {
-
   /// Performance Trend Chart - Shows quiz scores over time
-  static Widget buildPerformanceChart(BuildContext context, PerformanceMetrics metrics) {
+  static Widget buildPerformanceChart(
+    BuildContext context,
+    PerformanceMetrics metrics,
+  ) {
     // Mock data for demonstration - in real app this would come from historical data
     final List<FlSpot> spots = [
       const FlSpot(0, 65),
@@ -47,7 +49,15 @@ class AnalyticsCharts {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          const titles = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Current'];
+                          const titles = [
+                            'Week 1',
+                            'Week 2',
+                            'Week 3',
+                            'Week 4',
+                            'Week 5',
+                            'Week 6',
+                            'Current',
+                          ];
                           if (value.toInt() < titles.length) {
                             return Text(
                               titles[value.toInt()],
@@ -68,8 +78,12 @@ class AnalyticsCharts {
                         reservedSize: 40,
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   borderData: FlBorderData(show: true),
                   lineBarsData: [
@@ -80,7 +94,7 @@ class AnalyticsCharts {
                       barWidth: 3,
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                       ),
                       dotData: const FlDotData(show: true),
                     ),
@@ -99,7 +113,10 @@ class AnalyticsCharts {
                 const Icon(Icons.arrow_upward, color: Colors.green, size: 16),
                 Text(
                   '+${metrics.improvementRate.toStringAsFixed(1)}% improvement trend',
-                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -110,10 +127,21 @@ class AnalyticsCharts {
   }
 
   /// Learning Progress Chart - Shows courses and lessons completion
-  static Widget buildProgressChart(BuildContext context, LearningProgress progress) {
+  static Widget buildProgressChart(
+    BuildContext context,
+    LearningProgress progress,
+  ) {
     final data = [
-      ProgressData('Enrolled', progress.enrolledCourses.toDouble(), Colors.blue),
-      ProgressData('Completed', progress.completedCourses.toDouble(), Colors.green),
+      ProgressData(
+        'Enrolled',
+        progress.enrolledCourses.toDouble(),
+        Colors.blue,
+      ),
+      ProgressData(
+        'Completed',
+        progress.completedCourses.toDouble(),
+        Colors.green,
+      ),
     ];
 
     return Card(
@@ -176,11 +204,15 @@ class AnalyticsCharts {
   }
 
   /// Learning Patterns Chart - Shows study time distribution
-  static Widget buildStudyPatternsChart(BuildContext context, LearningPatterns patterns) {
+  static Widget buildStudyPatternsChart(
+    BuildContext context,
+    LearningPatterns patterns,
+  ) {
     // Mock hourly data for demonstration
     final List<BarChartGroupData> barGroups = List.generate(24, (hour) {
       double value = 0;
-      if (hour >= 8 && hour <= 22) { // Study hours
+      if (hour >= 8 && hour <= 22) {
+        // Study hours
         // Simulate study pattern with peak at preferred hour
         final distance = (hour - patterns.preferredStudyHour).abs();
         value = (10 - distance) * 2.0;
@@ -191,7 +223,9 @@ class AnalyticsCharts {
         barRods: [
           BarChartRodData(
             toY: value,
-            color: hour == patterns.preferredStudyHour ? Colors.purple : Colors.blue.withOpacity(0.7),
+            color: hour == patterns.preferredStudyHour
+                ? Colors.purple
+                : Colors.blue.withValues(alpha: 0.7),
             width: 8,
           ),
         ],
@@ -244,8 +278,12 @@ class AnalyticsCharts {
                         reservedSize: 40,
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   borderData: FlBorderData(show: true),
                 ),
@@ -268,7 +306,10 @@ class AnalyticsCharts {
   }
 
   /// Content Type Preferences Chart - Shows preferred learning content
-  static Widget buildContentPreferencesChart(BuildContext context, LearningPatterns patterns) {
+  static Widget buildContentPreferencesChart(
+    BuildContext context,
+    LearningPatterns patterns,
+  ) {
     final data = patterns.contentTypePreferences.entries.map((entry) {
       return ContentPreferenceData(
         entry.key,
@@ -302,14 +343,19 @@ class AnalyticsCharts {
                   radarShape: RadarShape.polygon,
                   dataSets: [
                     RadarDataSet(
-                      dataEntries: data.map((item) => RadarEntry(value: item.percentage)).toList(),
+                      dataEntries: data
+                          .map((item) => RadarEntry(value: item.percentage))
+                          .toList(),
                       borderColor: Colors.teal,
-                      fillColor: Colors.teal.withOpacity(0.1),
+                      fillColor: Colors.teal.withValues(alpha: 0.1),
                       borderWidth: 2,
                       entryRadius: 3,
                     ),
                   ],
-                  radarBorderData: const BorderSide(color: Colors.grey, width: 1),
+                  radarBorderData: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
                   titlePositionPercentageOffset: 0.2,
                   titleTextStyle: const TextStyle(fontSize: 12),
                   getTitle: (index, angle) {
@@ -330,11 +376,10 @@ class AnalyticsCharts {
               runSpacing: AppDimensions.spacingSmall,
               children: data.map((item) {
                 return Chip(
-                  avatar: CircleAvatar(
-                    backgroundColor: item.color,
-                    radius: 8,
+                  avatar: CircleAvatar(backgroundColor: item.color, radius: 8),
+                  label: Text(
+                    '${item.contentType}: ${item.percentage.toInt()}%',
                   ),
-                  label: Text('${item.contentType}: ${item.percentage.toInt()}%'),
                 );
               }).toList(),
             ),
@@ -345,7 +390,10 @@ class AnalyticsCharts {
   }
 
   /// Achievement Progress Chart - Shows leveling progress
-  static Widget buildAchievementProgressChart(BuildContext context, AchievementsData achievements) {
+  static Widget buildAchievementProgressChart(
+    BuildContext context,
+    AchievementsData achievements,
+  ) {
     final progress = achievements.nextLevelProgress / 100.0;
 
     return Card(
@@ -377,7 +425,9 @@ class AnalyticsCharts {
                       value: progress,
                       strokeWidth: 12,
                       backgroundColor: Colors.grey.shade200,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.amber,
+                      ),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,

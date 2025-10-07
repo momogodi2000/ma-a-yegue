@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:maa_yegue/core/database/database_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -43,7 +44,7 @@ class ProgressTrackingService {
         'updated_at': now,
       });
 
-      print('✅ Lesson $lessonId started for user $userId');
+      debugPrint('✅ Lesson $lessonId started for user $userId');
     } else {
       // Update existing record - increment attempts
       await db.update(
@@ -58,12 +59,14 @@ class ProgressTrackingService {
         whereArgs: [userId, languageCode, lessonId],
       );
 
-      print('✅ Lesson $lessonId resumed for user $userId');
+      debugPrint('✅ Lesson $lessonId resumed for user $userId');
     }
 
     // Sync to Firebase (fire and forget)
-    _syncLessonProgressToFirebase(userId, languageCode, lessonId).catchError((e) {
-      print('⚠️ Firebase sync failed: $e');
+    _syncLessonProgressToFirebase(userId, languageCode, lessonId).catchError((
+      e,
+    ) {
+      debugPrint('⚠️ Firebase sync failed: $e');
     });
   }
 
@@ -86,7 +89,7 @@ class ProgressTrackingService {
     );
 
     if (existing.isEmpty) {
-      print('⚠️ Lesson progress not found. Starting lesson first...');
+      debugPrint('⚠️ Lesson progress not found. Starting lesson first...');
       await startLesson(
         userId: userId,
         languageCode: languageCode,
@@ -114,7 +117,9 @@ class ProgressTrackingService {
       whereArgs: [userId, languageCode, lessonId],
     );
 
-    print('📊 Progress updated: $progressPercentage% for lesson $lessonId');
+    debugPrint(
+      '📊 Progress updated: $progressPercentage% for lesson $lessonId',
+    );
   }
 
   /// Complete a lesson
@@ -135,12 +140,14 @@ class ProgressTrackingService {
     );
 
     if (existing.isEmpty) {
-      print('⚠️ Lesson progress not found');
+      debugPrint('⚠️ Lesson progress not found');
       return;
     }
 
     final currentBestScore = existing.first['best_score'] as int;
-    final newBestScore = finalScore > currentBestScore ? finalScore : currentBestScore;
+    final newBestScore = finalScore > currentBestScore
+        ? finalScore
+        : currentBestScore;
 
     await db.update(
       'lesson_progress',
@@ -165,11 +172,13 @@ class ProgressTrackingService {
     await _checkAndRecordMilestones(userId, languageCode);
 
     // Sync to Firebase
-    _syncLessonProgressToFirebase(userId, languageCode, lessonId).catchError((e) {
-      print('⚠️ Firebase sync failed: $e');
+    _syncLessonProgressToFirebase(userId, languageCode, lessonId).catchError((
+      e,
+    ) {
+      debugPrint('⚠️ Firebase sync failed: $e');
     });
 
-    print('🎉 Lesson $lessonId completed! Score: $finalScore');
+    debugPrint('🎉 Lesson $lessonId completed! Score: $finalScore');
   }
 
   /// Get lesson progress
@@ -235,14 +244,17 @@ class ProgressTrackingService {
         'updated_at': now,
       });
 
-      print('✅ New skill progress created: $skillName ($proficiencyScore/100)');
+      debugPrint(
+        '✅ New skill progress created: $skillName ($proficiencyScore/100)',
+      );
     } else {
       // Update existing skill
       final currentPracticeCount = existing.first['practice_count'] as int;
       final currentProficiency = existing.first['proficiency_score'] as int;
-      
+
       // Average the proficiency scores for smoother progression
-      final newProficiency = ((currentProficiency + proficiencyScore) / 2).round();
+      final newProficiency = ((currentProficiency + proficiencyScore) / 2)
+          .round();
 
       await db.update(
         'skill_progress',
@@ -256,12 +268,14 @@ class ProgressTrackingService {
         whereArgs: [userId, languageCode, skillName],
       );
 
-      print('📈 Skill updated: $skillName ($newProficiency/100)');
+      debugPrint('📈 Skill updated: $skillName ($newProficiency/100)');
     }
 
     // Sync to Firebase
-    _syncSkillProgressToFirebase(userId, languageCode, skillName).catchError((e) {
-      print('⚠️ Firebase sync failed: $e');
+    _syncSkillProgressToFirebase(userId, languageCode, skillName).catchError((
+      e,
+    ) {
+      debugPrint('⚠️ Firebase sync failed: $e');
     });
   }
 
@@ -329,11 +343,13 @@ class ProgressTrackingService {
         'created_at': now,
       });
 
-      print('🏆 Milestone achieved: $milestoneTitle');
+      debugPrint('🏆 Milestone achieved: $milestoneTitle');
 
       // Sync to Firebase
-      _syncMilestoneToFirebase(userId, languageCode, milestoneType).catchError((e) {
-        print('⚠️ Firebase sync failed: $e');
+      _syncMilestoneToFirebase(userId, languageCode, milestoneType).catchError((
+        e,
+      ) {
+        debugPrint('⚠️ Firebase sync failed: $e');
       });
     }
   }
@@ -361,24 +377,33 @@ class ProgressTrackingService {
     final db = await DatabaseHelper.database;
 
     // Get completed lessons count
-    final completedCount = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
-          [userId, languageCode, 'completed'],
-        )) ??
+    final completedCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
+            [userId, languageCode, 'completed'],
+          ),
+        ) ??
         0;
 
     // Get in-progress lessons count
-    final inProgressCount = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
-          [userId, languageCode, 'in_progress'],
-        )) ??
+    final inProgressCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
+            [userId, languageCode, 'in_progress'],
+          ),
+        ) ??
         0;
 
     // Get total time spent
-    final totalTimeSeconds = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT SUM(time_spent_seconds) FROM lesson_progress WHERE user_id = ? AND language_code = ?',
-          [userId, languageCode],
-        )) ??
+    final totalTimeSeconds =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT SUM(time_spent_seconds) FROM lesson_progress WHERE user_id = ? AND language_code = ?',
+            [userId, languageCode],
+          ),
+        ) ??
         0;
 
     // Get average score
@@ -386,16 +411,20 @@ class ProgressTrackingService {
       'SELECT AVG(best_score) as avg_score FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
       [userId, languageCode, 'completed'],
     );
-    final averageScore = (avgScore.first['avg_score'] as num?)?.toDouble() ?? 0.0;
+    final averageScore =
+        (avgScore.first['avg_score'] as num?)?.toDouble() ?? 0.0;
 
     // Get streak
     final streak = await _calculateStreak(userId, languageCode);
 
     // Get milestone count
-    final milestoneCount = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT COUNT(*) FROM milestones WHERE user_id = ? AND language_code = ?',
-          [userId, languageCode],
-        )) ??
+    final milestoneCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM milestones WHERE user_id = ? AND language_code = ?',
+            [userId, languageCode],
+          ),
+        ) ??
         0;
 
     return {
@@ -411,7 +440,10 @@ class ProgressTrackingService {
   }
 
   /// Update overall learning progress in learning_progress table
-  Future<void> _updateOverallProgress(String userId, String languageCode) async {
+  Future<void> _updateOverallProgress(
+    String userId,
+    String languageCode,
+  ) async {
     final db = await DatabaseHelper.database;
     final now = DateTime.now().millisecondsSinceEpoch;
 
@@ -452,7 +484,7 @@ class ProgressTrackingService {
         'created_at': now,
       });
 
-      print('✅ Learning progress record created');
+      debugPrint('✅ Learning progress record created');
     } else {
       final longestStreak = existing.first['longest_streak'] as int;
       final newLongestStreak = streak > longestStreak ? streak : longestStreak;
@@ -473,7 +505,7 @@ class ProgressTrackingService {
         whereArgs: [userId, languageCode],
       );
 
-      print('✅ Learning progress updated');
+      debugPrint('✅ Learning progress updated');
     }
   }
 
@@ -497,18 +529,19 @@ class ProgressTrackingService {
       final completedAt = DateTime.fromMillisecondsSinceEpoch(
         lesson['completed_at'] as int,
       );
-      
-      final dateKey = '${completedAt.year}-${completedAt.month}-${completedAt.day}';
+
+      final dateKey =
+          '${completedAt.year}-${completedAt.month}-${completedAt.day}';
       studyDays.add(dateKey);
     }
 
     // Count consecutive days from today
     final now = DateTime.now();
     DateTime checkDate = now;
-    
+
     for (int i = 0; i < 365; i++) {
       final dateKey = '${checkDate.year}-${checkDate.month}-${checkDate.day}';
-      
+
       if (studyDays.contains(dateKey)) {
         streak++;
         checkDate = checkDate.subtract(const Duration(days: 1));
@@ -526,42 +559,87 @@ class ProgressTrackingService {
   }
 
   /// Calculate completion rate
-  Future<double> _calculateCompletionRate(String userId, String languageCode) async {
+  Future<double> _calculateCompletionRate(
+    String userId,
+    String languageCode,
+  ) async {
     final db = await DatabaseHelper.database;
 
-    final totalStarted = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ?',
-          [userId, languageCode],
-        )) ??
+    final totalStarted =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ?',
+            [userId, languageCode],
+          ),
+        ) ??
         0;
 
-    final totalCompleted = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
-          [userId, languageCode, 'completed'],
-        )) ??
+    final totalCompleted =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
+            [userId, languageCode, 'completed'],
+          ),
+        ) ??
         0;
 
     return totalStarted > 0 ? (totalCompleted / totalStarted) * 100 : 0.0;
   }
 
   /// Check and record automatic milestones based on progress
-  Future<void> _checkAndRecordMilestones(String userId, String languageCode) async {
+  Future<void> _checkAndRecordMilestones(
+    String userId,
+    String languageCode,
+  ) async {
     final db = await DatabaseHelper.database;
 
-    final completedCount = Sqflite.firstIntValue(await db.rawQuery(
-          'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
-          [userId, languageCode, 'completed'],
-        )) ??
+    final completedCount =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND language_code = ? AND status = ?',
+            [userId, languageCode, 'completed'],
+          ),
+        ) ??
         0;
 
     // Define milestone thresholds
     final milestones = [
-      {'count': 1, 'type': 'first_lesson', 'title': 'First Steps', 'description': 'Completed your first lesson!'},
-      {'count': 5, 'type': 'five_lessons', 'title': 'Getting Started', 'description': 'Completed 5 lessons!'},
-      {'count': 10, 'type': 'ten_lessons', 'title': 'Dedicated Learner', 'description': 'Completed 10 lessons!'},
-      {'count': 25, 'type': 'twentyfive_lessons', 'title': 'Committed Student', 'description': 'Completed 25 lessons!'},
-      {'count': 50, 'type': 'fifty_lessons', 'title': 'Language Enthusiast', 'description': 'Completed 50 lessons!'},
-      {'count': 100, 'type': 'hundred_lessons', 'title': 'Master Student', 'description': 'Completed 100 lessons!'},
+      {
+        'count': 1,
+        'type': 'first_lesson',
+        'title': 'First Steps',
+        'description': 'Completed your first lesson!',
+      },
+      {
+        'count': 5,
+        'type': 'five_lessons',
+        'title': 'Getting Started',
+        'description': 'Completed 5 lessons!',
+      },
+      {
+        'count': 10,
+        'type': 'ten_lessons',
+        'title': 'Dedicated Learner',
+        'description': 'Completed 10 lessons!',
+      },
+      {
+        'count': 25,
+        'type': 'twentyfive_lessons',
+        'title': 'Committed Student',
+        'description': 'Completed 25 lessons!',
+      },
+      {
+        'count': 50,
+        'type': 'fifty_lessons',
+        'title': 'Language Enthusiast',
+        'description': 'Completed 50 lessons!',
+      },
+      {
+        'count': 100,
+        'type': 'hundred_lessons',
+        'title': 'Master Student',
+        'description': 'Completed 100 lessons!',
+      },
     ];
 
     for (var milestone in milestones) {
@@ -579,7 +657,10 @@ class ProgressTrackingService {
 
   /// Sync lesson progress to Firebase
   Future<void> _syncLessonProgressToFirebase(
-      String userId, String languageCode, String lessonId) async {
+    String userId,
+    String languageCode,
+    String lessonId,
+  ) async {
     final db = await DatabaseHelper.database;
     final progress = await db.query(
       'lesson_progress',
@@ -599,7 +680,10 @@ class ProgressTrackingService {
 
   /// Sync skill progress to Firebase
   Future<void> _syncSkillProgressToFirebase(
-      String userId, String languageCode, String skillName) async {
+    String userId,
+    String languageCode,
+    String skillName,
+  ) async {
     final db = await DatabaseHelper.database;
     final skill = await db.query(
       'skill_progress',
@@ -619,7 +703,10 @@ class ProgressTrackingService {
 
   /// Sync milestone to Firebase
   Future<void> _syncMilestoneToFirebase(
-      String userId, String languageCode, String milestoneType) async {
+    String userId,
+    String languageCode,
+    String milestoneType,
+  ) async {
     final db = await DatabaseHelper.database;
     final milestone = await db.query(
       'milestones',

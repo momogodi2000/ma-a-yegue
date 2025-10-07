@@ -201,7 +201,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
+            color: Colors.blue.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -252,7 +252,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
                   'Keep up the great work learning ${widget.languageCode.toUpperCase()}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -260,7 +260,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
                 Container(
                   height: 6,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(3),
                   ),
                   child: FractionallySizedBox(
@@ -279,7 +279,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
                   '$xp / $nextLevelXP XP to next level',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -359,7 +359,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
               const SizedBox(height: 8),
               LinearProgressIndicator(
                 value: progress.clamp(0.0, 1.0),
-                backgroundColor: color.withOpacity(0.2),
+                backgroundColor: color.withValues(alpha: 0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(color),
               ),
             ],
@@ -440,7 +440,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
               leading: CircleAvatar(
                 backgroundColor: _getActivityColor(
                   activity['type'] as String,
-                ).withOpacity(0.2),
+                ).withValues(alpha: 0.2),
                 child: Icon(
                   _getActivityIcon(activity['type'] as String),
                   color: _getActivityColor(activity['type'] as String),

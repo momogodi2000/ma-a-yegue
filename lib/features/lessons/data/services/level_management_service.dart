@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:maa_yegue/features/lessons/domain/entities/user_level_entity.dart';
@@ -10,7 +11,10 @@ class LevelManagementService {
   LevelManagementService(this._database, this._firestore);
 
   /// Get user's current level for a language
-  Future<UserLevelEntity?> getUserLevel(String userId, String languageCode) async {
+  Future<UserLevelEntity?> getUserLevel(
+    String userId,
+    String languageCode,
+  ) async {
     try {
       // Try to get from SQLite first
       final results = await _database.query(
@@ -36,10 +40,13 @@ class LevelManagementService {
           id: doc.id,
           userId: userId,
           languageCode: languageCode,
-          currentLevel: LearningLevel.fromString(data['currentLevel'] ?? 'beginner'),
+          currentLevel: LearningLevel.fromString(
+            data['currentLevel'] ?? 'beginner',
+          ),
           currentPoints: data['currentPoints'] ?? 0,
           pointsToNextLevel: data['pointsToNextLevel'] ?? 1000,
-          completionPercentage: (data['completionPercentage'] ?? 0.0).toDouble(),
+          completionPercentage: (data['completionPercentage'] ?? 0.0)
+              .toDouble(),
           levelAchievedAt: DateTime.parse(data['levelAchievedAt']),
           lastAssessmentDate: data['lastAssessmentDate'] != null
               ? DateTime.parse(data['lastAssessmentDate'])
@@ -59,7 +66,7 @@ class LevelManagementService {
 
       return null;
     } catch (e) {
-      print('Error getting user level: $e');
+      debugPrint('Error getting user level: $e');
       return null;
     }
   }
@@ -82,7 +89,9 @@ class LevelManagementService {
       completionPercentage: 0.0,
       levelAchievedAt: DateTime.now(),
       completedLessons: [],
-      unlockedCourses: _getInitialUnlockedCourses(initialLevel ?? LearningLevel.beginner),
+      unlockedCourses: _getInitialUnlockedCourses(
+        initialLevel ?? LearningLevel.beginner,
+      ),
       skillScores: _initializeSkillScores(),
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -105,7 +114,7 @@ class LevelManagementService {
     String? skillCategory,
   }) async {
     var userLevel = await getUserLevel(userId, languageCode);
-    
+
     if (userLevel == null) {
       userLevel = await initializeUserLevel(userId, languageCode);
     }
@@ -146,7 +155,7 @@ class LevelManagementService {
     int earnedPoints,
   ) async {
     var userLevel = await getUserLevel(userId, languageCode);
-    
+
     if (userLevel == null) {
       userLevel = await initializeUserLevel(userId, languageCode);
     }
@@ -165,7 +174,8 @@ class LevelManagementService {
     // Check if user can level up
     if (updatedLevel.canLevelUp && updatedLevel.nextLevel != null) {
       // Check if minimum lessons requirement met
-      final minLessons = LevelRequirements.minimumLessons[updatedLevel.currentLevel] ?? 0;
+      final minLessons =
+          LevelRequirements.minimumLessons[updatedLevel.currentLevel] ?? 0;
       if (completedLessons.length >= minLessons) {
         updatedLevel = await _levelUp(updatedLevel);
       }
@@ -187,7 +197,7 @@ class LevelManagementService {
     int limit = 10,
   }) async {
     final userLevel = await getUserLevel(userId, languageCode);
-    
+
     if (userLevel == null) {
       return [];
     }
@@ -202,7 +212,7 @@ class LevelManagementService {
         .get();
 
     final recommendedIds = <String>[];
-    
+
     for (final doc in lessonsSnapshot.docs) {
       // Skip already completed lessons
       if (!userLevel.completedLessons.contains(doc.id)) {
@@ -220,20 +230,25 @@ class LevelManagementService {
     String lessonId,
   ) async {
     final userLevel = await getUserLevel(userId, languageCode);
-    
+
     if (userLevel == null) {
       return false;
     }
 
     // Get lesson details
-    final lessonDoc = await _firestore.collection('lessons').doc(lessonId).get();
-    
+    final lessonDoc = await _firestore
+        .collection('lessons')
+        .doc(lessonId)
+        .get();
+
     if (!lessonDoc.exists) {
       return false;
     }
 
     final lessonData = lessonDoc.data()!;
-    final lessonLevel = LearningLevel.fromString(lessonData['difficulty'] ?? 'beginner');
+    final lessonLevel = LearningLevel.fromString(
+      lessonData['difficulty'] ?? 'beginner',
+    );
     final prerequisites = List<String>.from(lessonData['prerequisites'] ?? []);
 
     // Check if user's level is high enough
@@ -254,7 +269,7 @@ class LevelManagementService {
   /// Level up the user
   Future<UserLevelEntity> _levelUp(UserLevelEntity currentLevel) async {
     final nextLevel = currentLevel.nextLevel;
-    
+
     if (nextLevel == null) {
       return currentLevel; // Already at max level
     }
@@ -307,26 +322,22 @@ class LevelManagementService {
 
   /// Save user level to SQLite
   Future<void> _saveUserLevelToSQLite(UserLevelEntity level) async {
-    await _database.insert(
-      'user_levels',
-      {
-        'id': level.id,
-        'user_id': level.userId,
-        'language_code': level.languageCode,
-        'current_level': level.currentLevel.name,
-        'current_points': level.currentPoints,
-        'points_to_next_level': level.pointsToNextLevel,
-        'completion_percentage': level.completionPercentage,
-        'level_achieved_at': level.levelAchievedAt.toIso8601String(),
-        'last_assessment_date': level.lastAssessmentDate?.toIso8601String(),
-        'completed_lessons': level.completedLessons.join(','),
-        'unlocked_courses': level.unlockedCourses.join(','),
-        'skill_scores': level.skillScores.toString(),
-        'created_at': level.createdAt.toIso8601String(),
-        'updated_at': level.updatedAt.toIso8601String(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await _database.insert('user_levels', {
+      'id': level.id,
+      'user_id': level.userId,
+      'language_code': level.languageCode,
+      'current_level': level.currentLevel.name,
+      'current_points': level.currentPoints,
+      'points_to_next_level': level.pointsToNextLevel,
+      'completion_percentage': level.completionPercentage,
+      'level_achieved_at': level.levelAchievedAt.toIso8601String(),
+      'last_assessment_date': level.lastAssessmentDate?.toIso8601String(),
+      'completed_lessons': level.completedLessons.join(','),
+      'unlocked_courses': level.unlockedCourses.join(','),
+      'skill_scores': level.skillScores.toString(),
+      'created_at': level.createdAt.toIso8601String(),
+      'updated_at': level.updatedAt.toIso8601String(),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Save user level to Firebase

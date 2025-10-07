@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Database migration for adding course management tables
@@ -76,12 +77,20 @@ class DatabaseMigrationV4 {
     ''');
 
     // Create indexes for better performance
-    await db.execute('CREATE INDEX idx_courses_language_code ON courses(language_code)');
+    await db.execute(
+      'CREATE INDEX idx_courses_language_code ON courses(language_code)',
+    );
     await db.execute('CREATE INDEX idx_courses_status ON courses(status)');
-    await db.execute('CREATE INDEX idx_courses_teacher_id ON courses(teacher_id)');
-    await db.execute('CREATE INDEX idx_lessons_course_id ON lessons(course_id)');
-    await db.execute('CREATE INDEX idx_lesson_contents_lesson_id ON lesson_contents(lesson_id)');
+    await db.execute(
+      'CREATE INDEX idx_courses_teacher_id ON courses(teacher_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_lessons_course_id ON lessons(course_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_lesson_contents_lesson_id ON lesson_contents(lesson_id)',
+    );
 
-    print('✅ Course management tables created (version 4)');
+    debugPrint('✅ Course management tables created (version 4)');
   }
 }

@@ -81,7 +81,8 @@ class _CertificatesListViewState extends State<CertificatesListView> {
           }
 
           return RefreshIndicator(
-            onRefresh: () async => viewModel.loadUserCertificates(widget.userId),
+            onRefresh: () async =>
+                viewModel.loadUserCertificates(widget.userId),
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -176,7 +177,7 @@ class _CertificatesListViewState extends State<CertificatesListView> {
                     decoration: BoxDecoration(
                       color: _getStatusColor(
                         certificate.status,
-                      ).withOpacity(0.1),
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -293,7 +294,7 @@ class _CertificatesListViewState extends State<CertificatesListView> {
         label,
         style: TextStyle(color: color, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: color.withOpacity(0.1),
+      backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Database migration for adding learner progress and level tracking
@@ -115,28 +116,37 @@ class DatabaseMigrationV3 {
 
     // Create indexes for better query performance
     await db.execute(
-        'CREATE INDEX idx_user_levels_user ON user_levels(user_id)');
+      'CREATE INDEX idx_user_levels_user ON user_levels(user_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_user_levels_language ON user_levels(user_id, language_code)');
+      'CREATE INDEX idx_user_levels_language ON user_levels(user_id, language_code)',
+    );
 
     await db.execute(
-        'CREATE INDEX idx_learning_progress_user ON learning_progress(user_id)');
+      'CREATE INDEX idx_learning_progress_user ON learning_progress(user_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_learning_progress_language ON learning_progress(user_id, language_code)');
+      'CREATE INDEX idx_learning_progress_language ON learning_progress(user_id, language_code)',
+    );
 
     await db.execute(
-        'CREATE INDEX idx_lesson_progress_user ON lesson_progress(user_id)');
+      'CREATE INDEX idx_lesson_progress_user ON lesson_progress(user_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_lesson_progress_lesson ON lesson_progress(lesson_id)');
+      'CREATE INDEX idx_lesson_progress_lesson ON lesson_progress(lesson_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_lesson_progress_status ON lesson_progress(user_id, status)');
+      'CREATE INDEX idx_lesson_progress_status ON lesson_progress(user_id, status)',
+    );
 
     await db.execute('CREATE INDEX idx_milestones_user ON milestones(user_id)');
     await db.execute(
-        'CREATE INDEX idx_milestones_completed ON milestones(user_id, completed_at)');
+      'CREATE INDEX idx_milestones_completed ON milestones(user_id, completed_at)',
+    );
 
     await db.execute(
-        'CREATE INDEX idx_skill_progress_user ON skill_progress(user_id, language_code)');
+      'CREATE INDEX idx_skill_progress_user ON skill_progress(user_id, language_code)',
+    );
     // Create quiz_attempts table
     await db.execute('''
       CREATE TABLE quiz_attempts (
@@ -159,15 +169,19 @@ class DatabaseMigrationV3 {
 
     // Create indexes for quiz attempts
     await db.execute(
-        'CREATE INDEX idx_quiz_attempts_user ON quiz_attempts(user_id)');
+      'CREATE INDEX idx_quiz_attempts_user ON quiz_attempts(user_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_quiz_attempts_quiz ON quiz_attempts(quiz_id)');
+      'CREATE INDEX idx_quiz_attempts_quiz ON quiz_attempts(quiz_id)',
+    );
     await db.execute(
-        'CREATE INDEX idx_quiz_attempts_passed ON quiz_attempts(passed)');
+      'CREATE INDEX idx_quiz_attempts_passed ON quiz_attempts(passed)',
+    );
     await db.execute(
-        'CREATE INDEX idx_quiz_attempts_completed ON quiz_attempts(completed_at)');
+      'CREATE INDEX idx_quiz_attempts_completed ON quiz_attempts(completed_at)',
+    );
 
-    print('✅ Database migrated to version 3 successfully');
+    debugPrint('✅ Database migrated to version 3 successfully');
   }
 
   /// Create initial tables if creating database from scratch at v3

@@ -963,6 +963,9 @@ class TeacherAnalyticsModel extends TeacherAnalyticsEntity {
     required super.studentEngagement,
     required super.coursePerformance,
     required super.assignmentSubmissions,
+    required super.completionRate,
+    required super.averageTimeSpent,
+    required super.studentSatisfaction,
     required super.lastUpdated,
     required super.metadata,
   });
@@ -984,6 +987,10 @@ class TeacherAnalyticsModel extends TeacherAnalyticsEntity {
       assignmentSubmissions: Map<String, int>.from(
         json['assignmentSubmissions'] as Map,
       ),
+      completionRate: (json['completionRate'] as num?)?.toDouble() ?? 0.0,
+      averageTimeSpent: json['averageTimeSpent'] as int? ?? 0,
+      studentSatisfaction:
+          (json['studentSatisfaction'] as num?)?.toDouble() ?? 0.0,
       lastUpdated: DateTime.parse(json['lastUpdated'] as String),
       metadata: json['metadata'] as Map<String, dynamic>,
     );
@@ -1000,6 +1007,9 @@ class TeacherAnalyticsModel extends TeacherAnalyticsEntity {
       'studentEngagement': studentEngagement,
       'coursePerformance': coursePerformance,
       'assignmentSubmissions': assignmentSubmissions,
+      'completionRate': completionRate,
+      'averageTimeSpent': averageTimeSpent,
+      'studentSatisfaction': studentSatisfaction,
       'lastUpdated': lastUpdated.toIso8601String(),
       'metadata': metadata,
     };
@@ -1016,6 +1026,9 @@ class TeacherAnalyticsModel extends TeacherAnalyticsEntity {
       studentEngagement: entity.studentEngagement,
       coursePerformance: entity.coursePerformance,
       assignmentSubmissions: entity.assignmentSubmissions,
+      completionRate: entity.completionRate,
+      averageTimeSpent: entity.averageTimeSpent,
+      studentSatisfaction: entity.studentSatisfaction,
       lastUpdated: entity.lastUpdated,
       metadata: entity.metadata,
     );
@@ -1032,6 +1045,9 @@ class TeacherAnalyticsModel extends TeacherAnalyticsEntity {
       studentEngagement: studentEngagement,
       coursePerformance: coursePerformance,
       assignmentSubmissions: assignmentSubmissions,
+      completionRate: completionRate,
+      averageTimeSpent: averageTimeSpent,
+      studentSatisfaction: studentSatisfaction,
       lastUpdated: lastUpdated,
       metadata: metadata,
     );

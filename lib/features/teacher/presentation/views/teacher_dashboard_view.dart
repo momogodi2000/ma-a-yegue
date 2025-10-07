@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/teacher_viewmodel.dart';
-import '../../domain/entities/teacher_entity.dart' as teacher;
-import '../../../learner/domain/entities/learner_entity.dart';
-import '../../../lessons/domain/entities/course_entity.dart' as lesson;
-import '../../../lessons/domain/entities/lesson_entity.dart';
 
 /// Teacher Dashboard View
 class TeacherDashboardView extends StatefulWidget {
@@ -131,7 +127,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
     );
   }
 
-  Widget _buildTeacherProfileCard(teacher.TeacherEntity teacher) {
+  Widget _buildTeacherProfileCard(TeacherEntity teacher) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -284,7 +280,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
     );
   }
 
-  Widget _buildAnalyticsSummaryCard(teacher.TeacherAnalyticsEntity analytics) {
+  Widget _buildAnalyticsSummaryCard(TeacherAnalyticsEntity analytics) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -376,10 +372,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
     );
   }
 
-  Widget _buildCourseCard(
-    teacher.CourseEntity course,
-    TeacherViewModel viewModel,
-  ) {
+  Widget _buildCourseCard(CourseEntity course, TeacherViewModel viewModel) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
@@ -819,15 +812,15 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  Color _getStatusColor(teacher.CourseStatus status) {
+  Color _getStatusColor(CourseStatus status) {
     switch (status) {
-      case teacher.CourseStatus.draft:
+      case CourseStatus.draft:
         return Colors.grey;
-      case teacher.CourseStatus.published:
+      case CourseStatus.published:
         return Colors.green;
-      case teacher.CourseStatus.archived:
+      case CourseStatus.archived:
         return Colors.red;
-      case teacher.CourseStatus.suspended:
+      case CourseStatus.suspended:
         return Colors.orange;
     }
   }
@@ -841,7 +834,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
   // Action handlers
   void _handleCourseAction(
     String action,
-    teacher.CourseEntity course,
+    CourseEntity course,
     TeacherViewModel viewModel,
   ) {
     switch (action) {
@@ -897,15 +890,15 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
   }
 
   // Navigation and dialog methods
-  void _viewCourse(teacher.CourseEntity course, TeacherViewModel viewModel) {
+  void _viewCourse(CourseEntity course, TeacherViewModel viewModel) {
     // TODO: Navigate to course details
   }
 
-  void _editCourse(teacher.CourseEntity course, TeacherViewModel viewModel) {
+  void _editCourse(CourseEntity course, TeacherViewModel viewModel) {
     // TODO: Navigate to course edit
   }
 
-  void _deleteCourse(teacher.CourseEntity course, TeacherViewModel viewModel) {
+  void _deleteCourse(CourseEntity course, TeacherViewModel viewModel) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

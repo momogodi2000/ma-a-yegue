@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:maa_yegue/core/database/database_helper.dart';
@@ -15,9 +16,9 @@ void main() {
     test('Database should initialize at version 3', () async {
       final db = await DatabaseHelper.database;
       final version = await db.getVersion();
-      
+
       expect(version, 3);
-      print('✅ Database version: $version');
+      debugPrint('✅ Database version: $version');
     });
 
     test('All v3 tables should exist', () async {
@@ -32,20 +33,20 @@ void main() {
       for (var tableName in tables) {
         final exists = await DatabaseHelper.tableExists(tableName);
         expect(exists, true, reason: 'Table $tableName should exist');
-        print('✅ Table exists: $tableName');
+        debugPrint('✅ Table exists: $tableName');
       }
     });
 
     test('Database info should return counts', () async {
       final info = await DatabaseHelper.getDatabaseInfo();
-      
+
       expect(info, isNotNull);
       expect(info.containsKey('userLevels'), true);
       expect(info.containsKey('learningProgress'), true);
-      
-      print('📊 Database Info:');
+
+      debugPrint('📊 Database Info:');
       info.forEach((key, value) {
-        print('  $key: $value');
+        debugPrint('  $key: $value');
       });
     });
   });
@@ -73,10 +74,10 @@ void main() {
       expect(progress!['status'], 'in_progress');
       expect(progress['progress_percentage'], 0);
       expect(progress['attempts_count'], 1);
-      
-      print('✅ Lesson started successfully');
-      print('   Progress: ${progress['progress_percentage']}%');
-      print('   Status: ${progress['status']}');
+
+      debugPrint('✅ Lesson started successfully');
+      debugPrint('   Progress: ${progress['progress_percentage']}%');
+      debugPrint('   Status: ${progress['status']}');
     });
 
     test('Update lesson progress should modify values', () async {
@@ -98,11 +99,11 @@ void main() {
       expect(progress!['progress_percentage'], 50);
       expect(progress['time_spent_seconds'], 300);
       expect(progress['last_score'], 75);
-      
-      print('✅ Progress updated successfully');
-      print('   Progress: ${progress['progress_percentage']}%');
-      print('   Time spent: ${progress['time_spent_seconds']}s');
-      print('   Score: ${progress['last_score']}');
+
+      debugPrint('✅ Progress updated successfully');
+      debugPrint('   Progress: ${progress['progress_percentage']}%');
+      debugPrint('   Time spent: ${progress['time_spent_seconds']}s');
+      debugPrint('   Score: ${progress['last_score']}');
     });
 
     test('Complete lesson should mark as completed', () async {
@@ -124,11 +125,11 @@ void main() {
       expect(progress['progress_percentage'], 100);
       expect(progress['last_score'], 85);
       expect(progress['best_score'], 85);
-      
-      print('✅ Lesson completed successfully');
-      print('   Status: ${progress['status']}');
-      print('   Final Score: ${progress['last_score']}');
-      print('   Best Score: ${progress['best_score']}');
+
+      debugPrint('✅ Lesson completed successfully');
+      debugPrint('   Status: ${progress['status']}');
+      debugPrint('   Final Score: ${progress['last_score']}');
+      debugPrint('   Best Score: ${progress['best_score']}');
     });
 
     test('Update skill progress should track proficiency', () async {
@@ -149,11 +150,11 @@ void main() {
       expect(skill!['skill_name'], 'vocabulary');
       expect(skill['proficiency_score'], 80);
       expect(skill['practice_count'], 1);
-      
-      print('✅ Skill progress tracked');
-      print('   Skill: ${skill['skill_name']}');
-      print('   Proficiency: ${skill['proficiency_score']}/100');
-      print('   Practice count: ${skill['practice_count']}');
+
+      debugPrint('✅ Skill progress tracked');
+      debugPrint('   Skill: ${skill['skill_name']}');
+      debugPrint('   Proficiency: ${skill['proficiency_score']}/100');
+      debugPrint('   Practice count: ${skill['practice_count']}');
     });
 
     test('Record milestone should create achievement', () async {
@@ -173,10 +174,10 @@ void main() {
       expect(milestones.isNotEmpty, true);
       expect(milestones.first['milestone_type'], 'first_lesson');
       expect(milestones.first['title'], 'First Steps');
-      
-      print('✅ Milestone recorded');
-      print('   Type: ${milestones.first['milestone_type']}');
-      print('   Title: ${milestones.first['title']}');
+
+      debugPrint('✅ Milestone recorded');
+      debugPrint('   Type: ${milestones.first['milestone_type']}');
+      debugPrint('   Title: ${milestones.first['title']}');
     });
 
     test('Get overall statistics should calculate correctly', () async {
@@ -188,13 +189,13 @@ void main() {
       expect(stats['completedLessons'], greaterThan(0));
       expect(stats['totalTimeSpentSeconds'], greaterThan(0));
       expect(stats['currentStreak'], greaterThanOrEqualTo(0));
-      
-      print('✅ Overall statistics calculated');
-      print('   Completed Lessons: ${stats['completedLessons']}');
-      print('   Total Time: ${stats['totalTimeSpentMinutes']} minutes');
-      print('   Average Score: ${stats['averageScore']}%');
-      print('   Current Streak: ${stats['currentStreak']} days');
-      print('   Milestones: ${stats['milestonesEarned']}');
+
+      debugPrint('✅ Overall statistics calculated');
+      debugPrint('   Completed Lessons: ${stats['completedLessons']}');
+      debugPrint('   Total Time: ${stats['totalTimeSpentMinutes']} minutes');
+      debugPrint('   Average Score: ${stats['averageScore']}%');
+      debugPrint('   Current Streak: ${stats['currentStreak']} days');
+      debugPrint('   Milestones: ${stats['milestonesEarned']}');
     });
 
     test('Get all lesson progress should return all lessons', () async {
@@ -205,9 +206,9 @@ void main() {
 
       expect(allProgress, isNotEmpty);
       expect(allProgress.length, greaterThan(0));
-      
-      print('✅ Retrieved all lesson progress');
-      print('   Total lessons: ${allProgress.length}');
+
+      debugPrint('✅ Retrieved all lesson progress');
+      debugPrint('   Total lessons: ${allProgress.length}');
     });
 
     test('Get all skills progress should return all skills', () async {
@@ -217,11 +218,13 @@ void main() {
       );
 
       expect(allSkills, isNotEmpty);
-      
-      print('✅ Retrieved all skills');
-      print('   Total skills: ${allSkills.length}');
+
+      debugPrint('✅ Retrieved all skills');
+      debugPrint('   Total skills: ${allSkills.length}');
       for (var skill in allSkills) {
-        print('   - ${skill['skill_name']}: ${skill['proficiency_score']}/100');
+        debugPrint(
+          '   - ${skill['skill_name']}: ${skill['proficiency_score']}/100',
+        );
       }
     });
   });
@@ -229,6 +232,6 @@ void main() {
   tearDownAll(() async {
     // Clean up test data
     await DatabaseHelper.close();
-    print('\n🧹 Test cleanup complete');
+    debugPrint('\n🧹 Test cleanup complete');
   });
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:maa_yegue/core/database/database_helper.dart';
@@ -78,11 +79,19 @@ class CourseService {
     ''');
 
     // Create indexes
-    await db.execute('CREATE INDEX idx_courses_language_code ON courses(language_code)');
+    await db.execute(
+      'CREATE INDEX idx_courses_language_code ON courses(language_code)',
+    );
     await db.execute('CREATE INDEX idx_courses_status ON courses(status)');
-    await db.execute('CREATE INDEX idx_courses_teacher_id ON courses(teacher_id)');
-    await db.execute('CREATE INDEX idx_lessons_course_id ON lessons(course_id)');
-    await db.execute('CREATE INDEX idx_lesson_contents_lesson_id ON lesson_contents(lesson_id)');
+    await db.execute(
+      'CREATE INDEX idx_courses_teacher_id ON courses(teacher_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_lessons_course_id ON lessons(course_id)',
+    );
+    await db.execute(
+      'CREATE INDEX idx_lesson_contents_lesson_id ON lesson_contents(lesson_id)',
+    );
   }
 
   // ===== COURSE OPERATIONS =====
@@ -116,7 +125,7 @@ class CourseService {
     // Sync to Firebase
     await _syncCourseToFirebase(courseId, courseData);
 
-    print('✅ Course created: ${course.title}');
+    debugPrint('✅ Course created: ${course.title}');
     return courseId;
   }
 
@@ -184,7 +193,7 @@ class CourseService {
     // Sync to Firebase
     await _syncCourseToFirebase(course.id, {...courseData, 'id': course.id});
 
-    print('✅ Course updated: ${course.title}');
+    debugPrint('✅ Course updated: ${course.title}');
   }
 
   /// Delete course (soft delete)
@@ -194,11 +203,7 @@ class CourseService {
 
     await db.update(
       'courses',
-      {
-        'is_deleted': 1,
-        'updated_at': now.toIso8601String(),
-        'needs_sync': 1,
-      },
+      {'is_deleted': 1, 'updated_at': now.toIso8601String(), 'needs_sync': 1},
       where: 'id = ?',
       whereArgs: [courseId],
     );
@@ -209,7 +214,7 @@ class CourseService {
       'updated_at': now.toIso8601String(),
     });
 
-    print('✅ Course deleted: $courseId');
+    debugPrint('✅ Course deleted: $courseId');
   }
 
   // ===== LESSON OPERATIONS =====
@@ -250,7 +255,7 @@ class CourseService {
     // Sync to Firebase
     await _syncLessonToFirebase(lessonId, lessonData);
 
-    print('✅ Lesson created: ${lesson.title}');
+    debugPrint('✅ Lesson created: ${lesson.title}');
     return lessonId;
   }
 
@@ -304,7 +309,7 @@ class CourseService {
     // Sync to Firebase
     await _syncLessonToFirebase(lesson.id, {...lessonData, 'id': lesson.id});
 
-    print('✅ Lesson updated: ${lesson.title}');
+    debugPrint('✅ Lesson updated: ${lesson.title}');
   }
 
   // ===== LESSON CONTENT OPERATIONS =====
@@ -323,7 +328,9 @@ class CourseService {
       'audio_url': content.audioUrl,
       'image_url': content.imageUrl,
       'video_url': content.videoUrl,
-      'metadata': content.metadata != null ? _encodeMetadata(content.metadata!) : null,
+      'metadata': content.metadata != null
+          ? _encodeMetadata(content.metadata!)
+          : null,
       'order_index': content.order,
       'created_at': now.toIso8601String(),
       'updated_at': now.toIso8601String(),
@@ -361,10 +368,7 @@ class CourseService {
     final db = await DatabaseHelper.database;
 
     // Sync courses
-    final pendingCourses = await db.query(
-      'courses',
-      where: 'needs_sync = 1',
-    );
+    final pendingCourses = await db.query('courses', where: 'needs_sync = 1');
 
     for (final course in pendingCourses) {
       await _syncCourseToFirebase(course['id'] as String, course);
@@ -377,7 +381,7 @@ class CourseService {
     }
 
     // Sync lessons and contents similarly...
-    print('✅ Sync completed');
+    debugPrint('✅ Sync completed');
   }
 
   // ===== PRIVATE HELPER METHODS =====
@@ -443,7 +447,9 @@ class CourseService {
       audioUrl: row['audio_url'] as String?,
       imageUrl: row['image_url'] as String?,
       videoUrl: row['video_url'] as String?,
-      metadata: row['metadata'] != null ? _decodeMetadata(row['metadata'] as String) : null,
+      metadata: row['metadata'] != null
+          ? _decodeMetadata(row['metadata'] as String)
+          : null,
       order: row['order_index'] as int,
       createdAt: DateTime.parse(row['created_at'] as String),
       updatedAt: DateTime.parse(row['updated_at'] as String),
@@ -453,10 +459,14 @@ class CourseService {
   Future<void> _updateCourseLessonCount(String courseId) async {
     final db = await DatabaseHelper.database;
 
-    final count = Sqflite.firstIntValue(await db.rawQuery(
-      'SELECT COUNT(*) FROM lessons WHERE course_id = ? AND is_deleted = 0',
-      [courseId],
-    )) ?? 0;
+    final count =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM lessons WHERE course_id = ? AND is_deleted = 0',
+            [courseId],
+          ),
+        ) ??
+        0;
 
     await db.update(
       'courses',
@@ -466,7 +476,10 @@ class CourseService {
     );
   }
 
-  Future<void> _updateLessonContents(String lessonId, List<LessonContent> contents) async {
+  Future<void> _updateLessonContents(
+    String lessonId,
+    List<LessonContent> contents,
+  ) async {
     final db = await DatabaseHelper.database;
 
     // Delete existing contents
@@ -483,27 +496,36 @@ class CourseService {
     }
   }
 
-  Future<void> _syncCourseToFirebase(String courseId, Map<String, dynamic> data) async {
+  Future<void> _syncCourseToFirebase(
+    String courseId,
+    Map<String, dynamic> data,
+  ) async {
     try {
       await _firestore.collection('courses').doc(courseId).set(data);
     } catch (e) {
-      print('❌ Failed to sync course to Firebase: $e');
+      debugPrint('❌ Failed to sync course to Firebase: $e');
     }
   }
 
-  Future<void> _syncLessonToFirebase(String lessonId, Map<String, dynamic> data) async {
+  Future<void> _syncLessonToFirebase(
+    String lessonId,
+    Map<String, dynamic> data,
+  ) async {
     try {
       await _firestore.collection('lessons').doc(lessonId).set(data);
     } catch (e) {
-      print('❌ Failed to sync lesson to Firebase: $e');
+      debugPrint('❌ Failed to sync lesson to Firebase: $e');
     }
   }
 
-  Future<void> _syncContentToFirebase(String contentId, Map<String, dynamic> data) async {
+  Future<void> _syncContentToFirebase(
+    String contentId,
+    Map<String, dynamic> data,
+  ) async {
     try {
       await _firestore.collection('lesson_contents').doc(contentId).set(data);
     } catch (e) {
-      print('❌ Failed to sync content to Firebase: $e');
+      debugPrint('❌ Failed to sync content to Firebase: $e');
     }
   }
 

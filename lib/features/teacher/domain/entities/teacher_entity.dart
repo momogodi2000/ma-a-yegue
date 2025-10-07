@@ -110,6 +110,9 @@ class CourseEntity extends Equatable {
     required this.metadata,
   });
 
+  /// Get lesson count from lessonIds
+  int get lessonCount => lessonIds.length;
+
   @override
   List<Object?> get props => [
     id,
@@ -319,6 +322,9 @@ class AssignmentEntity extends Equatable {
     required this.metadata,
   });
 
+  /// Get submission count from metadata
+  int get submissionCount => (metadata['submissionCount'] as int?) ?? 0;
+
   @override
   List<Object?> get props => [
     id,
@@ -521,6 +527,9 @@ class TeacherAnalyticsEntity extends Equatable {
   final Map<String, double> coursePerformance; // courseId -> completion rate
   final Map<String, int>
   assignmentSubmissions; // assignmentId -> submission count
+  final double completionRate;
+  final int averageTimeSpent; // in minutes
+  final double studentSatisfaction; // 0-5 scale
   final DateTime lastUpdated;
   final Map<String, dynamic> metadata;
 
@@ -534,9 +543,34 @@ class TeacherAnalyticsEntity extends Equatable {
     required this.studentEngagement,
     required this.coursePerformance,
     required this.assignmentSubmissions,
+    required this.completionRate,
+    required this.averageTimeSpent,
+    required this.studentSatisfaction,
     required this.lastUpdated,
     required this.metadata,
   });
+
+  /// Get completed lessons count from metadata
+  int get totalCompletedLessons =>
+      (metadata['totalCompletedLessons'] as int?) ?? 0;
+
+  /// Get in-progress lessons count from metadata
+  int get totalInProgressLessons =>
+      (metadata['totalInProgressLessons'] as int?) ?? 0;
+
+  /// Get not started lessons count from metadata
+  int get totalNotStartedLessons =>
+      (metadata['totalNotStartedLessons'] as int?) ?? 0;
+
+  /// Get active courses count from metadata
+  int get totalActiveCourses => (metadata['totalActiveCourses'] as int?) ?? 0;
+
+  /// Get pending courses count from metadata
+  int get totalPendingCourses => (metadata['totalPendingCourses'] as int?) ?? 0;
+
+  /// Get archived courses count from metadata
+  int get totalArchivedCourses =>
+      (metadata['totalArchivedCourses'] as int?) ?? 0;
 
   @override
   List<Object?> get props => [
@@ -549,6 +583,9 @@ class TeacherAnalyticsEntity extends Equatable {
     studentEngagement,
     coursePerformance,
     assignmentSubmissions,
+    completionRate,
+    averageTimeSpent,
+    studentSatisfaction,
     lastUpdated,
     metadata,
   ];

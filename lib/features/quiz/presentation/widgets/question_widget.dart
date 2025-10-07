@@ -105,7 +105,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -156,7 +156,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: iconColor.withOpacity(0.1),
+        color: iconColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(iconData, color: iconColor, size: 20),
@@ -214,7 +214,9 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             onPressed: () {
               // TODO: Implement audio playback
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Audio playback not implemented yet')),
+                const SnackBar(
+                  content: Text('Audio playback not implemented yet'),
+                ),
               );
             },
             icon: const Icon(Icons.play_arrow, color: Colors.orange),
@@ -269,7 +271,8 @@ class _QuestionWidgetState extends State<QuestionWidget> {
     return Column(
       children: widget.question.formattedOptions.map((option) {
         final isSelected = _selectedAnswer == option;
-        final isCorrectOption = widget.showResult && option == widget.question.correctAnswer;
+        final isCorrectOption =
+            widget.showResult && option == widget.question.correctAnswer;
         final isUserSelected = widget.showResult && option == widget.userAnswer;
 
         Color? backgroundColor;
@@ -290,14 +293,18 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             borderColor = Colors.grey[300];
           }
         } else if (isSelected) {
-          backgroundColor = Theme.of(context).primaryColor.withOpacity(0.1);
+          backgroundColor = Theme.of(
+            context,
+          ).primaryColor.withValues(alpha: 0.1);
           borderColor = Theme.of(context).primaryColor;
         }
 
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           child: InkWell(
-            onTap: _hasSubmitted || widget.showResult ? null : () => _submitAnswer(option),
+            onTap: _hasSubmitted || widget.showResult
+                ? null
+                : () => _submitAnswer(option),
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -305,7 +312,12 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                 color: backgroundColor,
                 border: Border.all(
                   color: borderColor ?? Colors.grey[300]!,
-                  width: isSelected || (widget.showResult && (isCorrectOption || isUserSelected)) ? 2 : 1,
+                  width:
+                      isSelected ||
+                          (widget.showResult &&
+                              (isCorrectOption || isUserSelected))
+                      ? 2
+                      : 1,
                 ),
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -316,7 +328,9 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                       option,
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -342,11 +356,11 @@ class _QuestionWidgetState extends State<QuestionWidget> {
           enabled: !widget.showResult && !_hasSubmitted,
           decoration: InputDecoration(
             hintText: 'Type your answer here...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
-            fillColor: widget.showResult ? (widget.isCorrect ? Colors.green[50] : Colors.red[50]) : Colors.white,
+            fillColor: widget.showResult
+                ? (widget.isCorrect ? Colors.green[50] : Colors.red[50])
+                : Colors.white,
             suffixIcon: widget.showResult
                 ? Icon(
                     widget.isCorrect ? Icons.check_circle : Icons.cancel,
@@ -380,20 +394,17 @@ class _QuestionWidgetState extends State<QuestionWidget> {
   Widget _buildTrueFalseOptions() {
     return Row(
       children: [
-        Expanded(
-          child: _buildTrueFalseButton('True', Colors.green),
-        ),
+        Expanded(child: _buildTrueFalseButton('True', Colors.green)),
         const SizedBox(width: 12),
-        Expanded(
-          child: _buildTrueFalseButton('False', Colors.red),
-        ),
+        Expanded(child: _buildTrueFalseButton('False', Colors.red)),
       ],
     );
   }
 
   Widget _buildTrueFalseButton(String answer, Color color) {
     final isSelected = _selectedAnswer == answer;
-    final isCorrectOption = widget.showResult && answer == widget.question.correctAnswer;
+    final isCorrectOption =
+        widget.showResult && answer == widget.question.correctAnswer;
     final isUserSelected = widget.showResult && answer == widget.userAnswer;
 
     Color? backgroundColor;
@@ -411,20 +422,26 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         trailingIcon = Icons.cancel;
       }
     } else if (isSelected) {
-      backgroundColor = color.withOpacity(0.1);
+      backgroundColor = color.withValues(alpha: 0.1);
       borderColor = color;
     }
 
     return InkWell(
-      onTap: _hasSubmitted || widget.showResult ? null : () => _submitAnswer(answer),
+      onTap: _hasSubmitted || widget.showResult
+          ? null
+          : () => _submitAnswer(answer),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: backgroundColor,
           border: Border.all(
-            color: borderColor ?? color.withOpacity(0.3),
-            width: isSelected || (widget.showResult && (isCorrectOption || isUserSelected)) ? 2 : 1,
+            color: borderColor ?? color.withValues(alpha: 0.3),
+            width:
+                isSelected ||
+                    (widget.showResult && (isCorrectOption || isUserSelected))
+                ? 2
+                : 1,
           ),
           borderRadius: BorderRadius.circular(12),
         ),
