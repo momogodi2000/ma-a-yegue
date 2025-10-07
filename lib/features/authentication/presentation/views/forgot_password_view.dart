@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/constants/routes.dart';
 import '../../../../shared/themes/colors.dart';
 import '../viewmodels/auth_viewmodel.dart';
 
@@ -147,7 +149,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
+                    } else {
+                      context.go(Routes.landing);
+                    }
+                  },
                   child: const Text('Retour à la connexion'),
                 ),
               ],

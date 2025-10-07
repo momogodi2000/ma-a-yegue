@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/routes.dart';
 import '../../../../shared/widgets/forms/custom_button.dart';
 import '../viewmodels/guest_dashboard_viewmodel.dart';
 
@@ -25,13 +26,21 @@ class _DemoLessonsViewState extends State<DemoLessonsView> {
     });
   }
 
-  // No static fallback - we'll show a proper empty state instead
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Leçons de Démonstration'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go(Routes.landing);
+            }
+          },
+        ),
         backgroundColor: Colors.green,
         actions: [
           Container(

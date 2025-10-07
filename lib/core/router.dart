@@ -28,6 +28,8 @@ import '../features/dashboard/presentation/views/admin_dashboard_view.dart';
 import '../features/dashboard/presentation/views/teacher_dashboard_view.dart';
 import '../features/dashboard/presentation/views/student_dashboard_view.dart';
 import '../features/guides/presentation/views/admin_guide_view.dart';
+import '../features/guest/presentation/views/demo_lessons_view.dart';
+import '../features/guest/presentation/views/guest_dictionary_view.dart';
 import '../features/guides/presentation/views/teacher_guide_view.dart';
 import '../features/guides/presentation/views/student_guide_view.dart';
 import '../features/admin/presentation/views/admin_setup_view.dart';
@@ -102,11 +104,37 @@ class AppRouter {
         ),
         GoRoute(
           path: Routes.courses,
-          builder: (context, state) => const CoursesView(),
+          builder: (context, state) {
+            // Check if user is authenticated
+            final authViewModel = Provider.of<AuthViewModel>(
+              context,
+              listen: false,
+            );
+            
+            // If guest user, redirect to demo lessons
+            if (authViewModel.currentUser == null) {
+              return const DemoLessonsView();
+            }
+            
+            return const CoursesView();
+          },
         ),
         GoRoute(
           path: Routes.dictionary,
-          builder: (context, state) => const DictionaryView(),
+          builder: (context, state) {
+            // Check if user is authenticated
+            final authViewModel = Provider.of<AuthViewModel>(
+              context,
+              listen: false,
+            );
+            
+            // If guest user, redirect to guest dictionary
+            if (authViewModel.currentUser == null) {
+              return const GuestDictionaryView();
+            }
+            
+            return const DictionaryView();
+          },
         ),
         GoRoute(
           path: Routes.games,
@@ -150,6 +178,17 @@ class AppRouter {
             return GamificationView(userId: userId);
           },
         ),
+        
+        // Guest routes
+        GoRoute(
+          path: '/guest-dictionary',
+          builder: (context, state) => const GuestDictionaryView(),
+        ),
+        GoRoute(
+          path: '/demo-lessons',
+          builder: (context, state) => const DemoLessonsView(),
+        ),
+        
         GoRoute(
           path: Routes.certificates,
           builder: (context, state) => const CertificatesView(),

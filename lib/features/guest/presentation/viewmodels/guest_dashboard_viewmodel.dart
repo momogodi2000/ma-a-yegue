@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/services/guest_content_service.dart';
+import '../../data/services/guest_dictionary_service.dart';
 
-/// ViewModel for Guest Dashboard - Uses real SQLite + Firebase data
+/// ViewModel for Guest Dashboard - Uses real SQLite data
 class GuestDashboardViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> _availableLanguages = [];
   List<Map<String, dynamic>> _demoLessons = [];
@@ -22,20 +22,20 @@ class GuestDashboardViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;
 
-  /// Initialize guest content from SQLite + Firebase
+  /// Initialize guest content from SQLite database
   Future<void> initialize() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      // Load all guest content in parallel
+      // Load all guest content in parallel using SQLite
       final results = await Future.wait([
-        GuestContentService.getAvailableLanguages(),
-        GuestContentService.getDemoLessons(languageCode: 'fr', limit: 5),
-        GuestContentService.getBasicWords(languageCode: 'fr'),
-        GuestContentService.getCategories(languageCode: 'fr'),
-        GuestContentService.getContentStats(languageCode: 'fr'),
+        GuestDictionaryService.getAvailableLanguages(),
+        GuestDictionaryService.getDemoLessons(limit: 5),
+        GuestDictionaryService.getBasicWords(limit: 25),
+        GuestDictionaryService.getCategories(),
+        GuestDictionaryService.getDictionaryStats(),
       ]);
 
       _availableLanguages = results[0] as List<Map<String, dynamic>>;
@@ -57,8 +57,9 @@ class GuestDashboardViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _basicWords = await GuestContentService.getBasicWords(
-        languageCode: languageCode,
+      _basicWords = await GuestDictionaryService.getBasicWords(
+        languageId: languageCode,
+        limit: 25,
       );
     } catch (e) {
       _errorMessage = 'Erreur lors du chargement des mots: $e';
@@ -69,14 +70,14 @@ class GuestDashboardViewModel extends ChangeNotifier {
   }
 
   /// Load words by category
-  Future<void> loadWordsByCategory(int categoryId) async {
+  Future<void> loadWordsByCategory(String categoryId) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _basicWords = await GuestContentService.getWordsByCategory(
+      _basicWords = await GuestDictionaryService.getWordsByCategory(
         categoryId,
-        limit: 50,
+        limit: 25,
       );
     } catch (e) {
       _errorMessage = 'Erreur lors du chargement des mots: $e';
@@ -91,8 +92,9 @@ class GuestDashboardViewModel extends ChangeNotifier {
     String? languageCode,
   }) async {
     try {
-      return await GuestContentService.getBasicWords(
-        languageCode: languageCode ?? 'fr',
+      return await GuestDictionaryService.getBasicWords(
+        languageId: languageCode ?? 'EWO',
+        limit: 25,
       );
     } catch (e) {
       return [];
@@ -102,10 +104,9 @@ class GuestDashboardViewModel extends ChangeNotifier {
   /// Search words
   Future<List<Map<String, dynamic>>> searchWords(String searchTerm) async {
     try {
-      return await GuestContentService.searchWords(
-        query: searchTerm,
-        languageCode: 'fr',
-        limit: 30,
+      return await GuestDictionaryService.searchWords(
+        searchTerm,
+        limit: 10,
       );
     } catch (e) {
       return [];
@@ -115,8 +116,8 @@ class GuestDashboardViewModel extends ChangeNotifier {
   /// Get lesson content/chapters
   Future<List<Map<String, dynamic>>> getLessonContent(int lessonId) async {
     try {
-      final lesson = await GuestContentService.getLessonContent(lessonId);
-      return [lesson]; // Wrap in list as expected by return type
+      final lesson = await GuestDictionaryService.getLessonById(lessonId);
+      return lesson != null ? [lesson] : [];
     } catch (e) {
       return [];
     }
