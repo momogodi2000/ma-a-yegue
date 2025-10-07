@@ -266,7 +266,7 @@ class CertificateViewModel extends ChangeNotifier {
     _setLoading(true);
     _clearError();
 
-    final result = await _getPendingCertificates(NoParams());
+    final result = await _getPendingCertificates(const NoParams());
     result.fold((failure) => _setError(failure.message), (certificates) {
       _pendingCertificates = certificates;
       notifyListeners();

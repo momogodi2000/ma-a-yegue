@@ -1005,7 +1005,7 @@ packages:
     source: hosted
     version: "5.9.0"
   google_sign_in_platform_interface:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: google_sign_in_platform_interface
       sha256: "5f6f79cf139c197261adb6ac024577518ae48fdff8e53205c5373b5f6430a8aa"
@@ -1703,7 +1703,7 @@ packages:
     source: hosted
     version: "2.4.1"
   sqflite_common:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: sqflite_common
       sha256: "6ef422a4525ecc601db6c0a2233ff448c731307906e92cabc9ba292afaae16a6"

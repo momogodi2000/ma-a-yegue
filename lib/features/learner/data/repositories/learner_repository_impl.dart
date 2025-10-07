@@ -18,7 +18,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
     try {
       final learnerModel = await _localDataSource.getLearnerProfile(userId);
       if (learnerModel == null) {
-        return Left(CacheFailure('Learner profile not found'));
+        return const Left(CacheFailure('Learner profile not found'));
       }
       return Right(learnerModel.toEntity());
     } catch (e) {
@@ -50,7 +50,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         languageCode,
       );
       if (progressModel == null) {
-        return Left(CacheFailure('Language progress not found'));
+        return const Left(CacheFailure('Language progress not found'));
       }
       return Right(progressModel.toEntity());
     } catch (e) {
@@ -186,7 +186,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         timeSpentMinutes: timeSpentMinutes,
         metadata: metadata,
       );
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(CacheFailure('Failed to record lesson completion: $e'));
     }
@@ -208,7 +208,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         finalScore: finalScore,
         totalTimeSpentMinutes: totalTimeSpentMinutes,
       );
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(CacheFailure('Failed to record course completion: $e'));
     }
@@ -270,7 +270,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         score: score,
         assessmentData: assessmentData,
       );
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(CacheFailure('Failed to save level assessment: $e'));
     }
@@ -395,7 +395,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
   ) async {
     try {
       await _localDataSource.resetLearnerProgress(userId, languageCode);
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(CacheFailure('Failed to reset learner progress: $e'));
     }
@@ -445,7 +445,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         languageCode,
         lessonIds,
       );
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(CacheFailure('Failed to update learning path: $e'));
     }
@@ -481,7 +481,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         skill,
         score,
       );
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(CacheFailure('Failed to update skill assessment: $e'));
     }
@@ -512,7 +512,7 @@ class LearnerRepositoryImpl implements LearnerRepository {
         userId,
         recommendationId,
       );
-      return Right(true);
+      return const Right(true);
     } catch (e) {
       return Left(
         CacheFailure('Failed to complete learning recommendation: $e'),

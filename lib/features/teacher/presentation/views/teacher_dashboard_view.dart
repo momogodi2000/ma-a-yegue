@@ -378,7 +378,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: _getStatusColor(course.status),
-          child: Icon(Icons.school, color: Colors.white),
+          child: const Icon(Icons.school, color: Colors.white),
         ),
         title: Text(course.title),
         subtitle: Column(
@@ -518,7 +518,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
           backgroundColor: assignment.isPublished
               ? Colors.green
               : Colors.orange,
-          child: Icon(Icons.assignment, color: Colors.white),
+          child: const Icon(Icons.assignment, color: Colors.white),
         ),
         title: Text(assignment.title),
         subtitle: Column(

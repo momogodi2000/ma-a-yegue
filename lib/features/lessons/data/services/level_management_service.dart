@@ -88,7 +88,7 @@ class LevelManagementService {
       ),
       completionPercentage: 0.0,
       levelAchievedAt: DateTime.now(),
-      completedLessons: [],
+      completedLessons: const [],
       unlockedCourses: _getInitialUnlockedCourses(
         initialLevel ?? LearningLevel.beginner,
       ),
@@ -115,9 +115,7 @@ class LevelManagementService {
   }) async {
     var userLevel = await getUserLevel(userId, languageCode);
 
-    if (userLevel == null) {
-      userLevel = await initializeUserLevel(userId, languageCode);
-    }
+    userLevel ??= await initializeUserLevel(userId, languageCode);
 
     final newPoints = userLevel.currentPoints + points;
     var updatedLevel = userLevel.copyWith(
@@ -156,9 +154,7 @@ class LevelManagementService {
   ) async {
     var userLevel = await getUserLevel(userId, languageCode);
 
-    if (userLevel == null) {
-      userLevel = await initializeUserLevel(userId, languageCode);
-    }
+    userLevel ??= await initializeUserLevel(userId, languageCode);
 
     final completedLessons = List<String>.from(userLevel.completedLessons);
     if (!completedLessons.contains(lessonId)) {
@@ -375,7 +371,7 @@ class LevelManagementService {
           : null,
       completedLessons: (map['completed_lessons'] as String).split(','),
       unlockedCourses: (map['unlocked_courses'] as String).split(','),
-      skillScores: {}, // Parse from string if needed
+      skillScores: const {}, // Parse from string if needed
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
     );

@@ -306,9 +306,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             "Apprends et redécouvre les langues maternelles du Cameroun 🇨🇲",
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 15),
           Row(
@@ -497,14 +497,14 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
               const Spacer(),
-              Row(
+              const Row(
                 children: [
                   Icon(
                     Icons.play_circle_fill,
                     color: Colors.deepPurple,
                     size: 16,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
                     'Continuer',
                     style: TextStyle(

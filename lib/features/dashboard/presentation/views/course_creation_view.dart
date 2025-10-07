@@ -45,7 +45,7 @@ class _CourseCreationViewState extends State<CourseCreationView> {
         description: _descriptionController.text.trim(),
         languageCode: _selectedLanguage,
         thumbnailUrl: '', // TODO: Add image picker
-        lessons: [], // Empty initially
+        lessons: const [], // Empty initially
         estimatedDuration: 60, // Default 1 hour in minutes
         level: CourseLevel.values.firstWhere(
           (level) => level.name == _selectedDifficulty,

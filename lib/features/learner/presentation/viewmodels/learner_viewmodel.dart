@@ -41,7 +41,7 @@ class LearnerViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   LearnerEntity? _learnerProfile;
-  Map<String, LanguageProgress> _languageProgress = {};
+  final Map<String, LanguageProgress> _languageProgress = {};
   List<Achievement> _achievements = [];
   Map<String, dynamic> _learningStatistics = {};
   List<String> _recommendedLessons = [];

@@ -373,9 +373,9 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
         children: [
           Icon(Icons.video_library, size: 64, color: Colors.blue[300]),
           const SizedBox(height: 20),
-          Text(
+          const Text(
             'Video Content',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Text(
@@ -403,9 +403,9 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
         children: [
           Icon(Icons.audiotrack, size: 64, color: Colors.green[300]),
           const SizedBox(height: 20),
-          Text(
+          const Text(
             'Audio Content',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Text(
@@ -433,9 +433,9 @@ class _LessonPlayerViewState extends State<LessonPlayerView>
         children: [
           Icon(Icons.text_fields, size: 64, color: Colors.orange[300]),
           const SizedBox(height: 20),
-          Text(
+          const Text(
             'Text Content',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Expanded(

@@ -917,6 +917,6 @@ class SendNotificationToStudent {
     String message,
   ) async {
     // TODO: Implement notification sending
-    return Left(CacheFailure('Notification sending not implemented'));
+    return const Left(CacheFailure('Notification sending not implemented'));
   }
 }

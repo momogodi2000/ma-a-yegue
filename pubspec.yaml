@@ -69,6 +69,8 @@ dev_dependencies:
     sdk: flutter
   sqflite_common_ffi: ^2.3.0
   connectivity_plus_platform_interface: any
+  sqflite_common: any
+  google_sign_in_platform_interface: any
 flutter:
   uses-material-design: true
   assets:

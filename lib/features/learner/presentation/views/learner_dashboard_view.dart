@@ -157,15 +157,15 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Continuez votre parcours d\'apprentissage des langues camerounaises',
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
               _buildWelcomeStat(
-                '${profile?.currentLevel ?? 'Débutant'}',
+                profile?.currentLevel ?? 'Débutant',
                 'Niveau',
                 Icons.star,
               ),
@@ -343,7 +343,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
                       ),
                       Text(
                         progress.currentLevel,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.deepPurple,
                           fontWeight: FontWeight.w600,

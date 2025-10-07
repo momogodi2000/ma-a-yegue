@@ -125,7 +125,7 @@ class _QuizCreationViewState extends State<QuizCreationView> {
             status: LessonStatus.available,
             estimatedDuration: _questions.length * 2, // 2 minutes per question
             thumbnailUrl: '',
-            contents: [],
+            contents: const [],
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           );
