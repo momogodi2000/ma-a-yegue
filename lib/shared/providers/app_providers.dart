@@ -48,7 +48,7 @@ import '../../features/community/domain/repositories/social_repository.dart';
 import '../../features/community/domain/usecases/social_usecases.dart';
 import '../../features/community/domain/usecases/user_profile_usecases.dart';
 import '../../features/community/presentation/viewmodels/social_viewmodel.dart';
-// import '../../features/culture/culture_providers.dart';
+import '../../features/culture/culture_providers.dart';
 import 'theme_provider.dart';
 import 'locale_provider.dart';
 
@@ -362,5 +362,5 @@ List<SingleChildWidget> get appProviders => [
   ),
 
   // Culture Providers
-  // ...cultureProviders,
+  ...cultureProviders,
 ];

@@ -4,6 +4,8 @@ import 'package:provider/single_child_widget.dart';
 import 'data/datasources/culture_datasources.dart';
 import 'data/repositories/culture_repository_impl.dart';
 import 'domain/repositories/culture_repository.dart';
+import 'domain/usecases/culture_usecases.dart';
+import 'presentation/viewmodels/culture_viewmodels.dart';
 
 /// List of providers for the Culture feature
 List<SingleChildWidget> get cultureProviders => [
@@ -26,5 +28,30 @@ List<SingleChildWidget> get cultureProviders => [
         ),
       ),
 
-      // TODO: Add more providers
+      // Usecases
+      ProxyProvider<CultureRepository, GetCultureContentUseCase>(
+        update: (_, repository, __) => GetCultureContentUseCase(repository),
+      ),
+      
+      ProxyProvider<CultureRepository, GetCultureContentByIdUseCase>(
+        update: (_, repository, __) => GetCultureContentByIdUseCase(repository),
+      ),
+      
+      ProxyProvider<CultureRepository, SearchCultureContentUseCase>(
+        update: (_, repository, __) => SearchCultureContentUseCase(repository),
+      ),
+      
+      ProxyProvider<CultureRepository, GetCultureStatisticsUseCase>(
+        update: (_, repository, __) => GetCultureStatisticsUseCase(repository),
+      ),
+
+      // ViewModels
+      ChangeNotifierProvider<CultureViewModel>(
+        create: (context) => CultureViewModel(
+          getCultureContentUseCase: context.read<GetCultureContentUseCase>(),
+          getCultureContentByIdUseCase: context.read<GetCultureContentByIdUseCase>(),
+          searchCultureContentUseCase: context.read<SearchCultureContentUseCase>(),
+          getCultureStatisticsUseCase: context.read<GetCultureStatisticsUseCase>(),
+        ),
+      ),
     ];
