@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/common/loading_widget.dart';
 import '../../../../shared/widgets/common/error_widget.dart' as custom_error;
+import '../../../../core/constants/routes.dart';
+import '../../../authentication/presentation/viewmodels/auth_viewmodel.dart';
 import '../viewmodels/culture_viewmodels.dart';
 import '../widgets/culture_content_cards.dart';
 
@@ -48,16 +51,89 @@ class _CultureScreenState extends State<CultureScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = context.watch<AuthViewModel>();
+    final isGuest = !authViewModel.isAuthenticated;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Culture & History'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Culture'),
-            Tab(text: 'History'),
-            Tab(text: 'Yemba'),
-          ],
+        title: const Text('Culture & Histoire'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go(Routes.landing);
+            }
+          },
+        ),
+        actions: isGuest
+            ? [
+                TextButton.icon(
+                  onPressed: () => context.go(Routes.login),
+                  icon: const Icon(Icons.login, color: Colors.white, size: 18),
+                  label: const Text(
+                    'Connexion',
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ]
+            : null,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(
+            isGuest ? 110.0 : 48.0,
+          ),
+          child: Column(
+            children: [
+              if (isGuest)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  color: Colors.orange.shade100,
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange.shade900),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Mode Invité - Contenu limité',
+                          style: TextStyle(
+                            color: Colors.orange.shade900,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => context.go(Routes.register),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange.shade900,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                        ),
+                        child: const Text(
+                          'S\'inscrire',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Culture'),
+                  Tab(text: 'Histoire'),
+                  Tab(text: 'Yemba'),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       body: TabBarView(

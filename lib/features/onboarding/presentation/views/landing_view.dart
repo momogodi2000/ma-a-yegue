@@ -434,6 +434,97 @@ class _LandingViewState extends State<LandingView>
                   ),
                 ),
 
+                // Culture Module Preview Section
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.purple.shade700, Colors.deepPurple.shade900],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.museum,
+                        size: 64,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Découvrez le Module Culture',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Explorez l\'histoire, les traditions et le patrimoine culturel camerounais',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      // Culture Features
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 16,
+                        runSpacing: 16,
+                        children: [
+                          _buildCultureFeature(Icons.history_edu, 'Histoire Riche'),
+                          _buildCultureFeature(Icons.celebration, 'Traditions'),
+                          _buildCultureFeature(Icons.music_note, 'Musique & Art'),
+                          _buildCultureFeature(Icons.restaurant, 'Gastronomie'),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Explore as Guest Button
+                      ElevatedButton.icon(
+                        onPressed: () => context.go(Routes.culture),
+                        icon: const Icon(Icons.explore, size: 28),
+                        label: const Text(
+                          'Explorer en tant qu\'Invité',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.deepPurple,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 8,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Aucune inscription requise pour explorer la culture camerounaise',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+
                 // App Highlights Section
                 Container(
                   padding: const EdgeInsets.all(24),
@@ -1069,6 +1160,32 @@ class _LandingViewState extends State<LandingView>
                   ),
                 );
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCultureFeature(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
