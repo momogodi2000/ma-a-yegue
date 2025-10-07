@@ -164,7 +164,7 @@ class LanguageInfo {
   String get greeting {
     switch (code) {
       case 'ewondo':
-        return 'Mboté!';
+        return 'mbolo!';
       case 'duala':
         return 'Mboló!';
       case 'feefee':

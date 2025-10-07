@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/user_entity.dart';
 import '../models/user_model.dart';
 
@@ -13,6 +14,13 @@ abstract class AuthLocalDataSource {
   Future<bool> isUserLoggedIn();
   Future<String?> getCachedUserId();
   Future<void> cacheUserId(String userId);
+  Future<void> saveUser(UserEntity user);
+  Future<UserEntity?> getCurrentUser();
+  Future<void> deleteUser(String userId);
+  Future<void> saveAuthTokens(String accessToken, String refreshToken);
+  Future<Map<String, String>?> getAuthTokens();
+  Future<void> updateUserProfile(UserEntity user);
+  Future<UserEntity?> getUserById(String userId);
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -47,7 +55,17 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     if (userJson != null) {
       try {
         final userMap = json.decode(userJson) as Map<String, dynamic>;
-        return UserModel.fromFirestore(userMap, userMap['id'] as String);
+        // Parse dates from strings
+        final createdAtStr = userMap['createdAt'] as String?;
+        final lastLoginAtStr = userMap['lastLoginAt'] as String?;
+        
+        final parsedMap = {
+          ...userMap,
+          'createdAt': createdAtStr != null ? Timestamp.fromDate(DateTime.parse(createdAtStr)) : Timestamp.now(),
+          'lastLoginAt': lastLoginAtStr != null ? Timestamp.fromDate(DateTime.parse(lastLoginAtStr)) : null,
+        };
+        
+        return UserModel.fromFirestore(parsedMap, userMap['id'] as String);
       } catch (e) {
         // If parsing fails, clear cache
         await prefs.remove(_keyCachedUser);
@@ -125,5 +143,55 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<void> cacheUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyUserId, userId);
+  }
+
+  @override
+  Future<void> saveUser(UserEntity user) async {
+    await cacheUser(user);
+  }
+
+  @override
+  Future<UserEntity?> getCurrentUser() async {
+    return await getCachedUser();
+  }
+
+  @override
+  Future<void> deleteUser(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString(_keyUserId) == userId) {
+      await clearAuthData();
+    }
+  }
+
+  @override
+  Future<void> saveAuthTokens(String accessToken, String refreshToken) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', accessToken);
+    await prefs.setString('refresh_token', refreshToken);
+  }
+
+  @override
+  Future<Map<String, String>?> getAuthTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('access_token');
+    final refreshToken = prefs.getString('refresh_token');
+    if (accessToken != null && refreshToken != null) {
+      return {'access_token': accessToken, 'refresh_token': refreshToken};
+    }
+    return null;
+  }
+
+  @override
+  Future<void> updateUserProfile(UserEntity user) async {
+    await cacheUser(user);
+  }
+
+  @override
+  Future<UserEntity?> getUserById(String userId) async {
+    final cachedUser = await getCachedUser();
+    if (cachedUser != null && cachedUser.id == userId) {
+      return cachedUser;
+    }
+    return null;
   }
 }

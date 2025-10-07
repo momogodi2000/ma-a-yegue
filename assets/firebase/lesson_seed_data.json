@@ -111,17 +111,17 @@
           "content": {
             "words": [
               {
-                "word": "Mboté",
+                "word": "mbolo",
                 "pronunciation": "/ᵐbote/",
                 "meaning": "Hello (general greeting)",
-                "example": "Mboté, mam wam! (Hello, my mother!)",
+                "example": "mbolo, mam wam! (Hello, my mother!)",
                 "audioUrl": ""
               },
               {
-                "word": "Mboté o bibóm",
+                "word": "mbolo o bibóm",
                 "pronunciation": "/ᵐbote o bibom/",
                 "meaning": "Good morning",
-                "example": "Mboté o bibóm, tara! (Good morning, father!)",
+                "example": "mbolo o bibóm, tara! (Good morning, father!)",
                 "audioUrl": ""
               },
               {
@@ -162,9 +162,9 @@
               {
                 "type": "multiple_choice",
                 "question": "How do you say 'Good morning' in Ewondo?",
-                "options": ["Mboté", "Mboté o bibóm", "Akiba", "Matónda"],
+                "options": ["mbolo", "mbolo o bibóm", "Akiba", "Matónda"],
                 "correct": 1,
-                "explanation": "Mboté o bibóm specifically means 'Good morning', combining the general greeting with the time reference."
+                "explanation": "mbolo o bibóm specifically means 'Good morning', combining the general greeting with the time reference."
               },
               {
                 "type": "fill_blank",

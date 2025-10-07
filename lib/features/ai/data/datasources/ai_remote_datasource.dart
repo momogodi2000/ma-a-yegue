@@ -243,10 +243,10 @@ Respond helpfully in French or the target language as appropriate.
   String _getMockTranslation(String text, String sourceLanguage, String targetLanguage) {
     // Simple mock translations for demonstration
     final mockTranslations = {
-      'hello': {'ewondo': 'mboté', 'bafang': 'mbɔ́tɛ'},
+      'hello': {'ewondo': 'mbolo', 'bafang': 'mbɔ́tɛ'},
       'thank you': {'ewondo': 'matónda', 'bafang': 'màtɔ̀ndà'},
-      'good morning': {'ewondo': 'mboté o bibóm', 'bafang': 'mbɔ́tɛ ɔ̀ bìbɔ́m'},
-      'how are you': {'ewondo': 'mboté o yem', 'bafang': 'mbɔ́tɛ ɔ̀ yɛ̀m'},
+      'good morning': {'ewondo': 'mbolo o bibóm', 'bafang': 'mbɔ́tɛ ɔ̀ bìbɔ́m'},
+      'how are you': {'ewondo': 'mbolo o yem', 'bafang': 'mbɔ́tɛ ɔ̀ yɛ̀m'},
     };
 
     final lowerText = text.toLowerCase();

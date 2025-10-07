@@ -239,6 +239,63 @@ service cloud.firestore {
       }
     }
 
+    // Culture Content - Allow read for all users, write for teachers and admins
+    match /culture_content/{contentId} {
+      // Allow anyone to read culture content (including guests)
+      allow read: if true;
+      
+      // Only teachers and admins can create/update/delete
+      allow create: if isTeacherOrAdmin() && isValidCultureContent();
+      allow update: if isTeacherOrAdmin() && isValidCultureContent();
+      allow delete: if isAdmin();
+
+      function isValidCultureContent() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['title', 'description', 'createdAt']) &&
+               data.title is string && data.title.size() > 0 &&
+               data.description is string &&
+               data.createdAt is timestamp;
+      }
+    }
+
+    // Historical Content - Allow read for all users, write for teachers and admins
+    match /historical_content/{contentId} {
+      // Allow anyone to read historical content (including guests)
+      allow read: if true;
+      
+      // Only teachers and admins can create/update/delete
+      allow create: if isTeacherOrAdmin() && isValidHistoricalContent();
+      allow update: if isTeacherOrAdmin() && isValidHistoricalContent();
+      allow delete: if isAdmin();
+
+      function isValidHistoricalContent() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['title', 'description', 'createdAt']) &&
+               data.title is string && data.title.size() > 0 &&
+               data.description is string &&
+               data.createdAt is timestamp;
+      }
+    }
+
+    // Yemba Content - Allow read for all users, write for teachers and admins
+    match /yemba_content/{contentId} {
+      // Allow anyone to read yemba content (including guests)
+      allow read: if true;
+      
+      // Only teachers and admins can create/update/delete
+      allow create: if isTeacherOrAdmin() && isValidYembaContent();
+      allow update: if isTeacherOrAdmin() && isValidYembaContent();
+      allow delete: if isAdmin();
+
+      function isValidYembaContent() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['title', 'content', 'createdAt']) &&
+               data.title is string && data.title.size() > 0 &&
+               data.content is string &&
+               data.createdAt is timestamp;
+      }
+    }
+
     // Default deny rule for any unmatched documents
     match /{document=**} {
       allow read, write: if false;

@@ -63,7 +63,7 @@ class _LandingViewState extends State<LandingView>
       'name': 'Ewondo',
       'group': 'Beti-Pahuin',
       'region': 'Centre',
-      'greeting': 'Mboté!',
+      'greeting': 'mbolo!',
       'color': Colors.green,
       'icon': Icons.nature_people,
     },
@@ -1030,30 +1030,39 @@ class _LandingViewState extends State<LandingView>
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             highlight['icon'] as IconData,
             color: highlight['color'] as Color,
-            size: 40,
+            size: 32,
           ),
-          const SizedBox(height: 12),
-          Text(
-            highlight['title'] as String,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: highlight['color'] as Color,
+          const SizedBox(height: 6),
+          Flexible(
+            child: Text(
+              highlight['title'] as String,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: highlight['color'] as Color,
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            highlight['description'] as String,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-              height: 1.3,
+          const SizedBox(height: 4),
+          Flexible(
+            child: Text(
+              highlight['description'] as String,
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 10,
+                color: Colors.grey,
+                height: 1.2,
+              ),
             ),
           ),
         ],

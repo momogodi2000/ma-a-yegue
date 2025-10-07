@@ -2,7 +2,7 @@
   "achievements": {
     "first_hello": {
       "id": "first_hello",
-      "title": "Premier Mboté",
+      "title": "Premier mbolo",
       "description": "Learn your first greeting in Ewondo",
       "iconName": "handshake",
       "type": "lessonCompletion",

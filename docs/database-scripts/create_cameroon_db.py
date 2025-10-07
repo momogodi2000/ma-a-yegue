@@ -391,8 +391,8 @@ def insert_translations(cursor):
         ('Au revoir', 'BAM', 'Ka ben', 'GRT', 'kah behn', None, 'beginner'),
 
         # Additional words from enhanced dictionary and lessons
-        ('Bonjour', 'EWO', 'Mboté', 'GRT', 'mm-BOH-teh', None, 'beginner'),
-        ('Bonjour', 'EWO', 'Mboté o bibóm', 'GRT', 'mm-BOH-teh oh bee-BOHM', None, 'beginner'),
+        ('Bonjour', 'EWO', 'mbolo', 'GRT', 'mm-BOH-teh', None, 'beginner'),
+        ('Bonjour', 'EWO', 'mbolo o bibóm', 'GRT', 'mm-BOH-teh oh bee-BOHM', None, 'beginner'),
         ('Merci', 'EWO', 'Matónda', 'GRT', 'mah-TOHN-dah', None, 'beginner'),
         ('Eau', 'DUA', 'Mam', 'FOD', 'mahm', None, 'beginner'),
         ('Venir', 'FEF', 'Kaa', 'VRB', 'KAH-ah', None, 'beginner'),
@@ -428,8 +428,8 @@ def insert_translations(cursor):
         ('Quelle heure est-il?', 'FUL', 'Waktu fotde?', 'PHR', 'WAHK-too FOHT-deh', None, 'intermediate'),
 
         # Extended vocabulary from lessons
-        ('Bonjour', 'EWO', 'Mboté', 'GRT', 'mm-BOH-teh', None, 'beginner'),
-        ('Bonjour', 'EWO', 'Mboté o bibóm', 'GRT', 'mm-BOH-teh oh bee-BOHM', None, 'beginner'),
+        ('Bonjour', 'EWO', 'mbolo', 'GRT', 'mm-BOH-teh', None, 'beginner'),
+        ('Bonjour', 'EWO', 'mbolo o bibóm', 'GRT', 'mm-BOH-teh oh bee-BOHM', None, 'beginner'),
         ('Merci', 'EWO', 'Matónda', 'GRT', 'mah-TOHN-dah', None, 'beginner'),
         ('Père', 'EWO', 'Tara', 'FAM', 'TAH-rah', None, 'beginner'),
         ('Mère', 'EWO', 'Mama', 'FAM', 'MAH-mah', None, 'beginner'),
@@ -1534,7 +1534,7 @@ def insert_translations(cursor):
         ('Léger', 'FUL', 'Newi', 'ADJ', 'neh-wee', None, 'beginner'),
 
         # EXTENDED PHRASES AND EXPRESSIONS
-        ('Bonjour, comment allez-vous?', 'EWO', 'Mboté, osime?', 'PHR', 'mm-boh-teh, oh-see-meh', None, 'intermediate'),
+        ('Bonjour, comment allez-vous?', 'EWO', 'mbolo, osime?', 'PHR', 'mm-boh-teh, oh-see-meh', None, 'intermediate'),
         ('Je vais bien, merci', 'EWO', 'Ma yem bot, matónda', 'PHR', 'mah yehm boht, mah-tohn-dah', None, 'intermediate'),
         ('Et vous?', 'EWO', 'Wo osime?', 'PHR', 'woh oh-see-meh', None, 'intermediate'),
         ('Au revoir, bonne journée', 'EWO', 'Ka ben, nga bot', 'PHR', 'kah behn, n-gah boht', None, 'intermediate'),
