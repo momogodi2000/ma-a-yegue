@@ -26,6 +26,33 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(message, style: const TextStyle(fontSize: 15)),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Fermer',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -62,6 +89,8 @@ class _LoginViewState extends State<LoginView> {
           authViewModel.navigateToRoleBasedDashboard(context);
         }
       }
+    } else if (authViewModel.errorMessage != null && mounted) {
+      _showErrorSnackBar(authViewModel.errorMessage!);
     }
   }
 
@@ -72,6 +101,8 @@ class _LoginViewState extends State<LoginView> {
     if (success && mounted) {
       // Navigation will be handled by the router based on auth state and role
       authViewModel.navigateToRoleBasedDashboard(context);
+    } else if (authViewModel.errorMessage != null && mounted) {
+      _showErrorSnackBar(authViewModel.errorMessage!);
     }
   }
 
@@ -82,6 +113,8 @@ class _LoginViewState extends State<LoginView> {
     if (success && mounted) {
       // Navigation will be handled by the router based on auth state and role
       authViewModel.navigateToRoleBasedDashboard(context);
+    } else if (authViewModel.errorMessage != null && mounted) {
+      _showErrorSnackBar(authViewModel.errorMessage!);
     }
   }
 
@@ -92,6 +125,8 @@ class _LoginViewState extends State<LoginView> {
     if (success && mounted) {
       // Navigation will be handled by the router based on auth state and role
       authViewModel.navigateToRoleBasedDashboard(context);
+    } else if (authViewModel.errorMessage != null && mounted) {
+      _showErrorSnackBar(authViewModel.errorMessage!);
     }
   }
 

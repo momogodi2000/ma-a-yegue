@@ -1,44 +1,71 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/database/database_helper.dart';
+import 'dart:convert';
 import '../../domain/entities/user_entity.dart';
 import '../models/user_model.dart';
 
-/// Local auth datasource for offline support
+/// Local auth datasource for session management only
+/// User data is stored ONLY in Firebase Firestore
 abstract class AuthLocalDataSource {
-  Future<UserEntity?> getCurrentUser();
-  Future<void> saveUser(UserEntity user);
-  Future<void> updateUser(UserEntity user);
-  Future<void> deleteUser(String userId);
-  Future<List<UserEntity>> getAllUsers();
-  Future<void> saveAuthTokens(String token, String refreshToken);
-  Future<Map<String, String>?> getAuthTokens();
+  Future<UserEntity?> getCachedUser();
+  Future<void> cacheUser(UserEntity user);
+  Future<void> clearCachedUser();
   Future<void> clearAuthData();
   Future<bool> isUserLoggedIn();
-  Future<void> updateUserProfile(UserEntity user);
-  Future<UserEntity?> getUserById(String userId);
+  Future<String?> getCachedUserId();
+  Future<void> cacheUserId(String userId);
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  @override
-  Future<UserEntity?> getCurrentUser() async {
-    final db = await DatabaseHelper.database;
-    final maps = await db.query(
-      'users',
-      limit: 1,
-      orderBy: 'created_at DESC',
-    );
+  static const String _keyUserId = 'current_user_id';
+  static const String _keyCachedUser = 'cached_user_data';
+  static const String _keyLastCacheTime = 'last_cache_time';
 
-    if (maps.isNotEmpty) {
-      return UserModel.fromFirestore(maps.first, maps.first['id'] as String);
+  // Cache duration: 5 minutes (to ensure fresh data from Firebase)
+  static const Duration _cacheDuration = Duration(minutes: 5);
+
+  /// Get cached user if still valid, otherwise return null
+  @override
+  Future<UserEntity?> getCachedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Check if cache is still valid
+    final lastCacheTimeStr = prefs.getString(_keyLastCacheTime);
+    if (lastCacheTimeStr != null) {
+      final lastCacheTime = DateTime.parse(lastCacheTimeStr);
+      final now = DateTime.now();
+
+      if (now.difference(lastCacheTime) > _cacheDuration) {
+        // Cache expired, clear it
+        await prefs.remove(_keyCachedUser);
+        await prefs.remove(_keyLastCacheTime);
+        return null;
+      }
     }
+
+    // Get cached user data
+    final userJson = prefs.getString(_keyCachedUser);
+    if (userJson != null) {
+      try {
+        final userMap = json.decode(userJson) as Map<String, dynamic>;
+        return UserModel.fromFirestore(userMap, userMap['id'] as String);
+      } catch (e) {
+        // If parsing fails, clear cache
+        await prefs.remove(_keyCachedUser);
+        await prefs.remove(_keyLastCacheTime);
+        return null;
+      }
+    }
+
     return null;
   }
 
+  /// Cache user data temporarily for quick access
   @override
-  Future<void> saveUser(UserEntity user) async {
-    final db = await DatabaseHelper.database;
-    final userData = {
+  Future<void> cacheUser(UserEntity user) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Convert user to JSON
+    final userMap = {
       'id': user.id,
       'email': user.email,
       'displayName': user.displayName,
@@ -47,132 +74,56 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       'role': user.role,
       'createdAt': user.createdAt.toIso8601String(),
       'lastLoginAt': user.lastLoginAt?.toIso8601String(),
-      'isEmailVerified': user.isEmailVerified ? 1 : 0,
-      'preferences': user.preferences?.toString(),
-      'last_sync': DateTime.now().toIso8601String(),
-      'is_synced': 1,
+      'isEmailVerified': user.isEmailVerified,
+      'preferences': user.preferences,
     };
 
-    await db.insert(
-      'users',
-      userData,
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    final userJson = json.encode(userMap);
+
+    await prefs.setString(_keyCachedUser, userJson);
+    await prefs.setString(_keyLastCacheTime, DateTime.now().toIso8601String());
+    await prefs.setString(_keyUserId, user.id);
   }
 
+  /// Clear cached user data
   @override
-  Future<void> updateUser(UserEntity user) async {
-    final db = await DatabaseHelper.database;
-    final userData = {
-      'email': user.email,
-      'displayName': user.displayName,
-      'phoneNumber': user.phoneNumber,
-      'photoUrl': user.photoUrl,
-      'role': user.role,
-      'lastLoginAt': user.lastLoginAt?.toIso8601String(),
-      'isEmailVerified': user.isEmailVerified ? 1 : 0,
-      'preferences': user.preferences?.toString(),
-      'last_sync': DateTime.now().toIso8601String(),
-      'is_synced': 1,
-    };
-
-    await db.update(
-      'users',
-      userData,
-      where: 'id = ?',
-      whereArgs: [user.id],
-    );
-  }
-
-  @override
-  Future<void> deleteUser(String userId) async {
-    final db = await DatabaseHelper.database;
-    await db.delete(
-      'users',
-      where: 'id = ?',
-      whereArgs: [userId],
-    );
-  }
-
-  @override
-  Future<List<UserEntity>> getAllUsers() async {
-    final db = await DatabaseHelper.database;
-    final maps = await db.query('users');
-
-    return maps.map((map) => UserModel.fromFirestore(map, map['id'] as String)).toList();
-  }
-
-  @override
-  Future<void> saveAuthTokens(String token, String refreshToken) async {
-    final db = await DatabaseHelper.database;
+  Future<void> clearCachedUser() async {
     final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('auth_token', token);
-    await prefs.setString('refresh_token', refreshToken);
-
-    await db.insert(
-      'auth_tokens',
-      {
-        'token': token,
-        'refresh_token': refreshToken,
-        'created_at': DateTime.now().toIso8601String(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await prefs.remove(_keyCachedUser);
+    await prefs.remove(_keyLastCacheTime);
   }
 
-  @override
-  Future<Map<String, String>?> getAuthTokens() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    final refreshToken = prefs.getString('refresh_token');
-
-    if (token != null && refreshToken != null) {
-      return {'token': token, 'refreshToken': refreshToken};
-    }
-    return null;
-  }
-
+  /// Clear all authentication data
   @override
   Future<void> clearAuthData() async {
-    final db = await DatabaseHelper.database;
     final prefs = await SharedPreferences.getInstance();
 
-    await prefs.remove('auth_token');
-    await prefs.remove('refresh_token');
-    await prefs.remove('current_user_id');
+    await prefs.remove(_keyUserId);
+    await prefs.remove(_keyCachedUser);
+    await prefs.remove(_keyLastCacheTime);
     await prefs.remove('user_email');
     await prefs.remove('user_role');
-
-    await db.delete('auth_tokens');
   }
 
+  /// Check if user is logged in (has cached user ID)
   @override
   Future<bool> isUserLoggedIn() async {
-    final tokens = await getAuthTokens();
     final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('current_user_id');
-
-    return tokens != null && userId != null;
+    final userId = prefs.getString(_keyUserId);
+    return userId != null;
   }
 
+  /// Get cached user ID
   @override
-  Future<void> updateUserProfile(UserEntity user) async {
-    await updateUser(user);
+  Future<String?> getCachedUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyUserId);
   }
 
+  /// Cache user ID
   @override
-  Future<UserEntity?> getUserById(String userId) async {
-    final db = await DatabaseHelper.database;
-    final maps = await db.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [userId],
-    );
-
-    if (maps.isNotEmpty) {
-      return UserModel.fromFirestore(maps.first, maps.first['id'] as String);
-    }
-    return null;
+  Future<void> cacheUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyUserId, userId);
   }
 }

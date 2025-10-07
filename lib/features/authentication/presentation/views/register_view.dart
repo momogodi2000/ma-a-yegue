@@ -31,6 +31,53 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(message, style: const TextStyle(fontSize: 15)),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Fermer',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(message, style: const TextStyle(fontSize: 15)),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -45,8 +92,14 @@ class _RegisterViewState extends State<RegisterView> {
     );
 
     if (success && mounted) {
+      _showSuccessSnackBar('Compte créé avec succès! Bienvenue!');
       // Navigation will be handled by the router based on auth state and role
-      authViewModel.navigateToRoleBasedDashboard(context);
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        authViewModel.navigateToRoleBasedDashboard(context);
+      }
+    } else if (authViewModel.errorMessage != null && mounted) {
+      _showErrorSnackBar(authViewModel.errorMessage!);
     }
   }
 

@@ -1,14 +1,15 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../../../core/sync/general_sync_manager.dart';
-import '../../../../core/sync/sync_operation.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/entities/auth_response_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../models/user_model.dart';
 import '../datasources/auth_remote_datasource.dart';
 import '../datasources/auth_local_datasource.dart';
+import '../models/user_model.dart';
 
-/// Implementation of AuthRepository with offline support
+/// Implementation of AuthRepository
+/// Uses Firebase as the single source of truth for user data
+/// Local cache is only used for session management and quick access
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final AuthLocalDataSource localDataSource;
@@ -22,8 +23,17 @@ class AuthRepositoryImpl implements AuthRepository {
     required this.syncManager,
   });
 
+  /// Helper method to check if device is offline
+  Future<bool> _isOffline() async {
+    final connectivityResult = await connectivity.checkConnectivity();
+    return connectivityResult == ConnectivityResult.none;
+  }
+
   /// Helper method to create offline error response
-  AuthResponseEntity _createOfflineErrorResponse(String message, {String? email}) {
+  AuthResponseEntity _createOfflineErrorResponse(
+    String message, {
+    String? email,
+  }) {
     final dummyUser = UserEntity(
       id: 'offline',
       email: email ?? 'offline@example.com',
@@ -36,74 +46,31 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  /// Helper method to handle successful authentication and sync
+  /// Helper method to handle successful authentication and cache
   Future<void> _handleSuccessfulAuth(AuthResponseEntity result) async {
     if (result.success) {
-      await localDataSource.saveUser(result.user);
-      await _queueUserSyncOperation(result.user, SyncOperationType.update);
+      // Cache user data for quick access
+      await localDataSource.cacheUser(result.user);
     }
-  }
-
-  /// Helper method to queue sync operation for user
-  Future<void> _queueUserSyncOperation(UserEntity user, SyncOperationType operationType) async {
-    await syncManager.queueOperation(SyncOperation(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      operationType: operationType,
-      tableName: 'users',
-      recordId: user.id,
-      data: {
-        'email': user.email,
-        'displayName': user.displayName,
-        'lastLoginAt': DateTime.now().toIso8601String(),
-        if (operationType == SyncOperationType.insert) 'createdAt': user.createdAt.toIso8601String(),
-      },
-      timestamp: DateTime.now(),
-    ));
-  }
-
-  /// Helper method to check connectivity
-  Future<bool> _isOffline() async {
-    final connectivityResult = await connectivity.checkConnectivity();
-    return connectivityResult == ConnectivityResult.none;
-  }
-
-  /// Helper method for OAuth sign-in methods
-  Future<AuthResponseEntity> _handleOAuthSignIn(
-    Future<AuthResponseEntity> Function() remoteSignIn,
-    String serviceName,
-  ) async {
-    if (await _isOffline()) {
-      return _createOfflineErrorResponse(
-        'Internet connection required for $serviceName sign-in',
-      );
-    }
-
-    final result = await remoteSignIn();
-    await _handleSuccessfulAuth(result);
-    return result;
   }
 
   @override
-  Future<AuthResponseEntity> signInWithEmailAndPassword(String email, String password) async {
+  Future<AuthResponseEntity> signInWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
     if (await _isOffline()) {
-      // Offline mode - try to get cached user
-      final cachedUser = await localDataSource.getCurrentUser();
-      if (cachedUser != null && cachedUser.email == email) {
-        return AuthResponseEntity(
-          user: cachedUser,
-          success: true,
-          message: 'Signed in offline',
-        );
-      } else {
-        return _createOfflineErrorResponse(
-          'No internet connection and no cached credentials',
-          email: email,
-        );
-      }
+      return _createOfflineErrorResponse(
+        'Internet connection required for authentication',
+        email: email,
+      );
     }
 
-    // Online mode
-    final result = await remoteDataSource.signInWithEmailAndPassword(email, password);
+    // Always authenticate with Firebase
+    final result = await remoteDataSource.signInWithEmailAndPassword(
+      email,
+      password,
+    );
     await _handleSuccessfulAuth(result);
     return result;
   }
@@ -128,8 +95,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     if (result.success) {
-      await localDataSource.saveUser(result.user);
-      await _queueUserSyncOperation(result.user, SyncOperationType.insert);
+      await localDataSource.cacheUser(result.user);
     }
 
     return result;
@@ -137,43 +103,72 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthResponseEntity> signInWithGoogle() async {
-    return _handleOAuthSignIn(() => remoteDataSource.signInWithGoogle(), 'Google');
+    return _handleOAuthSignIn(
+      () => remoteDataSource.signInWithGoogle(),
+      'Google',
+    );
   }
 
   @override
   Future<AuthResponseEntity> signInWithFacebook() async {
-    return _handleOAuthSignIn(() => remoteDataSource.signInWithFacebook(), 'Facebook');
+    return _handleOAuthSignIn(
+      () => remoteDataSource.signInWithFacebook(),
+      'Facebook',
+    );
   }
 
   @override
   Future<AuthResponseEntity> signInWithApple() async {
-    return _handleOAuthSignIn(() => remoteDataSource.signInWithApple(), 'Apple');
+    return _handleOAuthSignIn(
+      () => remoteDataSource.signInWithApple(),
+      'Apple',
+    );
   }
 
-  // Add remaining methods from the interface
+  /// Helper method for OAuth sign-in
+  Future<AuthResponseEntity> _handleOAuthSignIn(
+    Future<AuthResponseEntity> Function() signInMethod,
+    String provider,
+  ) async {
+    if (await _isOffline()) {
+      return _createOfflineErrorResponse(
+        'Internet connection required for $provider authentication',
+      );
+    }
+
+    final result = await signInMethod();
+    if (result.success) {
+      await localDataSource.cacheUser(result.user);
+    }
+
+    return result;
+  }
+
   @override
   Future<void> signOut() async {
     await remoteDataSource.signOut();
-    // Clear local user data
-    final currentUser = await localDataSource.getCurrentUser();
-    if (currentUser != null) {
-      await localDataSource.deleteUser(currentUser.id);
-    }
+    await localDataSource.clearAuthData();
   }
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    final connectivityResult = await connectivity.checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.none) {
-      return await localDataSource.getCurrentUser();
+    // Try to get from Firebase (always the source of truth)
+    try {
+      final remoteUser = await remoteDataSource.getCurrentUser();
+      if (remoteUser != null) {
+        // Update cache with fresh data
+        await localDataSource.cacheUser(remoteUser);
+        return remoteUser;
+      }
+    } catch (e) {
+      // If Firebase fails, try cache
+      final cachedUser = await localDataSource.getCachedUser();
+      if (cachedUser != null) {
+        return cachedUser;
+      }
     }
 
-    final remoteUser = await remoteDataSource.getCurrentUser();
-    if (remoteUser != null) {
-      await localDataSource.saveUser(remoteUser);
-    }
-    return remoteUser;
+    return null;
   }
 
   @override
@@ -183,97 +178,94 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
+    if (await _isOffline()) {
+      throw Exception('Internet connection required for password reset');
+    }
     await remoteDataSource.sendPasswordResetEmail(email);
   }
 
   @override
   Future<UserEntity> updateUserProfile(UserEntity user) async {
-    final result = await remoteDataSource.updateUserProfile(
-      UserModel(
-        id: user.id,
-        email: user.email,
-        displayName: user.displayName,
-        phoneNumber: user.phoneNumber,
-        photoUrl: user.photoUrl,
-        role: user.role,
-        createdAt: user.createdAt,
-        lastLoginAt: user.lastLoginAt,
-        isEmailVerified: user.isEmailVerified,
-        preferences: user.preferences,
-      ),
-    );
+    if (await _isOffline()) {
+      throw Exception('Internet connection required to update profile');
+    }
 
-    await localDataSource.saveUser(result);
-    return result;
+    // Convert to UserModel for remote data source
+    final userModel = UserModel.fromEntity(user);
+
+    // Update in Firebase (source of truth)
+    final updatedUser = await remoteDataSource.updateUserProfile(userModel);
+
+    // Update cache
+    await localDataSource.cacheUser(updatedUser);
+
+    return updatedUser;
   }
 
   @override
   Future<void> deleteUserAccount() async {
-    await remoteDataSource.deleteUserAccount();
-    final currentUser = await localDataSource.getCurrentUser();
-    if (currentUser != null) {
-      await localDataSource.deleteUser(currentUser.id);
+    if (await _isOffline()) {
+      throw Exception('Internet connection required to delete account');
     }
+
+    await remoteDataSource.deleteUserAccount();
+    await localDataSource.clearAuthData();
   }
 
   @override
-  Stream<UserEntity?> get authStateChanges {
-    return remoteDataSource.authStateChanges.map((userModel) {
-      if (userModel != null) {
-        localDataSource.saveUser(userModel);
-      }
-      return userModel;
-    });
-  }
+  Stream<UserEntity?> get authStateChanges => remoteDataSource.authStateChanges;
 
   @override
   Future<AuthResponseEntity> signInWithPhoneNumber(String phoneNumber) async {
     if (await _isOffline()) {
-      return _createOfflineErrorResponse('Internet connection required for phone sign-in');
+      return _createOfflineErrorResponse(
+        'Internet connection required for phone authentication',
+      );
     }
 
+    // Note: Phone authentication returns a verification ID, not a full auth response
+    // The actual authentication happens in verifyPhoneNumber
     try {
-      // Call remote datasource to send OTP and get verification ID
-      final verificationId = await remoteDataSource.signInWithPhoneNumber(phoneNumber);
+      final verificationId = await remoteDataSource.signInWithPhoneNumber(
+        phoneNumber,
+      );
 
-      // Return a response with the verification ID in the message
-      // The UI will use this to proceed to the OTP verification screen
-      final dummyUser = UserEntity(
-        id: 'phone_verification_pending',
-        email: 'phone@verification.pending',
+      // Return a temporary response indicating OTP was sent
+      final tempUser = UserEntity(
+        id: 'pending_verification',
+        email: phoneNumber,
         createdAt: DateTime.now(),
       );
 
       return AuthResponseEntity(
-        user: dummyUser,
+        user: tempUser,
         success: true,
-        message: verificationId, // Return verification ID in message field
+        message: 'OTP sent to $phoneNumber. Verification ID: $verificationId',
       );
     } catch (e) {
-      return _createOfflineErrorResponse(
-        'Failed to send verification code: ${e.toString()}',
-      );
+      return _createOfflineErrorResponse('Failed to send OTP: $e');
     }
   }
 
   @override
-  Future<AuthResponseEntity> verifyPhoneNumber(String verificationId, String smsCode) async {
+  Future<AuthResponseEntity> verifyPhoneNumber(
+    String verificationId,
+    String smsCode,
+  ) async {
     if (await _isOffline()) {
-      return _createOfflineErrorResponse('Internet connection required for phone verification');
-    }
-
-    try {
-      // Call remote datasource to verify the OTP code
-      final result = await remoteDataSource.verifyPhoneNumber(verificationId, smsCode);
-
-      // Handle successful authentication
-      await _handleSuccessfulAuth(result);
-
-      return result;
-    } catch (e) {
       return _createOfflineErrorResponse(
-        'Failed to verify code: ${e.toString()}',
+        'Internet connection required for phone verification',
       );
     }
+
+    final result = await remoteDataSource.verifyPhoneNumber(
+      verificationId,
+      smsCode,
+    );
+    if (result.success) {
+      await localDataSource.cacheUser(result.user);
+    }
+
+    return result;
   }
 }
