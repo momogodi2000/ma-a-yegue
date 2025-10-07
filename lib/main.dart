@@ -20,17 +20,18 @@ import 'core/services/firebase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize environment configuration
+  // Initialize only critical services before showing UI
+  bool firebaseInitialized = false;
+
+  // Initialize environment configuration (fast)
   try {
     await EnvironmentConfig.init();
   } catch (e) {
     debugPrint('Error initializing environment config: $e');
-    // Continue without environment config - app should still work
   }
 
-  // Initialize Firebase with error handling
+  // Initialize Firebase (important for auth, can't skip)
   try {
-    // Initialisation complète avant runApp
     await Future.wait([
       Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
       FirebaseService().initialize(),
@@ -41,48 +42,50 @@ void main() async {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };
 
-    // Pass all uncaught asynchronous errors to Crashlytics
     PlatformDispatcher.instance.onError = (error, stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
+
+    firebaseInitialized = true;
+    debugPrint('✅ Firebase initialized');
   } catch (e) {
-    debugPrint('Error initializing Firebase: $e');
-    // Continue without Firebase - app should work in offline mode
+    debugPrint('⚠️ Firebase initialization failed: $e');
   }
 
-  // Initialize databases and seed data with improved error handling
-  bool databasesInitialized = false;
-  try {
-    // Initialize the pre-built Cameroon languages database
-    await DatabaseInitializationService.database;
+  // Run app immediately - don't wait for database initialization
+  runApp(MyApp(firebaseInitialized: firebaseInitialized));
 
-    // Seed the main app database with initial data
+  // Initialize databases in background AFTER app is running
+  _initializeDatabasesInBackground();
+}
+
+/// Initialize heavy database operations in the background
+/// This allows the UI to show immediately while data loads
+Future<void> _initializeDatabasesInBackground() async {
+  debugPrint('🔄 Starting background database initialization...');
+
+  try {
+    // Initialize databases (heavy operation - copying from assets)
+    final dbFuture = DatabaseInitializationService.database;
+    final helperFuture = DatabaseHelper.database;
+
+    await Future.wait([dbFuture, helperFuture], eagerError: false);
+    debugPrint('✅ Databases initialized');
+
+    // Seed database (only on first run)
     await DataSeedingService.seedDatabase();
-
-    databasesInitialized = true;
-    debugPrint('Databases initialized successfully');
+    debugPrint('✅ Database seeding completed');
   } catch (e) {
-    // Log error but don't crash the app
-    debugPrint('Error initializing databases: $e');
-    // App will continue with limited functionality
+    debugPrint('⚠️ Background database initialization failed: $e');
+    // App continues to work - databases will be initialized on demand
   }
-
-  // Ensure database tables exist
-  try {
-    await DatabaseHelper.database;
-    debugPrint('Database tables initialized successfully');
-  } catch (e) {
-    debugPrint('Error ensuring database tables exist: $e');
-  }
-
-  runApp(MyApp(databasesInitialized: databasesInitialized));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key, this.databasesInitialized = false});
+  const MyApp({super.key, this.firebaseInitialized = false});
 
-  final bool databasesInitialized;
+  final bool firebaseInitialized;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -95,36 +98,79 @@ class _MyAppState extends State<MyApp> {
       providers: appProviders,
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder: (context, themeProvider, localeProvider, child) {
-          return FutureBuilder<void>(
-            future: Future.wait([
-              themeProvider.isInitialized
-                  ? Future.value()
-                  : themeProvider.initialize(),
-              localeProvider.isInitialized
-                  ? Future.value()
-                  : localeProvider.initialize(),
-            ]),
-            builder: (context, snapshot) {
-              return MaterialApp.router(
-                debugShowCheckedModeBanner: false,
-                title: 'Ma\'a yegue',
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: themeProvider.themeMode,
-                routerConfig: AppRouter.createRouter(),
-                locale: localeProvider.locale,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [Locale('en'), Locale('fr')],
+          // Initialize providers asynchronously (don't block UI)
+          if (!themeProvider.isInitialized) {
+            themeProvider.initialize().catchError((e) {
+              debugPrint('⚠️ Theme provider initialization failed: $e');
+            });
+          }
+          if (!localeProvider.isInitialized) {
+            localeProvider.initialize().catchError((e) {
+              debugPrint('⚠️ Locale provider initialization failed: $e');
+            });
+          }
+
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Ma\'a yegue',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            routerConfig: AppRouter.createRouter(),
+            locale: localeProvider.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en'), Locale('fr')],
+            // Show loading indicator while initializing
+            builder: (context, child) {
+              return _AppInitializationWrapper(
+                firebaseInitialized: widget.firebaseInitialized,
+                child: child ?? const SizedBox(),
               );
             },
           );
         },
       ),
     );
+  }
+}
+
+/// Wrapper to show loading state during initialization
+class _AppInitializationWrapper extends StatelessWidget {
+  const _AppInitializationWrapper({
+    required this.firebaseInitialized,
+    required this.child,
+  });
+
+  final bool firebaseInitialized;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    // If Firebase is not initialized, show a simple loading screen
+    if (!firebaseInitialized) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 20),
+              Text(
+                'Initializing...',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Otherwise, show the app normally
+    return child;
   }
 }
