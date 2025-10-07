@@ -303,18 +303,18 @@ class MockAuthLocalDataSource extends _i1.Mock
   }
 
   @override
-  _i6.Future<_i9.UserEntity?> getCurrentUser() => (super.noSuchMethod(
+  _i6.Future<_i9.UserEntity?> getCachedUser() => (super.noSuchMethod(
         Invocation.method(
-          #getCurrentUser,
+          #getCachedUser,
           [],
         ),
         returnValue: _i6.Future<_i9.UserEntity?>.value(),
       ) as _i6.Future<_i9.UserEntity?>);
 
   @override
-  _i6.Future<void> saveUser(_i9.UserEntity? user) => (super.noSuchMethod(
+  _i6.Future<void> cacheUser(_i9.UserEntity? user) => (super.noSuchMethod(
         Invocation.method(
-          #saveUser,
+          #cacheUser,
           [user],
         ),
         returnValue: _i6.Future<void>.value(),
@@ -322,59 +322,14 @@ class MockAuthLocalDataSource extends _i1.Mock
       ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> updateUser(_i9.UserEntity? user) => (super.noSuchMethod(
+  _i6.Future<void> clearCachedUser() => (super.noSuchMethod(
         Invocation.method(
-          #updateUser,
-          [user],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<void> deleteUser(String? userId) => (super.noSuchMethod(
-        Invocation.method(
-          #deleteUser,
-          [userId],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<List<_i9.UserEntity>> getAllUsers() => (super.noSuchMethod(
-        Invocation.method(
-          #getAllUsers,
+          #clearCachedUser,
           [],
         ),
-        returnValue: _i6.Future<List<_i9.UserEntity>>.value(<_i9.UserEntity>[]),
-      ) as _i6.Future<List<_i9.UserEntity>>);
-
-  @override
-  _i6.Future<void> saveAuthTokens(
-    String? token,
-    String? refreshToken,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #saveAuthTokens,
-          [
-            token,
-            refreshToken,
-          ],
-        ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<Map<String, String>?> getAuthTokens() => (super.noSuchMethod(
-        Invocation.method(
-          #getAuthTokens,
-          [],
-        ),
-        returnValue: _i6.Future<Map<String, String>?>.value(),
-      ) as _i6.Future<Map<String, String>?>);
 
   @override
   _i6.Future<void> clearAuthData() => (super.noSuchMethod(
@@ -396,25 +351,23 @@ class MockAuthLocalDataSource extends _i1.Mock
       ) as _i6.Future<bool>);
 
   @override
-  _i6.Future<void> updateUserProfile(_i9.UserEntity? user) =>
-      (super.noSuchMethod(
+  _i6.Future<String?> getCachedUserId() => (super.noSuchMethod(
         Invocation.method(
-          #updateUserProfile,
-          [user],
+          #getCachedUserId,
+          [],
+        ),
+        returnValue: _i6.Future<String?>.value(),
+      ) as _i6.Future<String?>);
+
+  @override
+  _i6.Future<void> cacheUserId(String? userId) => (super.noSuchMethod(
+        Invocation.method(
+          #cacheUserId,
+          [userId],
         ),
         returnValue: _i6.Future<void>.value(),
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<_i9.UserEntity?> getUserById(String? userId) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getUserById,
-          [userId],
-        ),
-        returnValue: _i6.Future<_i9.UserEntity?>.value(),
-      ) as _i6.Future<_i9.UserEntity?>);
 }
 
 /// A class which mocks [Connectivity].

@@ -1,19 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:maa_yegue/features/authentication/data/datasources/auth_local_datasource.dart';
 import 'package:maa_yegue/features/authentication/data/models/user_model.dart';
 
-import 'auth_local_datasource_test.mocks.dart';
-
-// Generate mocks
-@GenerateMocks([SharedPreferences, Database])
 void main() {
   late AuthLocalDataSourceImpl dataSource;
-  late MockSharedPreferences mockSharedPreferences;
-  late MockDatabase mockDatabase;
 
   final tUserModel = UserModel(
     id: 'test-user-id',
@@ -24,470 +15,187 @@ void main() {
     isEmailVerified: true,
   );
 
-  // Remove unused variable
-  // final tAuthResponseModel = AuthResponseModel(
-  //   user: tUserModel,
-  //   token: 'test-token-123',
-  //   refreshToken: 'refresh-token-456',
-  //   success: true,
-  //   message: 'Authentication successful',
-  // );
-
   setUp(() {
-    // Initialize FFI
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-
-    mockSharedPreferences = MockSharedPreferences();
-    mockDatabase = MockDatabase();
     dataSource = AuthLocalDataSourceImpl();
+    // Initialize SharedPreferences for testing
+    SharedPreferences.setMockInitialValues({});
   });
 
   group('AuthLocalDataSourceImpl', () {
-    group('saveUser', () {
-      test(
-        'should save user data to database and shared preferences',
-        () async {
-          // arrange
-          when(
-            mockDatabase.insert(
-              any,
-              any,
-              conflictAlgorithm: anyNamed('conflictAlgorithm'),
-            ),
-          ).thenAnswer((_) async => 1);
-          when(
-            mockSharedPreferences.setString(any, any),
-          ).thenAnswer((_) async => true);
+    group('cacheUser', () {
+      test('should cache user data in SharedPreferences', () async {
+        // act
+        await dataSource.cacheUser(tUserModel);
 
-          // act
-          await dataSource.saveUser(tUserModel);
+        // assert
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('current_user_id'), 'test-user-id');
+        expect(prefs.getString('cached_user_data'), isNotNull);
+        expect(prefs.getString('last_cache_time'), isNotNull);
+      });
 
-          // assert
-          verify(
-            mockDatabase.insert(
-              'users',
-              any,
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            ),
-          ).called(1);
-          verify(
-            mockSharedPreferences.setString('current_user_id', 'test-user-id'),
-          ).called(1);
-          verify(
-            mockSharedPreferences.setString('user_email', 'test@example.com'),
-          ).called(1);
-          verify(
-            mockSharedPreferences.setString('user_role', 'learner'),
-          ).called(1);
-        },
-      );
+      test('should cache user with all fields', () async {
+        // act
+        await dataSource.cacheUser(tUserModel);
 
-      test('should throw exception when database insert fails', () async {
-        // arrange
-        when(
-          mockDatabase.insert(
-            any,
-            any,
-            conflictAlgorithm: anyNamed('conflictAlgorithm'),
-          ),
-        ).thenThrow(Exception('Database error'));
-
-        // act & assert
-        expect(
-          () => dataSource.saveUser(tUserModel),
-          throwsA(isA<Exception>()),
-        );
+        // assert
+        final prefs = await SharedPreferences.getInstance();
+        final cachedUserJson = prefs.getString('cached_user_data');
+        expect(cachedUserJson, isNotNull);
+        expect(cachedUserJson, contains('test-user-id'));
+        expect(cachedUserJson, contains('test@example.com'));
+        expect(cachedUserJson, contains('Test User'));
       });
     });
 
-    group('getCurrentUser', () {
-      test('should return user when found in database', () async {
+    group('getCachedUser', () {
+      test('should return cached user when cache is valid', () async {
         // arrange
-        final userJson = {
-          'id': 'test-user-id',
-          'email': 'test@example.com',
-          'displayName': 'Test User',
-          'role': 'learner',
-          'createdAt': '2024-01-01T00:00:00.000Z',
-          'isEmailVerified': 1,
-        };
-
-        when(
-          mockDatabase.query(
-            'users',
-            where: any,
-            whereArgs: any,
-            limit: anyNamed('limit'),
-          ),
-        ).thenAnswer((_) async => [userJson]);
+        await dataSource.cacheUser(tUserModel);
 
         // act
-        final result = await dataSource.getCurrentUser();
+        final result = await dataSource.getCachedUser();
 
         // assert
-        expect(result, isA<UserModel>());
-        expect(result?.id, 'test-user-id');
-        expect(result?.email, 'test@example.com');
-        expect(result?.displayName, 'Test User');
-        expect(result?.role, 'learner');
-        expect(result?.isEmailVerified, true);
-
-        verify(
-          mockDatabase.query(
-            'users',
-            where: 'id = ?',
-            whereArgs: ['test-user-id'],
-            limit: 1,
-          ),
-        ).called(1);
+        expect(result, isNotNull);
+        expect(result!.id, 'test-user-id');
+        expect(result.email, 'test@example.com');
+        expect(result.displayName, 'Test User');
+        expect(result.role, 'learner');
       });
 
-      test('should return null when user not found in database', () async {
+      test('should return null when no cached user exists', () async {
+        // act
+        final result = await dataSource.getCachedUser();
+
+        // assert
+        expect(result, isNull);
+      });
+
+      test('should return null when cache has expired', () async {
         // arrange
-        when(
-          mockDatabase.query(
-            'users',
-            where: any,
-            whereArgs: any,
-            limit: anyNamed('limit'),
-          ),
-        ).thenAnswer((_) async => []);
+        final prefs = await SharedPreferences.getInstance();
+        
+        // Set cache time to 10 minutes ago (past the 5-minute expiry)
+        final oldTime = DateTime.now().subtract(const Duration(minutes: 10));
+        await prefs.setString('last_cache_time', oldTime.toIso8601String());
+        await prefs.setString('cached_user_data', '{"id": "test"}');
 
         // act
-        final result = await dataSource.getCurrentUser();
+        final result = await dataSource.getCachedUser();
 
         // assert
-        expect(result, null);
+        expect(result, isNull);
+        // Verify expired cache was cleared
+        expect(prefs.getString('cached_user_data'), isNull);
       });
 
-      test(
-        'should return null when no current user ID in shared preferences',
-        () async {
-          // arrange
-          when(
-            mockSharedPreferences.getString('current_user_id'),
-          ).thenReturn(null);
-
-          // act
-          final result = await dataSource.getCurrentUser();
-
-          // assert
-          expect(result, null);
-          verifyNever(
-            mockDatabase.query(
-              any,
-              where: any,
-              whereArgs: any,
-              limit: anyNamed('limit'),
-            ),
-          );
-        },
-      );
-
-      test('should throw exception when database query fails', () async {
+      test('should return null when cached data is invalid JSON', () async {
         // arrange
-        when(
-          mockSharedPreferences.getString('current_user_id'),
-        ).thenReturn('test-user-id');
-        when(
-          mockDatabase.query(
-            any,
-            where: any,
-            whereArgs: any,
-            limit: anyNamed('limit'),
-          ),
-        ).thenThrow(Exception('Database error'));
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('cached_user_data', 'invalid-json');
+        await prefs.setString('last_cache_time', DateTime.now().toIso8601String());
 
-        // act & assert
-        expect(() => dataSource.getCurrentUser(), throwsA(isA<Exception>()));
+        // act
+        final result = await dataSource.getCachedUser();
+
+        // assert
+        expect(result, isNull);
+        // Verify invalid cache was cleared
+        expect(prefs.getString('cached_user_data'), isNull);
       });
     });
 
-    group('deleteUser', () {
-      test(
-        'should delete user from database and clear shared preferences',
-        () async {
-          // arrange
-          when(
-            mockDatabase.delete(any, where: any, whereArgs: any),
-          ).thenAnswer((_) async => 1);
-          when(mockSharedPreferences.remove(any)).thenAnswer((_) async => true);
-
-          // act
-          await dataSource.deleteUser('test-user-id');
-
-          // assert
-          verify(
-            mockDatabase.delete(
-              'users',
-              where: 'id = ?',
-              whereArgs: ['test-user-id'],
-            ),
-          ).called(1);
-          verify(mockSharedPreferences.remove('current_user_id')).called(1);
-          verify(mockSharedPreferences.remove('user_email')).called(1);
-          verify(mockSharedPreferences.remove('user_role')).called(1);
-          verify(mockSharedPreferences.remove('auth_token')).called(1);
-          verify(mockSharedPreferences.remove('refresh_token')).called(1);
-        },
-      );
-
-      test('should throw exception when database delete fails', () async {
+    group('clearCachedUser', () {
+      test('should clear cached user data', () async {
         // arrange
-        when(
-          mockDatabase.delete(any, where: any, whereArgs: any),
-        ).thenThrow(Exception('Database error'));
+        await dataSource.cacheUser(tUserModel);
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('cached_user_data'), isNotNull);
 
-        // act & assert
-        expect(
-          () => dataSource.deleteUser('test-user-id'),
-          throwsA(isA<Exception>()),
-        );
+        // act
+        await dataSource.clearCachedUser();
+
+        // assert
+        expect(prefs.getString('cached_user_data'), isNull);
+        expect(prefs.getString('last_cache_time'), isNull);
       });
     });
 
-    group('saveAuthTokens', () {
-      test('should save auth tokens to shared preferences', () async {
-        // arrange
-        when(
-          mockSharedPreferences.setString(any, any),
-        ).thenAnswer((_) async => true);
-
+    group('cacheUserId', () {
+      test('should cache user ID in SharedPreferences', () async {
         // act
-        await dataSource.saveAuthTokens('test-token', 'refresh-token');
+        await dataSource.cacheUserId('test-user-id');
 
         // assert
-        verify(
-          mockSharedPreferences.setString('auth_token', 'test-token'),
-        ).called(1);
-        verify(
-          mockSharedPreferences.setString('refresh_token', 'refresh-token'),
-        ).called(1);
-      });
-
-      test('should throw exception when shared preferences fails', () async {
-        // arrange
-        when(
-          mockSharedPreferences.setString(any, any),
-        ).thenThrow(Exception('Storage error'));
-
-        // act & assert
-        expect(
-          () => dataSource.saveAuthTokens('test-token', 'refresh-token'),
-          throwsA(isA<Exception>()),
-        );
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('current_user_id'), 'test-user-id');
       });
     });
 
-    group('getAuthTokens', () {
-      test('should return auth tokens from shared preferences', () async {
+    group('getCachedUserId', () {
+      test('should return cached user ID', () async {
         // arrange
-        when(
-          mockSharedPreferences.getString('auth_token'),
-        ).thenReturn('test-token');
-        when(
-          mockSharedPreferences.getString('refresh_token'),
-        ).thenReturn('refresh-token');
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('current_user_id', 'test-user-id');
 
         // act
-        final result = await dataSource.getAuthTokens();
+        final result = await dataSource.getCachedUserId();
 
         // assert
-        expect(result!['token'], 'test-token');
-        expect(result['refreshToken'], 'refresh-token');
+        expect(result, 'test-user-id');
       });
 
-      test(
-        'should return null tokens when not found in shared preferences',
-        () async {
-          // arrange
-          when(mockSharedPreferences.getString('auth_token')).thenReturn(null);
-          when(
-            mockSharedPreferences.getString('refresh_token'),
-          ).thenReturn(null);
+      test('should return null when no user ID is cached', () async {
+        // act
+        final result = await dataSource.getCachedUserId();
 
-          // act
-          final result = await dataSource.getAuthTokens();
-
-          // assert
-          expect(result, null);
-        },
-      );
+        // assert
+        expect(result, isNull);
+      });
     });
 
     group('clearAuthData', () {
-      test('should clear all auth data from shared preferences', () async {
+      test('should clear all auth data from SharedPreferences', () async {
         // arrange
-        when(mockSharedPreferences.remove(any)).thenAnswer((_) async => true);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('current_user_id', 'test-user-id');
+        await prefs.setString('cached_user_data', 'cached-data');
+        await prefs.setString('last_cache_time', DateTime.now().toIso8601String());
+        await prefs.setString('user_email', 'test@example.com');
+        await prefs.setString('user_role', 'learner');
 
         // act
         await dataSource.clearAuthData();
 
         // assert
-        verify(mockSharedPreferences.remove('current_user_id')).called(1);
-        verify(mockSharedPreferences.remove('user_email')).called(1);
-        verify(mockSharedPreferences.remove('user_role')).called(1);
-        verify(mockSharedPreferences.remove('auth_token')).called(1);
-        verify(mockSharedPreferences.remove('refresh_token')).called(1);
-      });
-
-      test('should throw exception when shared preferences fails', () async {
-        // arrange
-        when(
-          mockSharedPreferences.remove(any),
-        ).thenThrow(Exception('Storage error'));
-
-        // act & assert
-        expect(() => dataSource.clearAuthData(), throwsA(isA<Exception>()));
+        expect(prefs.getString('current_user_id'), isNull);
+        expect(prefs.getString('cached_user_data'), isNull);
+        expect(prefs.getString('last_cache_time'), isNull);
+        expect(prefs.getString('user_email'), isNull);
+        expect(prefs.getString('user_role'), isNull);
       });
     });
 
     group('isUserLoggedIn', () {
-      test('should return true when user is logged in', () async {
+      test('should return true when user ID is cached', () async {
         // arrange
-        when(
-          mockSharedPreferences.getString('current_user_id'),
-        ).thenReturn('test-user-id');
-        when(
-          mockSharedPreferences.getString('auth_token'),
-        ).thenReturn('test-token');
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('current_user_id', 'test-user-id');
 
         // act
         final result = await dataSource.isUserLoggedIn();
 
         // assert
-        expect(result, true);
+        expect(result, isTrue);
       });
 
-      test('should return false when user is not logged in', () async {
-        // arrange
-        when(
-          mockSharedPreferences.getString('current_user_id'),
-        ).thenReturn(null);
-        when(mockSharedPreferences.getString('auth_token')).thenReturn(null);
-
+      test('should return false when no user ID is cached', () async {
         // act
         final result = await dataSource.isUserLoggedIn();
 
         // assert
-        expect(result, false);
-      });
-
-      test('should return false when user ID exists but no token', () async {
-        // arrange
-        when(
-          mockSharedPreferences.getString('current_user_id'),
-        ).thenReturn('test-user-id');
-        when(mockSharedPreferences.getString('auth_token')).thenReturn(null);
-
-        // act
-        final result = await dataSource.isUserLoggedIn();
-
-        // assert
-        expect(result, false);
-      });
-    });
-
-    group('updateUserProfile', () {
-      test('should update user profile in database', () async {
-        // arrange
-        final updatedUser = UserModel(
-          id: 'test-user-id',
-          email: 'updated@example.com',
-          displayName: 'Updated User',
-          role: 'learner',
-          createdAt: DateTime.parse('2024-01-01T00:00:00.000Z'),
-          isEmailVerified: true,
-        );
-
-        when(
-          mockDatabase.update(any, any, where: any, whereArgs: any),
-        ).thenAnswer((_) async => 1);
-
-        // act
-        await dataSource.updateUserProfile(updatedUser);
-
-        // assert
-        verify(
-          mockDatabase.update(
-            'users',
-            any,
-            where: 'id = ?',
-            whereArgs: ['test-user-id'],
-          ),
-        ).called(1);
-      });
-
-      test('should throw exception when database update fails', () async {
-        // arrange
-        when(
-          mockDatabase.update(any, any, where: any, whereArgs: any),
-        ).thenThrow(Exception('Database error'));
-
-        // act & assert
-        expect(
-          () => dataSource.updateUserProfile(tUserModel),
-          throwsA(isA<Exception>()),
-        );
-      });
-    });
-
-    group('getUserById', () {
-      test('should return user when found by ID', () async {
-        // arrange
-        final userJson = {
-          'id': 'test-user-id',
-          'email': 'test@example.com',
-          'displayName': 'Test User',
-          'role': 'learner',
-          'createdAt': '2024-01-01T00:00:00.000Z',
-          'isEmailVerified': 1,
-        };
-
-        when(
-          mockDatabase.query(
-            'users',
-            where: any,
-            whereArgs: any,
-            limit: anyNamed('limit'),
-          ),
-        ).thenAnswer((_) async => [userJson]);
-
-        // act
-        final result = await dataSource.getUserById('test-user-id');
-
-        // assert
-        expect(result, isA<UserModel>());
-        expect(result?.id, 'test-user-id');
-        expect(result?.email, 'test@example.com');
-
-        verify(
-          mockDatabase.query(
-            'users',
-            where: 'id = ?',
-            whereArgs: ['test-user-id'],
-            limit: 1,
-          ),
-        ).called(1);
-      });
-
-      test('should return null when user not found by ID', () async {
-        // arrange
-        when(
-          mockDatabase.query(
-            'users',
-            where: any,
-            whereArgs: any,
-            limit: anyNamed('limit'),
-          ),
-        ).thenAnswer((_) async => []);
-
-        // act
-        final result = await dataSource.getUserById('non-existent-id');
-
-        // assert
-        expect(result, null);
+        expect(result, isFalse);
       });
     });
   });
