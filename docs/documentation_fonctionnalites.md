@@ -1,8 +1,8 @@
-# Documentation des Fonctionnalités - Ma’a yegue App
+# Documentation des Fonctionnalités - Ma'a yegue App
 
 ## Vue d'Ensemble
 
-L'application Ma’a yegue propose un écosystème complet d'apprentissage des langues camerounaises, organisé autour de 15 modules fonctionnels principaux. Chaque fonctionnalité est conçue pour offrir une expérience utilisateur fluide et pédagogique.
+L'application Ma'a yegue propose un écosystème complet d'apprentissage des langues camerounaises, organisé autour de **25+ modules fonctionnels** intégrés. Chaque fonctionnalité est conçue pour offrir une expérience utilisateur fluide et pédagogique, avec support pour **22 langues camerounaises** et un système éducatif complet.
 
 ## 👤 1. Authentification (`features/authentication/`)
 
@@ -10,11 +10,13 @@ L'application Ma’a yegue propose un écosystème complet d'apprentissage des l
 Système d'authentification multi-fournisseurs permettant une connexion sécurisée et flexible.
 
 ### Fonctionnalités
-- **Connexion multi-méthodes** : Email/Mot de passe, Google, Facebook, Apple, numéro de téléphone
+- **Connexion multi-méthodes** : Email/Mot de passe, Google, Facebook, numéro de téléphone (SMS)
 - **Inscription guidée** : Processus d'onboarding avec validation des informations
 - **Récupération de mot de passe** : Réinitialisation sécurisée via email
-- **Gestion des rôles** : Apprenant, Enseignant, Administrateur
-- **Vérification téléphone** : Authentification SMS pour sécurité renforcée
+- **Gestion des rôles** : 12 rôles utilisateurs (Visitor, Student, Parent, Teacher, Substitute Teacher, Educational Counselor, Vice Director, School Director, Inspector, MINEDUC Official, Admin, Super Admin)
+- **Hiérarchie 10 niveaux** : Permissions granulaires basées sur les niveaux
+- **Double authentification (2FA)** : Sécurité renforcée pour comptes sensibles
+- **Gestion de session** : Tokens JWT avec expiration automatique
 
 ### Architecture
 ```
@@ -133,41 +135,75 @@ class DictionaryEntry {
 ## 🤖 4. Intelligence Artificielle (`features/ai/`)
 
 ### Description
-Assistant IA spécialisé dans l'apprentissage des langues camerounaises utilisant Gemini AI.
+Assistant IA complet utilisant **Google Gemini AI** spécialisé dans l'apprentissage des langues camerounaises.
 
-### Fonctionnalités
-- **Assistant conversationnel** : Questions-réponses en temps réel
-- **Génération de contenu** : Création automatique de leçons et exercices
-- **Correction grammaticale** : Analyse et suggestions d'amélioration
-- **Prononciation assistée** : Retours sur la prononciation
-- **Recommandations personnalisées** : Contenu adapté au profil
+### Fonctionnalités Principales
+- **Chat Conversationnel** : Conversations en temps réel en français et langues camerounaises
+- **Traduction Contextuelle** : Traduction intelligente entre français et 22 langues locales
+- **Évaluation de Prononciation** : Analyse audio et feedback détaillé
+- **Génération de Contenu** : Création automatique de leçons, exercices et quiz
+- **Recommandations Personnalisées** : Suggestions basées sur progression utilisateur
+- **Analyse de Progression** : Évaluation IA des performances et points d'amélioration
 
-### Intégration Gemini AI
+### Services IA Disponibles
 ```dart
-class AIService {
-  Future<String> generateLesson({
+abstract class AiRepository {
+  // Chat conversationnel
+  Future<AiResponseEntity> sendMessage({
+    required String conversationId,
+    required String message,
+    required String userId,
+  });
+
+  // Traduction avec contexte
+  Future<TranslationEntity> translateText({
+    required String sourceText,
+    required String sourceLanguage,
+    required String targetLanguage,
+  });
+
+  // Évaluation prononciation
+  Future<PronunciationAssessmentEntity> assessPronunciation({
+    required String word,
     required String language,
+    required String audioUrl,
+  });
+
+  // Génération de contenu pédagogique
+  Future<ContentGenerationEntity> generateContent({
+    required String type,
     required String topic,
-    required int level,
-  });
-
-  Future<PronunciationFeedback> analyzePronunciation({
-    required String audioFile,
-    required String targetWord,
-  });
-
-  Future<List<String>> getSuggestions({
-    required String currentText,
     required String language,
+    required String difficulty,
+  });
+
+  // Recommandations personnalisées
+  Future<List<AiLearningRecommendationEntity>> getPersonalizedRecommendations(
+    String userId
+  );
+
+  // Analyse de progression
+  Future<ProgressAnalysisEntity> analyzeUserProgress({
+    required String userId,
+    required String language,
+    required String timeRange,
   });
 }
 ```
 
+### Interfaces Utilisateur
+- **Tab Chat** : Conversation avec l'assistant IA
+- **Tab Traduction** : Interface de traduction rapide
+- **Tab Prononciation** : Enregistrement et évaluation vocale
+- **Tab Génération** : Création de contenu personnalisé
+- **Tab Recommandations** : Suggestions d'apprentissage
+
 ### Cas d'Usage
-- **Génération de leçons** : Contenu pédagogique personnalisé
-- **Correction d'exercices** : Feedback intelligent
-- **Conversation culturelle** : Discussion en langue cible
-- **Explication grammaticale** : Clarification des règles complexes
+- **Tuteur Personnel** : Réponses aux questions sur grammaire et vocabulaire
+- **Exercices Dynamiques** : Génération d'exercices adaptés au niveau
+- **Coach de Prononciation** : Feedback immédiat sur la prononciation
+- **Traducteur Culturel** : Traductions contextuelles avec notes culturelles
+- **Planification d'Apprentissage** : Recommandations de parcours personnalisés
 
 ## 💳 5. Paiements (`features/payment/`)
 
@@ -184,12 +220,24 @@ Système de monétisation avec intégration de passerelles de paiement camerouna
 ### Plans d'Abonnement
 ```dart
 enum SubscriptionPlan {
-  free,        // Limité, publicités
-  premium,     // Accès complet, 9.99€/mois
-  teacher,     // Fonctionnalités pédagogiques, 19.99€/mois
-  lifetime,    // Accès perpétuel, 99.99€
+  free,        // Accès limité, contenu de base
+  premium,     // Accès complet, sans publicité
+  teacher,     // Outils pédagogiques avancés
+  school,      // Licence multi-utilisateurs pour établissements
+  lifetime,    // Accès perpétuel unique
 }
 ```
+
+### Méthodes de Paiement Supportées
+- **CamPay** : MTN Mobile Money, Orange Money (XAF)
+- **NouPai** : Alternative Mobile Money camerounaise
+- **Stripe** : Cartes bancaires internationales (Visa, MasterCard)
+
+### Fonctionnalités de Sécurité
+- Validation webhook pour vérification des paiements
+- Chiffrement des données de transaction
+- Historique détaillé avec références de transaction
+- Système de remboursement automatisé
 
 ### Intégration CamPay
 ```dart

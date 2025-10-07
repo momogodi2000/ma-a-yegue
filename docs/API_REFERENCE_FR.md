@@ -74,6 +74,57 @@ final credential = GoogleAuthProvider.credential(
   idToken: googleAuth.idToken,
 );
 
+final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+// Enregistrer l'utilisateur dans Firestore
+await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+  'email': userCredential.user!.email,
+  'displayName': userCredential.user!.displayName,
+  'photoURL': userCredential.user!.photoURL,
+  'provider': 'google',
+  'role': 'student', // Rôle par défaut
+  'createdAt': FieldValue.serverTimestamp(),
+});
+```
+
+#### Connexion Facebook
+
+```dart
+// Processus OAuth Facebook
+final LoginResult result = await FacebookAuth.instance.login();
+
+if (result.status == LoginStatus.success) {
+  final OAuthCredential facebookCredential = 
+    FacebookAuthProvider.credential(result.accessToken!.token);
+  
+  final userCredential = await FirebaseAuth.instance
+    .signInWithCredential(facebookCredential);
+}
+```
+
+#### Authentification par Téléphone (SMS)
+
+```dart
+// Vérification du numéro de téléphone
+await FirebaseAuth.instance.verifyPhoneNumber(
+  phoneNumber: '+237XXXXXXXXX',
+  verificationCompleted: (PhoneAuthCredential credential) async {
+    await FirebaseAuth.instance.signInWithCredential(credential);
+  },
+  verificationFailed: (FirebaseAuthException e) {
+    print('Verification failed: ${e.message}');
+  },
+  codeSent: (String verificationId, int? resendToken) {
+    // Afficher l'écran de saisie du code
+  },
+  codeAutoRetrievalTimeout: (String verificationId) {},
+);
+
+// Vérification avec le code SMS
+final credential = PhoneAuthProvider.credential(
+  verificationId: verificationId,
+  smsCode: smsCode,
+);
 await FirebaseAuth.instance.signInWithCredential(credential);
 ```
 

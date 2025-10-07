@@ -2,7 +2,13 @@
 
 ## Vue d'Ensemble
 
-L'application Ma’a yegue suit une architecture moderne basée sur les principes de **Clean Architecture** et le pattern **MVVM (Model-View-ViewModel)**. Cette approche garantit une séparation claire des responsabilités, une testabilité élevée et une maintenabilité à long terme.
+L'application **Ma'a yegue v2.0** suit une architecture moderne basée sur les principes de **Clean Architecture** et le pattern **MVVM (Model-View-ViewModel)**. Cette approche garantit une séparation claire des responsabilités, une testabilité élevée et une maintenabilité à long terme.
+
+**Version actuelle**: 2.0.0 - Educational Platform Edition  
+**Modules**: 25+ modules fonctionnels  
+**Fichiers**: 410+ fichiers Dart  
+**Core Services**: 21 services essentiels  
+**Score**: 8.5/10 - Production Ready
 
 ## 🏗️ Principes Architecturaux
 
@@ -91,7 +97,22 @@ core/
 ```
 
 ### Features Layer (`lib/features/`)
-Chaque feature est un module indépendant contenant :
+L'application contient **25+ modules fonctionnels**, chacun étant un module indépendant :
+
+**Modules principaux**:
+- `authentication/` (26 fichiers) - Multi-provider auth
+- `dashboard/` (22 fichiers) - Tableaux de bord par rôle
+- `lessons/` (54 fichiers) - Contenu pédagogique
+- `dictionary/` (42 fichiers) - Dictionnaire 22 langues
+- `ai/` (12 fichiers) - Gemini AI integration
+- `gamification/` (14 fichiers) - Points, badges, leaderboards
+- `payment/` (30 fichiers) - CamPay, NouPai, Stripe
+- `games/` (17 fichiers) - Jeux éducatifs
+- `community/` (16 fichiers) - Forums et social
+- `culture/` (12 fichiers) - Contenu culturel
+- ... et 15+ autres modules
+
+**Structure standard de chaque feature**:
 ```
 feature_name/
 ├── data/
@@ -103,7 +124,7 @@ feature_name/
 │   ├── repositories/   # Interfaces des repositories
 │   └── usecases/       # Cas d'usage spécifiques
 └── presentation/
-    ├── viewmodels/     # ViewModels
+    ├── viewmodels/     # ViewModels (ChangeNotifier)
     ├── views/          # Interfaces utilisateur
     ├── widgets/        # Composants réutilisables
     └── pages/          # Pages complètes

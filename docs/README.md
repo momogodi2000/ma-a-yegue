@@ -146,25 +146,32 @@ mayegue-mobile/
 
 ### Métriques
 
-- **Modules :** 25+ modules fonctionnels
-- **Fichiers :** 350+ fichiers Dart
-- **Code Nouveau :** 1,800+ lignes (système éducatif)
-- **Tests :** 50+ tests
-- **Erreurs :** 0
-- **Warnings :** 0
+- **Modules :** 25+ modules fonctionnels intégrés
+- **Fichiers :** 410+ fichiers Dart
+- **Core Services :** 21 services essentiels
+- **Code Nouveau (v2.0) :** 1,800+ lignes (système éducatif)
+- **Tests :** 50+ tests (unitaires, intégration, widget)
+- **Erreurs :** 0 ✅
+- **Warnings :** 0 (nouveau code) ✅
 - **Langues :** 22 langues camerounaises
 - **Niveaux Scolaires :** 12 (CP → Terminale)
 - **Rôles Utilisateurs :** 12 (Visitor → Super Admin)
+- **Hiérarchie :** 10 niveaux de permissions
 
-### 🎓 Nouveautés Version 2.0
+### 🎓 Nouveautés Version 2.0 - Educational Platform
 
-- ✅ **Système éducatif complet** (grades, écoles, classes)
-- ✅ **Notation camerounaise** (/20, bulletins)
-- ✅ **Calendrier académique** (3 trimestres)
-- ✅ **Outils enseignants** (présences, devoirs, leçons)
-- ✅ **Portail parents** (suivi, communication)
-- ✅ **Filtrage par âge** (5 niveaux de complexité)
-- ✅ **Module culture amélioré** (accès visiteurs)
+- ✅ **Système éducatif complet** - 12 niveaux (CP → Terminale), 12 rôles, hiérarchie 10 niveaux
+- ✅ **Notation camerounaise** - Notes /20, lettres A-F, appréciations, bulletins
+- ✅ **Calendrier académique** - 3 trimestres, vacances, jours fériés nationaux
+- ✅ **Gestion établissements** - Multi-écoles, code MINEDUC, 4 types d'établissements
+- ✅ **Gestion classes** - Professeur principal, max 40 élèves, emploi du temps
+- ✅ **Outils enseignants** - Présences, devoirs, cahier de textes, notes conduite
+- ✅ **Portail parents** - Suivi temps réel, messagerie, rendez-vous, annonces
+- ✅ **Filtrage par âge** - 5 niveaux de complexité (6-18 ans), contenu adaptatif
+- ✅ **Module culture amélioré** - Accessible visiteurs, 4 catégories, showcase
+- ✅ **IA avancée** - 6 fonctionnalités Gemini AI (chat, traduction, prononciation, etc.)
+- ✅ **Gamification complète** - Points, badges, leaderboards, streaks, shop
+- ✅ **Paiements africains** - CamPay (MTN, Orange), NouPai, Stripe
 
 ---
 

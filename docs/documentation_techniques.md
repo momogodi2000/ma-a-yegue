@@ -7,8 +7,8 @@ Cette documentation détaille l'écosystème technique de l'application Ma’a y
 ## 🛠️ Stack Technologique
 
 ### Framework Principal
-- **Flutter** : 3.0.0+ - Framework cross-platform pour iOS, Android et Web
-- **Dart** : 3.0.0+ - Langage de programmation moderne et performant
+- **Flutter** : 3.5.0+ - Framework cross-platform pour iOS, Android et Web
+- **Dart** : 3.5.0+ - Langage de programmation moderne et performant
 
 ### Architecture
 - **MVVM Pattern** : Séparation claire Vue-Modèle-VueModèle
@@ -25,9 +25,16 @@ Cette documentation détaille l'écosystème technique de l'application Ma’a y
   - **Analytics** : Suivi d'utilisation et métriques
 
 ### Services Externes
-- **Gemini AI** : Assistant conversationnel intelligent (Google AI)
-- **CamPay** : Passerelle de paiement mobile camerounais
-- **NouPai** : Passerelle de paiement alternative
+- **Gemini AI** : Assistant conversationnel intelligent (Google AI) avec support pour:
+  - Chat conversationnel multilingue
+  - Traduction contextuelle
+  - Évaluation de prononciation
+  - Génération de contenu pédagogique
+  - Recommandations personnalisées
+  - Analyse de progression
+- **CamPay** : Passerelle de paiement mobile camerounais (MTN Mobile Money, Orange Money)
+- **NouPai** : Passerelle de paiement alternative pour redondance
+- **Stripe** : Paiements par carte bancaire internationaux
 
 ## 📦 Dépendances Principales
 
@@ -74,24 +81,33 @@ flutter_local_notifications: ^17.1.0  # Notifications locales
 ### Authentification Sociale
 ```yaml
 google_sign_in: ^6.2.1        # Connexion Google
-flutter_facebook_auth: ^6.0.4 # Connexion Facebook
-sign_in_with_apple: ^5.0.0    # Connexion Apple
+flutter_facebook_auth: ^5.0.2 # Connexion Facebook
 ```
 
 ### Multimédia
 ```yaml
-audioplayers: ^3.0.1          # Lecture audio
-video_player: ^2.5.1          # Lecture vidéo
+audioplayers: ^6.5.1          # Lecture audio
+video_player: ^2.9.1          # Lecture vidéo
+path_provider: ^2.1.4         # Chemins de fichiers système
+image_picker: ^1.1.2          # Sélection d'images
+flutter_image_compress: ^2.3.0  # Compression d'images
+flutter_tts: ^4.2.3           # Text-to-Speech pour prononciation
 ```
 
 ### Utilitaires
 ```yaml
 crypto: ^3.0.3                # Cryptographie
+encrypt: ^5.0.3               # Chiffrement AES
 intl: ^0.20.2                 # Internationalisation
 flutter_dotenv: ^5.1.0        # Variables d'environnement
 file_picker: ^8.0.0           # Sélection de fichiers
 permission_handler: ^11.3.0   # Gestion des permissions
 lottie: ^3.0.0                # Animations Lottie
+carousel_slider: ^4.2.1       # Carrousels d'images
+cached_network_image: ^3.3.1  # Cache d'images réseau
+fl_chart: ^0.66.2             # Graphiques et statistiques
+timezone: ^0.9.2              # Gestion des fuseaux horaires
+package_info_plus: ^8.0.0     # Informations de l'app
 ```
 
 ### Développement & Tests
@@ -368,13 +384,14 @@ class Validators {
 ### Gemini AI Integration
 ```dart
 // lib/core/services/ai_service.dart
-class AIService {
+class GeminiAIService {
   final Dio _dio;
   final String _apiKey;
 
-  AIService(this._dio, this._apiKey);
+  GeminiAIService(this._dio, this._apiKey);
 
-  Future<String> generateResponse(String prompt) async {
+  /// Generate AI content from prompt
+  Future<String> generateContent(String prompt, {int maxTokens = 1000}) async {
     try {
       final response = await _dio.post(
         'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
@@ -387,7 +404,11 @@ class AIService {
             'parts': [{
               'text': prompt
             }]
-          }]
+          }],
+          'generationConfig': {
+            'maxOutputTokens': maxTokens,
+            'temperature': 0.7,
+          }
         },
       );
 
@@ -395,6 +416,34 @@ class AIService {
     } catch (e) {
       throw AIServiceException('Erreur IA: $e');
     }
+  }
+
+  /// Generate multi-turn conversation response
+  Future<String> generateConversationResponse({
+    required String message,
+    required List<Map<String, String>> conversationHistory,
+  }) async {
+    // Build conversation context
+    final contents = conversationHistory.map((msg) => {
+      'role': msg['role'],
+      'parts': [{'text': msg['content']}]
+    }).toList();
+    
+    contents.add({
+      'role': 'user',
+      'parts': [{'text': message}]
+    });
+
+    final response = await _dio.post(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+      options: Options(headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': _apiKey,
+      }),
+      data: {'contents': contents},
+    );
+
+    return response.data['candidates'][0]['content']['parts'][0]['text'];
   }
 }
 ```

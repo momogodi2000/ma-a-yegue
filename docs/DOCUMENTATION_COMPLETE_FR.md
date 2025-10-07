@@ -46,10 +46,22 @@
 
 ```yaml
 Flutter SDK: ≥3.5.0 <4.0.0
-Dart SDK: ≥3.5.0
+Dart SDK: ≥3.5.0 <4.0.0
 Android: API 21+ (Android 5.0+)
 iOS: 12.0+
+Web: Chrome, Firefox, Safari (latest)
 ```
+
+### Technologies Principales
+
+- **Framework** : Flutter 3.5+ / Dart 3.5+
+- **Architecture** : Clean Architecture + MVVM
+- **State Management** : Provider
+- **Backend** : Firebase Suite (Auth, Firestore, Storage, Analytics, Crashlytics, Messaging, Performance, Functions)
+- **AI** : Google Gemini AI
+- **Database Local** : SQLite + Hive
+- **Paiements** : CamPay, NouPai, Stripe
+- **Navigation** : GoRouter
 
 ### Installation
 
@@ -142,11 +154,28 @@ STRIPE_SECRET_KEY=sk_live_xxx
 
 ### Configuration Google Gemini AI
 
-```dart
+```env
 GEMINI_API_KEY=votre_cle_api_gemini
 ```
 
-Obtenir une clé sur [Google AI Studio](https://makersuite.google.com/app/apikey)
+**Obtenir une clé sur** : [Google AI Studio](https://makersuite.google.com/app/apikey)
+
+**Fonctionnalités IA activées** :
+- Chat conversationnel multilingue
+- Traduction contextuelle (22 langues camerounaises)
+- Évaluation de prononciation
+- Génération de contenu pédagogique
+- Recommandations personnalisées
+- Analyse de progression
+
+**Configuration dans l'app** :
+```dart
+// lib/core/services/ai_service.dart
+final geminiService = GeminiAIService(
+  dioClient,
+  dotenv.env['GEMINI_API_KEY']!,
+);
+```
 
 ---
 

@@ -24,18 +24,27 @@
 
 Ma’a yegue propose différents niveaux d'accès selon votre statut. Voici le parcours complet depuis la découverte jusqu'à l'expertise.
 
-### 1. Visiteur/Invité (Guest)
+### 1. Visiteur/Invité (Guest / Visitor)
 
 #### Qui peut être visiteur ?
 Toute personne téléchargeant l'application sans créer de compte.
 
 #### Fonctionnalités Disponibles
-- **Découverte de l'application** : Présentation des langues et fonctionnalités
-- **Aperçu des leçons** : Accès limité aux premières sections de leçons
-- **Dictionnaire de base** : Recherche de mots limitée (5 recherches/jour)
-- **Assistant IA limité** : 3 questions gratuites par jour
-- **Communauté en lecture seule** : Consultation des forums sans participation
-- **Inscription gratuite** : Accès au processus d'enregistrement
+- **🎨 Contenu Culturel Complet** : Accès total aux 4 catégories (Traditions, Histoire, Yemba, Patrimoine)
+- **📱 Découverte de l'application** : Présentation des langues et fonctionnalités
+- **📚 Aperçu des leçons** : Accès limité aux premières sections de leçons
+- **🔍 Dictionnaire de base** : Recherche limitée (aperçu des fonctionnalités)
+- **🤖 Assistant IA limité** : Démonstration des capacités
+- **👥 Communauté en lecture seule** : Consultation des forums sans participation
+- **✍️ Inscription gratuite** : Accès au processus d'enregistrement
+
+#### Nouveauté v2.0 - Accès Culture
+Les visiteurs ont désormais **accès complet au module Culture** avec :
+- Articles culturels enrichis
+- Histoire camerounaise
+- Culture Yemba (Bamiléké)
+- Patrimoine national
+- Contenu multimédia
 
 #### Flux d'Actions du Visiteur
 ```
