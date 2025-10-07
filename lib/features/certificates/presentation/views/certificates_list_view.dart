@@ -81,7 +81,7 @@ class _CertificatesListViewState extends State<CertificatesListView> {
           }
 
           return RefreshIndicator(
-            onPressed: () => viewModel.loadUserCertificates(widget.userId),
+            onRefresh: () async => viewModel.loadUserCertificates(widget.userId),
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [

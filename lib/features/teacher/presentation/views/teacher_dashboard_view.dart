@@ -377,7 +377,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
   }
 
   Widget _buildCourseCard(
-    lesson.CourseEntity course,
+    teacher.CourseEntity course,
     TeacherViewModel viewModel,
   ) {
     return Card(
@@ -819,15 +819,15 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  Color _getStatusColor(lesson.CourseStatus status) {
+  Color _getStatusColor(teacher.CourseStatus status) {
     switch (status) {
-      case lesson.CourseStatus.draft:
+      case teacher.CourseStatus.draft:
         return Colors.grey;
-      case lesson.CourseStatus.published:
+      case teacher.CourseStatus.published:
         return Colors.green;
-      case lesson.CourseStatus.archived:
+      case teacher.CourseStatus.archived:
         return Colors.red;
-      case lesson.CourseStatus.suspended:
+      case teacher.CourseStatus.suspended:
         return Colors.orange;
     }
   }
@@ -841,7 +841,7 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
   // Action handlers
   void _handleCourseAction(
     String action,
-    lesson.CourseEntity course,
+    teacher.CourseEntity course,
     TeacherViewModel viewModel,
   ) {
     switch (action) {
@@ -897,15 +897,15 @@ class _TeacherDashboardViewState extends State<TeacherDashboardView>
   }
 
   // Navigation and dialog methods
-  void _viewCourse(lesson.CourseEntity course, TeacherViewModel viewModel) {
+  void _viewCourse(teacher.CourseEntity course, TeacherViewModel viewModel) {
     // TODO: Navigate to course details
   }
 
-  void _editCourse(lesson.CourseEntity course, TeacherViewModel viewModel) {
+  void _editCourse(teacher.CourseEntity course, TeacherViewModel viewModel) {
     // TODO: Navigate to course edit
   }
 
-  void _deleteCourse(lesson.CourseEntity course, TeacherViewModel viewModel) {
+  void _deleteCourse(teacher.CourseEntity course, TeacherViewModel viewModel) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

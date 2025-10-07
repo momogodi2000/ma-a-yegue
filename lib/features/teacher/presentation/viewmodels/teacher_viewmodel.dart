@@ -27,11 +27,11 @@ class TeacherViewModel extends ChangeNotifier {
   final GetTeacherAnalytics _getTeacherAnalytics;
   final GetTeacherMessages _getTeacherMessages;
   final GetMessagesWithStudent _getMessagesWithStudent;
-  final SendMessage _sendMessage;
+  final SendMessageToStudent _sendMessage;
   final GetCourseAnnouncements _getCourseAnnouncements;
   final CreateAnnouncement _createAnnouncement;
   final GetTeacherNotifications _getTeacherNotifications;
-  final SendNotification _sendNotification;
+  final SendNotificationToStudent _sendNotification;
   final GetTeacherSettings _getTeacherSettings;
   final UpdateTeacherSettings _updateTeacherSettings;
   final GetTeacherCalendar _getTeacherCalendar;
@@ -513,7 +513,7 @@ class TeacherViewModel extends ChangeNotifier {
     _setLoading(true);
     _clearError();
 
-    final result = await _sendMessage(teacherId, studentId, message);
+    final result = await _sendMessage(teacherId, studentId, message, 'Message from teacher');
     result.fold((failure) => _setError(failure.message), (_) {
       _messages.add({
         'teacherId': teacherId,

@@ -104,4 +104,5 @@ enum CourseStatus {
   draft,
   published,
   archived,
+  suspended,
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/learner_viewmodel.dart';
-import '../../domain/entities/learner_entity.dart';
+import '../../domain/repositories/learner_repository.dart';
 
 /// Comprehensive learner dashboard view
 class LearnerDashboardView extends StatefulWidget {
@@ -262,7 +262,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
             _buildStatCard(
               '${(statistics['averageAccuracy'] ?? 0.0).toStringAsFixed(1)}%',
               'Précision Moyenne',
-              Icons.target,
+              Icons.adjust,
               Colors.purple,
             ),
           ],
@@ -648,7 +648,7 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
                     _buildAnalyticsItem(
                       'Précision',
                       '${(analytics['accuracy'] ?? 0.0).toStringAsFixed(1)}%',
-                      Icons.target,
+                      Icons.adjust,
                       Colors.green,
                     ),
                     _buildAnalyticsItem(
@@ -769,15 +769,13 @@ class _LearnerDashboardViewState extends State<LearnerDashboardView> {
       case RecommendationType.exercise:
         return Icons.fitness_center;
       case RecommendationType.practice:
-        return Icons.practice_mode;
+        return Icons.play_circle;
       case RecommendationType.review:
         return Icons.refresh;
       case RecommendationType.assessment:
         return Icons.assessment;
       case RecommendationType.challenge:
         return Icons.emoji_events;
-      default:
-        return Icons.lightbulb;
     }
   }
 }

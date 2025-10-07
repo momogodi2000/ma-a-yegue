@@ -904,3 +904,19 @@ class RespondToReview {
     return await repository.respondToReview(reviewId, response);
   }
 }
+
+/// Send notification to student use case
+class SendNotificationToStudent {
+  final TeacherRepository repository;
+
+  SendNotificationToStudent(this.repository);
+
+  Future<Either<Failure, bool>> call(
+    String teacherId,
+    String studentId,
+    String message,
+  ) async {
+    // TODO: Implement notification sending
+    return Left(CacheFailure('Notification sending not implemented'));
+  }
+}

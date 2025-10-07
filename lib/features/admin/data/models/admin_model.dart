@@ -92,7 +92,7 @@ class SystemAnalyticsModel extends SystemAnalyticsEntity {
     required super.lastUpdated,
   });
 
-  factory AdminModel.fromEntity(SystemAnalyticsEntity entity) {
+  factory SystemAnalyticsModel.fromEntity(SystemAnalyticsEntity entity) {
     return SystemAnalyticsModel(
       totalUsers: entity.totalUsers,
       totalLearners: entity.totalLearners,
