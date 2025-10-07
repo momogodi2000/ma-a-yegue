@@ -456,13 +456,34 @@ class AuthViewModel extends ChangeNotifier {
 
   String _mapFailureToMessage(Failure failure) {
     if (failure is AuthFailure) {
+      // Provide more specific error messages
+      final message = failure.message.toLowerCase();
+      
+      if (message.contains('wrong-password') || message.contains('invalid-credential')) {
+        return 'Email ou mot de passe incorrect. Veuillez réessayer.';
+      } else if (message.contains('user-not-found')) {
+        return 'Aucun compte trouvé avec cet email. Veuillez vous inscrire.';
+      } else if (message.contains('email-already-in-use')) {
+        return 'Cet email est déjà utilisé. Veuillez vous connecter ou utiliser un autre email.';
+      } else if (message.contains('weak-password')) {
+        return 'Mot de passe trop faible. Utilisez au moins 6 caractères avec chiffres et lettres.';
+      } else if (message.contains('invalid-email')) {
+        return 'Format d\'email invalide. Veuillez vérifier votre adresse email.';
+      } else if (message.contains('too-many-requests')) {
+        return 'Trop de tentatives. Veuillez réessayer dans quelques minutes.';
+      } else if (message.contains('network')) {
+        return 'Erreur de connexion. Vérifiez votre connexion Internet.';
+      } else if (message.contains('permission') || message.contains('insufficient')) {
+        return 'Erreur de configuration. Veuillez contacter le support.';
+      }
+      
       return 'Erreur d\'authentification: ${failure.message}';
     } else if (failure is NetworkFailure) {
-      return 'Erreur réseau: ${failure.message}';
+      return 'Erreur réseau: Vérifiez votre connexion Internet et réessayez.';
     } else if (failure is ServerFailure) {
-      return 'Erreur serveur: ${failure.message}';
+      return 'Erreur serveur: Le service est temporairement indisponible.';
     } else {
-      return 'Une erreur s\'est produite: ${failure.message}';
+      return 'Une erreur s\'est produite. Veuillez réessayer.';
     }
   }
 }

@@ -191,6 +191,7 @@ class _RegisterViewState extends State<RegisterView> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
+                  elevation: 4,
                 ),
                 onPressed: authViewModel.isLoading ? null : _handleRegister,
                 child: authViewModel.isLoading
@@ -204,21 +205,59 @@ class _RegisterViewState extends State<RegisterView> {
                       )
                     : const Text(
                         "S'inscrire",
-                        style: TextStyle(fontSize: 18, color: AppColors.onPrimary),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppColors.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 25),
 
-              // Login navigation
-              TextButton(
-                onPressed: () {
-                  context.go(Routes.login);
-                },
-                child: const Text(
-                  "Déjà inscrit ? Se connecter",
-                  style: TextStyle(color: AppColors.secondary, fontSize: 16),
+              // Login navigation - More prominent
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Déjà inscrit ?",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.go(Routes.login);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        elevation: 2,
+                      ),
+                      child: const Text(
+                        "Se connecter",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

@@ -312,27 +312,76 @@ class _LoginViewState extends State<LoginView> {
               ),
               const SizedBox(height: 15),
 
-              // Register navigation
-              TextButton(
-                onPressed: () {
-                  context.go(Routes.register);
-                },
-                child: const Text(
-                  "Pas encore de compte ? S'inscrire",
-                  style: TextStyle(color: AppColors.secondary, fontSize: 16),
+              // Forgot password - More prominent
+              Container(
+                alignment: Alignment.center,
+                child: TextButton(
+                  onPressed: () {
+                    context.go(Routes.forgotPassword);
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text(
+                    "Mot de passe oublié ?",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
+              const SizedBox(height: 20),
 
-              // Forgot password
-              TextButton(
-                onPressed: () {
-                  context.go(Routes.forgotPassword);
-                },
-                child: const Text(
-                  "Mot de passe oublié ?",
-                  style: TextStyle(color: AppColors.secondary, fontSize: 14),
+              // Register navigation - More prominent
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Pas encore de compte ?",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.go(Routes.register);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        elevation: 2,
+                      ),
+                      child: const Text(
+                        "S'inscrire",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

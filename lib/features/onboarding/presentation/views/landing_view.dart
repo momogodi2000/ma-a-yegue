@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../../core/constants/routes.dart';
 import '../../../../shared/widgets/forms/custom_button.dart';
 
@@ -17,7 +18,53 @@ class _LandingViewState extends State<LandingView>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   final PageController _pageController = PageController();
+  final PageController _updatePageController = PageController();
   int _currentPage = 0;
+  int _currentUpdatePage = 0;
+  String _appVersion = '1.0.0';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppVersion();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutBack,
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      setState(() {
+        _appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      });
+    } catch (e) {
+      // Keep default version if error
+    }
+  }
 
   final List<Map<String, dynamic>> _languages = [
     {
@@ -126,41 +173,67 @@ class _LandingViewState extends State<LandingView>
     },
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
+  final List<Map<String, dynamic>> _recentUpdates = [
+    {
+      'version': '1.0.0',
+      'date': 'Octobre 2025',
+      'icon': Icons.rocket_launch,
+      'title': 'Lancement Initial',
+      'features': [
+        '🎉 6 langues camerounaises disponibles',
+        '🤖 IA personnalisée pour l\'apprentissage',
+        '🎵 Prononciation audio authentique',
+        '📚 Plus de 500 leçons interactives',
+        '👥 Système de communauté intégré',
+      ],
+    },
+    {
+      'version': '1.1.0',
+      'date': 'À venir',
+      'icon': Icons.update,
+      'title': 'Améliorations Prévues',
+      'features': [
+        '🎮 Mode gamification avancé',
+        '📹 Leçons vidéo avec locuteurs natifs',
+        '🏆 Système de badges et récompenses',
+        '💬 Chat en temps réel avec tuteurs',
+        '📊 Analytics de progression détaillés',
+      ],
+    },
+  ];
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutBack,
-      ),
-    );
-
-    _animationController.forward();
-  }
+  final List<Map<String, dynamic>> _appHighlights = [
+    {
+      'title': 'Interface Intuitive',
+      'description': 'Design moderne et facile à utiliser',
+      'icon': Icons.touch_app,
+      'color': Colors.blue,
+    },
+    {
+      'title': 'Mode Hors Ligne',
+      'description': 'Apprenez même sans connexion',
+      'icon': Icons.offline_bolt,
+      'color': Colors.orange,
+    },
+    {
+      'title': 'Suivi de Progression',
+      'description': 'Statistiques détaillées de votre apprentissage',
+      'icon': Icons.trending_up,
+      'color': Colors.green,
+    },
+    {
+      'title': 'Certificats',
+      'description': 'Obtenez des certificats validés',
+      'icon': Icons.workspace_premium,
+      'color': Colors.purple,
+    },
+  ];
 
   @override
   void dispose() {
     _animationController.dispose();
     _pageController.dispose();
+    _updatePageController.dispose();
     super.dispose();
   }
 
@@ -361,6 +434,97 @@ class _LandingViewState extends State<LandingView>
                   ),
                 ),
 
+                // App Highlights Section
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Fonctionnalités Principales',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1.1,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: _appHighlights.length,
+                        itemBuilder: (context, index) =>
+                            _buildHighlightCard(_appHighlights[index]),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Recent Updates Section
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  color: Colors.green.shade50,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.new_releases, color: Colors.green),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Nouveautés & Mises à Jour',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 280,
+                        child: PageView.builder(
+                          controller: _updatePageController,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentUpdatePage = index;
+                            });
+                          },
+                          itemCount: _recentUpdates.length,
+                          itemBuilder: (context, index) =>
+                              _buildUpdateCard(_recentUpdates[index]),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          _recentUpdates.length,
+                          (index) => Container(
+                            width: 8,
+                            height: 8,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _currentUpdatePage == index
+                                  ? Colors.green
+                                  : Colors.grey.shade400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 // Testimonials Section
                 Container(
                   padding: const EdgeInsets.all(24),
@@ -475,6 +639,60 @@ class _LandingViewState extends State<LandingView>
                                   fontStyle: FontStyle.italic,
                                   fontWeight: FontWeight.w500,
                                 ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // App Version Footer
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.info_outline,
+                                  color: Colors.grey,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Version $_appVersion',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              '© 2025 Ma\'a yegue - Tous droits réservés',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Préservation du patrimoine linguistique camerounais',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 11,
+                                fontStyle: FontStyle.italic,
                               ),
                             ),
                           ],
@@ -717,6 +935,141 @@ class _LandingViewState extends State<LandingView>
               height: 1.4,
             ),
             textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHighlightCard(Map<String, dynamic> highlight) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: (highlight['color'] as Color).withOpacity(0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            highlight['icon'] as IconData,
+            color: highlight['color'] as Color,
+            size: 40,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            highlight['title'] as String,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: highlight['color'] as Color,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            highlight['description'] as String,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUpdateCard(Map<String, dynamic> update) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.green.withOpacity(0.3), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  update['icon'] as IconData,
+                  color: Colors.green,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      update['title'] as String,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                    Text(
+                      'Version ${update['version']} • ${update['date']}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: (update['features'] as List).length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    (update['features'] as List)[index],
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                      height: 1.4,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

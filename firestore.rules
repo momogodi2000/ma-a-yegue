@@ -52,19 +52,41 @@ service cloud.firestore {
 
     // User documents - users can read/write their own data, admins can read all
     match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isAuthenticated() && userId == request.auth.uid && isValidUserData();
-      allow update: if isOwner(userId) && isValidUserData() && !('role' in request.resource.data)
-                    || isAdmin();
+      // Allow users to read their own document, admins to read any
+      // Also allow checking for admin users during app initialization (limited read)
+      allow read: if isOwner(userId) || 
+                     isAdmin() ||
+                     (isAuthenticated() && request.query.limit <= 1);
+      
+      // Allow authenticated users to create their own profile during registration
+      allow create: if request.auth != null && 
+                       userId == request.auth.uid && 
+                       isValidUserDataForCreation();
+      
+      // Allow users to update their own data (except role) or admins to update anything
+      allow update: if (isOwner(userId) && isValidUserDataForUpdate()) || isAdmin();
+      
+      // Only admins can delete users
       allow delete: if isAdmin();
 
-      function isValidUserData() {
+      function isValidUserDataForCreation() {
         let data = request.resource.data;
-        return data.keys().hasAll(['email', 'displayName', 'role', 'createdAt']) &&
-               data.role in ['learner', 'teacher', 'admin'] &&
-               data.email is string &&
+        // During creation, we only require email, displayName, role, and createdAt
+        // Email should match the authenticated user's email
+        return data.email == request.auth.token.email &&
                data.displayName is string &&
+               data.displayName.size() > 0 &&
+               data.role in ['learner', 'teacher', 'admin', 'student'] &&
                data.createdAt is timestamp;
+      }
+
+      function isValidUserDataForUpdate() {
+        let data = request.resource.data;
+        // Users cannot change their role or email during update
+        return (!('role' in data) || data.role == resource.data.role) &&
+               (!('email' in data) || data.email == resource.data.email) &&
+               data.displayName is string &&
+               data.displayName.size() > 0;
       }
     }
 
