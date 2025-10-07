@@ -42,10 +42,7 @@ class GuestContentService {
             .get();
 
         firebaseWords = snapshot.docs
-            .map((doc) => {
-                  ...doc.data(),
-                  'id': doc.id,
-                })
+            .map((doc) => {...doc.data(), 'id': doc.id})
             .toList();
       }
     } catch (e) {
@@ -90,18 +87,15 @@ class GuestContentService {
       if (_firestore != null) {
         final snapshot = await _firestore!
             .collection('public_content')
-          .doc('words')
-          .collection('items')
+            .doc('words')
+            .collection('items')
             .where('category_id', isEqualTo: categoryId)
             .where('is_public', isEqualTo: true)
             .limit(limit)
             .get();
 
         firebaseWords = snapshot.docs
-            .map((doc) => {
-                  ...doc.data(),
-                  'id': doc.id,
-                })
+            .map((doc) => {...doc.data(), 'id': doc.id})
             .toList();
       }
     } catch (e) {
@@ -148,17 +142,13 @@ class GuestContentService {
       if (_firestore != null) {
         final doc = await _firestore!
             .collection('public_content')
-          .doc('lessons')
-          .collection('items')
+            .doc('lessons')
+            .collection('items')
             .doc(lessonId.toString())
-          .get();
+            .get();
 
         if (doc.exists && doc.data()?['is_public'] == true) {
-        return {
-            ...lesson,
-            ...doc.data()!,
-            'id': lessonId,
-          };
+          return {...lesson, ...doc.data()!, 'id': lessonId};
         }
       }
     } catch (e) {
@@ -221,10 +211,7 @@ class GuestContentService {
             .get();
 
         firebaseLessons = snapshot.docs
-            .map((doc) => {
-                  ...doc.data(),
-                  'id': doc.id,
-                })
+            .map((doc) => {...doc.data(), 'id': doc.id})
             .toList();
       }
     } catch (e) {
@@ -255,7 +242,7 @@ class GuestContentService {
   }
 
   /// Get content statistics for a language
-  static Future<Map<String, dynamic>> getContentStats({
+  static Future<Map<String, int>> getContentStats({
     required String languageCode,
   }) async {
     if (_db == null) {
@@ -280,10 +267,22 @@ class GuestContentService {
       [languageCode],
     );
 
+    // Get total languages count
+    final languagesCount = await _db!.rawQuery(
+      'SELECT COUNT(*) as count FROM languages WHERE is_active = 1',
+    );
+
+    // Get total users count (if available)
+    final usersCount = await _db!.rawQuery(
+      'SELECT COUNT(*) as count FROM users',
+    );
+
     return {
-      'wordCount': wordCount.first['count'] ?? 0,
-      'lessonCount': lessonCount.first['count'] ?? 0,
-      'categoryCount': categoryCount.first['count'] ?? 0,
+      'totalWords': (wordCount.first['count'] as int?) ?? 0,
+      'totalLessons': (lessonCount.first['count'] as int?) ?? 0,
+      'totalCategories': (categoryCount.first['count'] as int?) ?? 0,
+      'totalLanguages': (languagesCount.first['count'] as int?) ?? 0,
+      'totalUsers': (usersCount.first['count'] as int?) ?? 0,
     };
   }
 
@@ -322,14 +321,13 @@ class GuestContentService {
             .where((doc) {
               final data = doc.data();
               final word = data['word']?.toString().toLowerCase() ?? '';
-              final translation = data['translation']?.toString().toLowerCase() ?? '';
+              final translation =
+                  data['translation']?.toString().toLowerCase() ?? '';
               final searchQuery = query.toLowerCase();
-              return word.contains(searchQuery) || translation.contains(searchQuery);
+              return word.contains(searchQuery) ||
+                  translation.contains(searchQuery);
             })
-            .map((doc) => {
-                  ...doc.data(),
-                  'id': doc.id,
-                })
+            .map((doc) => {...doc.data(), 'id': doc.id})
             .toList();
       }
     } catch (e) {
