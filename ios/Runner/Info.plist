@@ -45,5 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Permission descriptions for iOS -->
+	<key>NSCameraUsageDescription</key>
+	<string>Cette application a besoin d'accéder à votre appareil photo pour prendre des photos de profil et créer du contenu.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Cette application a besoin d'accéder à votre microphone pour pratiquer la prononciation et enregistrer du contenu audio.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cette application a besoin d'accéder à vos photos pour sélectionner des images de profil et du contenu.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Cette application a besoin de sauvegarder des photos dans votre bibliothèque.</string>
 </dict>
 </plist>

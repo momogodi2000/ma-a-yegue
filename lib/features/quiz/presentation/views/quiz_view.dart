@@ -180,6 +180,8 @@ class _QuizViewState extends State<QuizView> with TickerProviderStateMixin {
         quiz: _quiz!,
       );
 
+      if (!mounted) return;
+
       if (attempt != null) {
         // Navigate to results
         Navigator.of(context).pushReplacement(

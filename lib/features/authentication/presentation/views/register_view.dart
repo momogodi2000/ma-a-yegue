@@ -141,8 +141,9 @@ class _RegisterViewState extends State<RegisterView> {
                   fillColor: AppColors.surface,
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return null; // Age is optional
+                  }
                   final age = int.tryParse(value);
                   if (age == null || age < 5 || age > 120) {
                     return "Entrez un âge valide (5-120)";
